@@ -1,11 +1,20 @@
 # 生活服务（日历）应用模板快速入门
 
+## [ :fa-chain-broken: 源码下载](https://agc-storage-drcn.platform.dbankcloud.cn/v0/scenic-i0v1l/Calendar.zip?token=4fa42a5b-6547-493b-9ab9-c5dd1ef8c6a6)
+
 ## 目录
 
+- [目录](#目录)
 - [功能介绍](#功能介绍)
-- [环境要求](#环境要求)
+  - [模板](#模板)
+- [注意事项](#注意事项)
 - [组件](#组件)
+- [环境要求](#环境要求)
+  - [软件](#软件)
+  - [硬件](#硬件)
 - [快速入门](#快速入门)
+  - [配置工程](#配置工程)
+  - [运行调试工程](#运行调试工程)
 - [示例效果](#示例效果)
 - [权限要求](#权限要求)
 - [开源许可协议](#开源许可协议)
@@ -121,18 +130,19 @@ Application
 
 本模板中提供了多种组件，您可以按需选择合适的组件进行使用，所有组件存放在工程根目录的components下。
 
-| 组件                         | 描述                                          | 使用指导                                             |
-|----------------------------|---------------------------------------------|--------------------------------------------------|
-| 日历组件（BaseCalendar）         | 展示当前日期日历、自定义头部项插槽、节日、节气展示颜色等相关的能力           | [使用指导](components/base_calendar/README.md)       |
-| 黄历组件（CalendarAlmanac）      | 日历黄历组件，支持日期动态选择，阴历阳历，五行等信息展示                | [使用指导](components/calendar_almanac/README.md)    |
-| 日程提醒（CalendarEventMain）    | 日历重要提醒，支持新增以及编辑日历，生日，纪念日，待办。支持日程添加到系统日历提醒中  | [使用指导](components/calendar_events/README.md)     |
-| 日期计算（DateToolsCalculate）   | 本组件日期计算的相关能力，包括日期间隔，日期计算，阴阳转换等功能            | [使用指导](components/date_calculation/README.md)    |
-| 节日节气（FestivalSolar）        | 本组件提供了节日节气展示的相关功能                           | [使用指导](components/festival_solar/README.md)      |
-| 登录（LoginInfo）              | 本组件提供了用户信息展示，登录，个人信息编辑，华为账号一键登录，开通会员入口的相关功能 | [使用指导](components/login_info/README.md)          |
-| 会员中心（VipCenter）            | 本组件提供了用户会员开通功能                              | [使用指导](components/vip_center/README.md)          |
-| 宜忌查询组件（YiJiQuery）          | 查询开始日期到结束日期内的吉日以及忌日的相关功能                    | [使用指导](components/yiji_query/README.md)          |
-| 城市限行组件（TrafficRestriction） | 查询定位城市限行信息                                  | [使用指导](components/traffic_restriction/README.md) |
-| 历史上的今天（TodayHistory）       | 查询历史上的今天                                 | [使用指导](components/today_history/README.md)       |
+| 组件                         | 描述                                          | 使用指导                                            |
+|----------------------------|---------------------------------------------| --------------------------------------------------- |
+| 基础能力组件                     | 包括模态框，对话框，选择器，公共方法等                         | [使用指导](components/base_apis/README.md)|
+| 日历组件（BaseCalendar）         | 展示当前日期日历、自定义头部项插槽、节日、节气展示颜色等相关的能力           | [使用指导](components/base_calendar/README.md)      |
+| 黄历组件（CalendarAlmanac）      | 日历黄历组件，支持日期动态选择，阴历阳历，五行等信息展示                | [使用指导](components/calendar_almanac/README.md)      |
+| 日程提醒（CalendarEventMain）    | 日历重要提醒，支持新增以及编辑日历，生日，纪念日，待办。支持日程添加到系统日历提醒中  | [使用指导](components/calendar_events/README.md)|
+| 日期计算（DateToolsCalculate）   | 本组件日期计算的相关能力，包括日期间隔，日期计算，阴阳转换等功能            | [使用指导](components/date_calculation/README.md)|
+| 节日节气（FestivalSolar）        | 本组件提供了节日节气展示的相关功能                           | [使用指导](components/festival_solar/README.md)|
+| 登录（LoginInfo）              | 本组件提供了用户信息展示，登录，个人信息编辑，华为账号一键登录，开通会员入口的相关功能 | [使用指导](components/login_info/README.md)|
+| 会员中心（VipCenter）            | 本组件提供了用户会员开通功能                              | [使用指导](components/vip_center/README.md)|
+| 宜忌查询组件（YiJiQuery）          | 查询开始日期到结束日期内的吉日以及忌日的相关功能                    | [使用指导](components/yiji_query/README.md)         |
+| 城市限行组件（TrafficRestriction） | 查询定位城市限行信息                                  | [使用指导](components/traffic_restriction/README.md)         |
+
 
 ## 环境要求
 
@@ -152,46 +162,56 @@ Application
 
 在运行此模板前，需要完成以下配置：
 
-1. 在AppGallery Connect创建应用，将包名配置到模板中。
+1. 在DevEco Studio中打开此模板。
 
-   a. 参考[创建HarmonyOS应用](https://developer.huawei.com/consumer/cn/doc/app/agc-help-createharmonyapp-0000001945392297)为应用创建APP ID，并将APP ID与应用进行关联。
+2. 在AppGallery Connect创建应用，将包名配置到模板中。
+
+   a. 参考[创建HarmonyOS应用](https://developer.huawei.com/consumer/cn/doc/app/agc-help-createharmonyapp-0000001945392297)为应用创建APPID，并进行关联。
 
    b. 返回应用列表页面，查看应用的包名。
 
-   c. 将模板工程根目录下AppScope/app.json5文件中的bundleName替换为创建应用的包名。
+   c. 将Application/AppScope/app.json5文件中的bundleName替换为创建应用的包名。
 
-2. 依次在“API管理”处开通位置服务、定位服务。
+3. 依次在“API管理”处开通位置服务、定位服务。
 
    <img src="screenshot/img.png" alt="开通位置定位服务" width="300">  
 
-3. 配置华为账号服务。
+4. 配置华为账号服务。
 
-   a. 将应用的client ID配置到product/entry/src/main模块的[module.json5](./product/entry/src/main/module.json5)文件，详细参考：[配置Client ID](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-client-id)。
+   a. 将应用的client ID配置到Application/product/entry模块的module.json5文件，详细参考：[配置Client ID](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-client-id)。
 
-   b. 申请华为账号一键登录所需的quickLoginMobilePhone权限，详细参考：[配置scope权限](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-config-permissions)。
 
-4. 对应用进行[手工签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section297715173233)。
+b. 添加公钥指纹，详细参考：[配置应用证书指纹](https://developer.huawei.com/consumer/cn/doc/app/agc-help-signature-info-0000001628566748#section5181019153511)。
 
-5. 添加手工签名所用证书对应的公钥指纹。详细参考：[配置应用签名证书指纹](https://developer.huawei.com/consumer/cn/doc/app/agc-help-signature-info-0000001628566748#section5181019153511)
+c. 配置scope权限：[配置scope权限](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-config-permissions)。
+
 ### 运行调试工程
 
 1. 连接调试手机和PC。
 
-2. 菜单选择“Run > Run 'entry' ”或者“Run > Debug 'entry' ”，运行或调试模板工程。
+2. 对应用[手工签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section297715173233)。
+
+3. 菜单选择“Run > Run 'entry' ”或者“Run > Debug 'entry' ”，运行或调试模板工程。
 
 ## 示例效果
 
-1. [万年历]([home.mp4](screenshot%2Fhome.mp4))
+1. 万年历
 
-2. [黄历]([huangli.mp4](screenshot%2Fhuangli.mp4))
+   <img src="screenshot/home.png" alt="万年历" width="300">
 
-3. [我的]([mine.mp4](screenshot%2Fmine.mp4))
+2. 黄历
+
+   <img src="screenshot/huangli.png" alt="黄历" width="300">
+
+3. 我的
+
+   <img src="screenshot/mine.png" alt="我的" width="300">
+
 
 ## 权限要求
 
 * 网络权限：ohos.permission.INTERNET
-* 获取位置权限：ohos.permission.APPROXIMATELY_LOCATION、ohos.permission.LOCATION
-* 日历权限：ohos.permission.WRITE_CALENDAR、ohos.permission.READ_CALENDAR
+
 ## 开源许可协议
 
 该代码经过[Apache 2.0 授权许可](http://www.apache.org/licenses/LICENSE-2.0)。
