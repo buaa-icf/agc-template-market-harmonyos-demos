@@ -1,7 +1,5 @@
 # 生活服务（日历）应用模板快速入门
 
-## [ :fa-chain-broken: 源码下载](https://agc-storage-drcn.platform.dbankcloud.cn/v0/scenic-i0v1l/Calendar.zip?token=4fa42a5b-6547-493b-9ab9-c5dd1ef8c6a6)
-
 ## 目录
 
 - [目录](#目录)
