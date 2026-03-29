@@ -5,6 +5,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { baseActionSheet } from 'base_common';
 import { UserInfo } from 'base_common';
 
+const ABOUT_PAGE_ROOT_ID = 'about_page_root';
+const ABOUT_PAGE_CONTACT_SERVICE_ROW_ID = 'about_page_contact_service_row';
+const ABOUT_PAGE_PHONE_SHEET_ID = 'about_page_phone_sheet';
+const ABOUT_PAGE_CALL_BUTTON_ID = 'about_page_make_call_button';
+const ABOUT_PAGE_CANCEL_BUTTON_ID = 'about_page_cancel_call_button';
+
 @ComponentV2
 export struct AboutPage {
   @Local userInfo: UserInfo | undefined = undefined;
@@ -44,6 +50,7 @@ export struct AboutPage {
         }
         this.aboutCardView()
       }
+      .id(ABOUT_PAGE_ROOT_ID)
       .padding({
         left:16,
         right:16,
@@ -160,6 +167,7 @@ export struct AboutPage {
         })
       }
       .width(Constants.FULL_SIZE)
+      .id(ABOUT_PAGE_CONTACT_SERVICE_ROW_ID)
       .justifyContent(FlexAlign.SpaceBetween)
       .padding({
         left:12,
@@ -197,6 +205,7 @@ export struct AboutPage {
           .fontWeight('medium')
           .fontColor($r('app.color.pure_white'))
       }
+      .id(ABOUT_PAGE_CALL_BUTTON_ID)
       .padding({ top: 10, bottom: 10 })
       .width('100%')
       .justifyContent(FlexAlign.Center)
@@ -219,6 +228,7 @@ export struct AboutPage {
           .fontWeight('medium')
           .fontColor('#ffffff')
       }
+      .id(ABOUT_PAGE_CANCEL_BUTTON_ID)
       .padding({ top: 10, bottom: 10 })
       .justifyContent(FlexAlign.Center)
       .width('100%')
@@ -228,6 +238,7 @@ export struct AboutPage {
         baseActionSheet.close('PhoneSheetBuilder')
       })
     }
+    .id(ABOUT_PAGE_PHONE_SHEET_ID)
     .width('90%')
     .padding({
       left: 12,

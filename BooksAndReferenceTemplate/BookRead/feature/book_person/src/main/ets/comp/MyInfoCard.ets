@@ -107,6 +107,7 @@ export struct MyInfoCard {
 
       Button((this.isLogin && this.isMembership) ? $r('app.string.member_center') : $r('app.string.open_member'),
         { controlSize: ControlSize.SMALL })
+        .id('my_info_card_membership_action')
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
         .fontColor($r('sys.color.font_on_primary'))
@@ -148,6 +149,7 @@ export struct MyInfoCard {
           SelectAvatarCard({ avatarIcon: this.avatarIcon, isLogin: this.isLogin })
         } else {
           Image($r('app.media.ic_default_hd'))
+            .id('my_info_card_guest_avatar')
             .width(64)
             .height(64)
             .borderRadius(50)
@@ -238,6 +240,7 @@ export struct MyInfoCard {
               .textAlign(TextAlign.Start)
               .align(Alignment.Center)
           }
+          .id('my_info_card_guest_login')
           .height(64)
           .width(230)
           .onClick(() => {
@@ -247,6 +250,7 @@ export struct MyInfoCard {
       }
       this.membershipBuilder()
     }
+    .id('my_info_card_root')
     .height(164)
     .width(Constants.FULL_SIZE)
     .justifyContent(FlexAlign.SpaceBetween)

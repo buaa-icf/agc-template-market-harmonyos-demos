@@ -1,0 +1,86 @@
+{
+  "/book/list": {
+    "books": [
+      {
+        "id": "11",
+        "author": "作者",
+        "name": "诛仙",
+        "coverUrl": "app.media.book_image_1",
+        "category": "艺术",
+        "rate": "8",
+        "epubUrl": "https://example.com/zhuxian.epub",
+        "description": "测试书籍：诛仙",
+        "count": "102万字",
+        "popular": "10.5",
+        "isFree": "0",
+        "gender": "1"
+      },
+      {
+        "id": "2",
+        "author": "作者",
+        "name": "小羊肖恩",
+        "coverUrl": "app.media.book_image_6",
+        "category": "文学",
+        "rate": "7",
+        "epubUrl": "https://example.com/shaun.epub",
+        "description": "测试书籍：小羊肖恩",
+        "count": "102万字",
+        "popular": "10.5",
+        "isFree": "0",
+        "gender": "2"
+      },
+      {
+        "id": "5",
+        "author": "作者",
+        "name": "旅途",
+        "coverUrl": "app.media.book_image_7",
+        "category": "艺术",
+        "rate": "7",
+        "epubUrl": "https://example.com/trip.epub",
+        "description": "测试书籍：旅途",
+        "count": "109万字",
+        "popular": "10.5",
+        "isFree": "2",
+        "gender": "2"
+      }
+    ]
+  },
+  "/book/hotRankList": {
+    "rankList": [
+      {
+        "id": "123456",
+        "rankName": "热搜榜",
+        "detailBooks": [
+          {
+            "id": "11",
+            "author": "作者",
+            "name": "诛仙",
+            "coverUrl": "app.media.book_image_1",
+            "rankUrl": "app.media.ic_ict_successfully_01",
+            "category": "艺术",
+            "rate": "8",
+            "epubUrl": "https://example.com/zhuxian.epub",
+            "description": "测试书籍：诛仙",
+            "count": "102万字",
+            "popular": "10.5",
+            "isFree": "0"
+          },
+          {
+            "id": "2",
+            "author": "作者",
+            "name": "小羊肖恩",
+            "coverUrl": "app.media.book_image_6",
+            "rankUrl": "app.media.ic_ict_successfully_03",
+            "category": "文学",
+            "rate": "7",
+            "epubUrl": "https://example.com/shaun.epub",
+            "description": "测试书籍：小羊肖恩",
+            "count": "102万字",
+            "popular": "10.5",
+            "isFree": "0"
+          }
+        ]
+      }
+    ]
+  }
+}

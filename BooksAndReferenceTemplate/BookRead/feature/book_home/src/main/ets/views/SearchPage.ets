@@ -91,6 +91,7 @@ export struct SearchPage {
         Column() {
           Row() {
             Image($r('app.media.ic_back')).height('40vp').width('40vp')
+              .id('search_page_back')
               .margin({ top: 16 + this.windowTopHeight, right: '8vp' })
               .onClick(() => {
                 TCRouter.pop();
@@ -197,7 +198,9 @@ export struct SearchPage {
                               Span(this.searchVM.keyword).fontColor('#F17F31')
                               Span(item.name.substring(item.name.indexOf(this.searchVM.keyword) +
                               this.searchVM.keyword.length, item.name.length))
-                            }.onClick(() => {
+                            }
+                            .id(`search_page_suggestion_${item.id}`)
+                            .onClick(() => {
                               this.searchVM.keyword = item.name;
                               this.submitValue = item.name;
                               this.isSure = true;
@@ -264,6 +267,7 @@ export struct SearchPage {
         ForEach(this.searchVM.historyInfo, (item: string, index) => {
           Text(item)
             .labelBaseStyle()
+            .id(`search_page_history_${index}`)
             .onClick(() => {
               this.searchVM.keyword = item;
               this.submitValue = item;

@@ -7,6 +7,5 @@
   "license": "Apache-2.0",
   "dependencies": {
     'base_common': 'file:../base_common',
-    "@ohos/hypium": "1.0.27"
   }
 }

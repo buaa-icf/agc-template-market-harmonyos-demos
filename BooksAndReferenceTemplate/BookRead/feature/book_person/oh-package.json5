@@ -9,9 +9,5 @@
     "common": "file:../../commons/common",
     "base_common": "file:../../components/base_common",
     "swiper_card": "file:../../components/swiper_card"
-  },
-  "devDependencies": {
-    "@ohos/hypium": "file:../../local_packages/hypium"
-  },
-  "dynamicDependencies": {}
+  }
 }

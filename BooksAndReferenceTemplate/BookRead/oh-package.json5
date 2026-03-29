@@ -4,6 +4,7 @@
   "dependencies": {
     "@hw-agconnect/ui-base": "^1.0.1",
     "@hw-agconnect/ui-countdown": "^1.0.0",
+    "@ohos/hypium": "1.0.27"
   },
   "devDependencies": {},
   "dynamicDependencies": {}

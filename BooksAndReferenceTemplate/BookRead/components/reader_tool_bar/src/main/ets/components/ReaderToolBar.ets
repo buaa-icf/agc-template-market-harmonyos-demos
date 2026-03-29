@@ -1,21 +1,66 @@
-import { bookParser, readerCore } from '@kit.ReaderKit';
-import { AppStorageV2, promptAction } from '@kit.ArkUI';
+import { AppStorageV2, promptAction, window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import {baseActionSheet} from 'base_common'
 import { UserInfo } from 'base_common';
 import { SelectState } from './SelectState';
 
+interface ReaderSettingLike {
+  fontName: string;
+  fontPath: string;
+  fontSize: number;
+  fontColor: string;
+  fontWeight: number;
+  lineHeight: number;
+  nightMode: boolean;
+  themeColor: string;
+  themeBgImg: string;
+  flipMode: string;
+  scaledDensity: number;
+  viewPortWidth: number;
+  viewPortHeight: number;
+}
+
+interface ReaderComponentControllerLike {
+  setPageConfig(readerSetting: ReaderSettingLike): void;
+  startPlay(resourceIndex: number, domPos: string): void;
+}
+
+interface BookParserHandlerLike {
+  getDomPosByCatalogHref(href: string): string;
+}
+
+interface CatalogItemLike {
+  href?: string;
+  resourceFile?: string;
+  catalogName?: string;
+  catalogId?: number;
+}
+
+interface SpineItemLike {
+  idRef: string;
+  index: number;
+  href: string;
+  properties: string;
+}
+
+class DefaultReaderComponentController implements ReaderComponentControllerLike {
+  setPageConfig(_readerSetting: ReaderSettingLike): void {
+  }
+
+  startPlay(_resourceIndex: number, _domPos: string): void {
+  }
+}
+
 @ComponentV2
 export struct ReaderToolBar {
-  @Param @Require readerComponentController: readerCore.ReaderComponentController =
-    new readerCore.ReaderComponentController();
-  @Param @Require bookParserHandler: bookParser.BookParserHandler | null = null;
+  @Param @Require readerComponentController: ReaderComponentControllerLike = new DefaultReaderComponentController();
+  @Param @Require bookParserHandler: BookParserHandlerLike | null = null;
   @Param @Require lockedStatus: boolean[] = [];
   @Param @Require curChapterId: number = 0
-  @Param @Require catalogItemList: bookParser.CatalogItem[] = [];
-  @Param @Require spineList: bookParser.SpineItem[] = []
-  @Param @Require readerSetting: readerCore.ReaderSetting
+  @Param @Require catalogItemList: CatalogItemLike[] = [];
+  @Param @Require spineList: SpineItemLike[] = []
+  @Param @Require readerSetting: ReaderSettingLike
   @Local isShowSetTool: boolean = false;
   @Local isShowLight: boolean = false;
   @Local screenLight: number = 0.5;
@@ -27,7 +72,7 @@ export struct ReaderToolBar {
   @Local selectState: SelectState = AppStorageV2.connect(SelectState, () => new SelectState())!;
   @Local userInfo: UserInfo = AppStorage.get<UserInfo>('userInfo')!
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-  private windowClass = this.context.windowStage.getMainWindowSync();
+  private windowClass: window.Window | null = null;
 
   aboutToAppear(): void {
     this.fontSize = this.readerSetting.fontSize
@@ -37,14 +82,27 @@ export struct ReaderToolBar {
     }
   }
 
-  private async jumpToCatalogItem(catalogItem: bookParser.CatalogItem) {
+  private async getWindowClass(): Promise<window.Window | null> {
+    if (this.windowClass !== null) {
+      return this.windowClass;
+    }
+
+    try {
+      this.windowClass = await window.getLastWindow(getContext());
+    } catch (_error) {
+      this.windowClass = null;
+    }
+    return this.windowClass;
+  }
+
+  private async jumpToCatalogItem(catalogItem: CatalogItemLike) {
     const domPos = await this.getDomPos(catalogItem);
     const resourceIndex = this.getResourceItemByCatalog(catalogItem).index;
     // 通过domPos及resourceIndex信息，即可通过startPlay接口跳转到指定位置
     this.readerComponentController.startPlay(resourceIndex, domPos)
   }
 
-  private async getDomPos(catalogItem: bookParser.CatalogItem): Promise<string> {
+  private async getDomPos(catalogItem: CatalogItemLike): Promise<string> {
     const domPos: string = this.bookParserHandler?.getDomPosByCatalogHref(catalogItem.href || '') || '';
     return domPos;
   }
@@ -54,7 +112,7 @@ export struct ReaderToolBar {
    *
    * @param catalogItem 目录条目
    */
-  private getResourceItemByCatalog(catalogItem: bookParser.CatalogItem): bookParser.SpineItem {
+  private getResourceItemByCatalog(catalogItem: CatalogItemLike): SpineItemLike {
     let resourceFile = catalogItem.resourceFile || '';
 
     // 查找目录对应的资源条目
@@ -80,7 +138,7 @@ export struct ReaderToolBar {
   }
 
   @Builder
-  buildBuyChapter(ri: RepeatItem<bookParser.CatalogItem>) {
+  buildBuyChapter(ri: RepeatItem<CatalogItemLike>) {
     Column({ space: 8 }) {
       Text(`价格：${this.price}书币`)
       Text(`余额：${this.userInfo!.bookCoins}书币`)
@@ -144,6 +202,7 @@ export struct ReaderToolBar {
         Text('字号')
 
         Image($r('app.media.ic_font_sub'))
+          .id('reader_tool_bar_font_size_sub')
           .height(28)
           .width(48)
           .onClick(() => {
@@ -155,10 +214,12 @@ export struct ReaderToolBar {
           })
 
         Text(this.fontSize.toString())
+          .id('reader_tool_bar_font_size_value')
           .fontSize(16)
           .fontColor($r('sys.color.ohos_id_color_text_secondary'))
 
         Image($r('app.media.ic_font_add'))
+          .id('reader_tool_bar_font_size_add')
           .height(28)
           .width(48)
           .onClick(() => {
@@ -276,6 +337,7 @@ export struct ReaderToolBar {
       left: 24,
       right: 24
     })
+    .id('reader_tool_bar_setting_sheet')
     .alignItems(HorizontalAlign.Start)
 
   }
@@ -297,10 +359,10 @@ export struct ReaderToolBar {
         .blockColor($r('app.color.font_modifier_inner_color'))
         .trackColor($r('app.color.pure_white'))
         .selectedColor($r('app.color.slider_selected_color'))
-        .onChange((value: number) => {
+        .onChange(async (value: number) => {
           this.autoLight = false
           this.screenLight = value;
-          this.windowClass.setWindowBrightness(this.screenLight);
+          (await this.getWindowClass())?.setWindowBrightness(this.screenLight);
         })
         .layoutWeight(1)
 
@@ -332,8 +394,8 @@ export struct ReaderToolBar {
 
 
       List({ space: 22 }) {
-        Repeat<bookParser.CatalogItem>(this.catalogItemList)
-          .each((ri: RepeatItem<bookParser.CatalogItem>) => {
+        Repeat<CatalogItemLike>(this.catalogItemList)
+          .each((ri: RepeatItem<CatalogItemLike>) => {
             ListItem() {
               Text(`• ${ri.item.catalogName}`)
                 .fontSize(14)
@@ -348,10 +410,10 @@ export struct ReaderToolBar {
               baseActionSheet.close('catalog')
             })
           })
-          .templateId((_item: bookParser.CatalogItem, index: number): string => {
+          .templateId((_item: CatalogItemLike, index: number): string => {
             return this.lockedStatus[index] ? 'locked' : ''
           })
-          .template('locked', (ri: RepeatItem<bookParser.CatalogItem>) => {
+          .template('locked', (ri: RepeatItem<CatalogItemLike>) => {
             ListItem() {
               Row() {
                 Text(`• ${ri.item.catalogName}`)
@@ -418,11 +480,12 @@ export struct ReaderToolBar {
         Text('系统亮度')
 
         Toggle({ type: ToggleType.Switch, isOn: $$this.autoLight })
-          .onChange((isOn) => {
+          .onChange(async (isOn) => {
+            const windowClass = await this.getWindowClass();
             if (isOn) {
-              this.windowClass.setWindowBrightness(-1)
+              windowClass?.setWindowBrightness(-1)
             } else {
-              this.windowClass.setWindowBrightness(this.screenLight);
+              windowClass?.setWindowBrightness(this.screenLight);
             }
           })
       }
@@ -510,6 +573,7 @@ export struct ReaderToolBar {
           Text('设置')
             .fontColor($r('sys.color.ohos_id_color_text_secondary'))
         }
+        .id('reader_tool_bar_settings_trigger')
         .onClick(() => {
           this.isShowSetTool = !this.isShowSetTool
           this.isShowLight = false

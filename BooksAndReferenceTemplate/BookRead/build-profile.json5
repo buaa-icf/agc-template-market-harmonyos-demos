@@ -1,13 +1,25 @@
 {
   "app": {
     "signingConfigs": [
-
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/jiaomingyang/.ohos/config/default_BookRead_TlnM88fqPY3_MJe22s7q5PZlpZvZS-TO14LAQgeWzcI=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BD339F808A4630837A9E9776BBD18AE21EBFE614234C8C64F457AD0C67DA82A2CCE1722889E9F9D",
+          "profile": "/Users/jiaomingyang/.ohos/config/default_BookRead_TlnM88fqPY3_MJe22s7q5PZlpZvZS-TO14LAQgeWzcI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/jiaomingyang/.ohos/config/default_BookRead_TlnM88fqPY3_MJe22s7q5PZlpZvZS-TO14LAQgeWzcI=.p12",
+          "storePassword": "0000001B0BCAB18D6E64E060045645FF7CECD871ECC0A4CFA7A85B9EDEF119C9E4D150C0FFAF72AD1B0956"
+        }
+      }
     ],
     "products": [
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "5.0.4(16)",
+        "compatibleSdkVersion": "6.0.2(22)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
