@@ -6,6 +6,13 @@ import { RechargeVM } from '../viewmodel/RechargeVM';
 import { RechargeRecordVM } from '../viewmodel/RechargeRecordVM';
 import { UserInfo } from 'base_common';
 
+const RECHARGE_PAGE_ROOT_ID = 'recharge_page_root';
+const RECHARGE_RECORD_LINK_ID = 'recharge_page_record_link';
+const RECHARGE_PACKAGE_CARD_PREFIX = 'recharge_page_package_card_';
+const RECHARGE_AGREEMENT_CHECKBOX_ID = 'recharge_page_agreement_checkbox';
+const RECHARGE_AGREEMENT_LINK_ID = 'recharge_page_agreement_link';
+const RECHARGE_SUBMIT_BUTTON_ID = 'recharge_page_submit';
+
 @Preview
 @ComponentV2
 export struct RechargePage {
@@ -58,6 +65,7 @@ export struct RechargePage {
                 .fontColor($r('sys.color.font_primary'))
 
               Text('充值记录')
+                .id(RECHARGE_RECORD_LINK_ID)
                 .fontSize(14)
                 .fontColor('#E39331')
                 .onClick(() => {
@@ -101,6 +109,7 @@ export struct RechargePage {
                   }
                   .width(Constants.FULL_SIZE)
                   .height(130)
+                  .id(RECHARGE_PACKAGE_CARD_PREFIX + item.id.toString())
                   .backgroundColor(this.vm.selectId === item.id ? '#FFF8F0' : $r('sys.color.background_primary'))
                   .border({
                     width: this.vm.selectId === item.id ? 2 : 1,
@@ -155,12 +164,14 @@ export struct RechargePage {
           .alignItems(HorizontalAlign.Start)
           .margin({ top: 470 })
         }
+        .id(RECHARGE_PAGE_ROOT_ID)
         .padding({ left: 0, right: 0 })
         .justifyContent(FlexAlign.Start)
 
         Column({ space: 12 }) {
           Row({ space: 8 }) {
             Checkbox({ name: `recharge_agreement`, group: `rechargeAgreement` })
+              .id(RECHARGE_AGREEMENT_CHECKBOX_ID)
               .select($$this.vm.selectCheckbox)
               .height(24)
               .width(24)
@@ -173,6 +184,7 @@ export struct RechargePage {
                 .fontColor($r('sys.color.font_secondary'))
 
               Text('充值协议')
+                .id(RECHARGE_AGREEMENT_LINK_ID)
                 .fontSize(12)
                 .fontColor('#E39331')
                 .onClick(() => {
@@ -183,6 +195,7 @@ export struct RechargePage {
           }
 
           Button('立即充值')
+            .id(RECHARGE_SUBMIT_BUTTON_ID)
             .fontColor($r('sys.color.font_on_primary'))
             .backgroundColor('#E39331')
             .width(Constants.FULL_SIZE)

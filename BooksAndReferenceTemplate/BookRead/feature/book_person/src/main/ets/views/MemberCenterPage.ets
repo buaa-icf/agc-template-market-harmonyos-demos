@@ -4,6 +4,12 @@ import { promptAction } from '@kit.ArkUI';
 import { emitter } from '@kit.BasicServicesKit';
 import { MemberCenterVM } from '../viewmodel/MemberCenterVM';
 
+const MEMBER_CENTER_PAGE_ROOT_ID = 'member_center_page_root';
+const MEMBER_CENTER_PACKAGE_CARD_PREFIX = 'member_center_package_card_';
+const MEMBER_CENTER_AGREEMENT_CHECKBOX_ID = 'member_center_agreement_checkbox';
+const MEMBER_CENTER_AGREEMENT_LINK_ID = 'member_center_agreement_link';
+const MEMBER_CENTER_OPEN_NOW_BUTTON_ID = 'member_center_open_now';
+
 @Preview
 @ComponentV2
 export struct MemberCenterPage {
@@ -72,6 +78,7 @@ export struct MemberCenterPage {
                       .backgroundColor(this.vm.selectId === item.id ? '#F8E6CE' : '#0D000000')
                       .textAlign(TextAlign.Center)
                   }
+                  .id(MEMBER_CENTER_PACKAGE_CARD_PREFIX + item.id.toString())
                   .clip(true)
                   .border({
                     width: this.vm.selectId === item.id ? 2 : 1,
@@ -174,6 +181,7 @@ export struct MemberCenterPage {
           .alignItems(HorizontalAlign.Start)
           .margin({ top: 200 })
         }
+        .id(MEMBER_CENTER_PAGE_ROOT_ID)
         .padding({ left: 16, right: 16 })
         .justifyContent(FlexAlign.Start)
         .height(Constants.FULL_SIZE)
@@ -181,6 +189,7 @@ export struct MemberCenterPage {
         Column({ space: 12 }) {
           Row({ space: 8 }) {
             Checkbox({ name: `1`, group: `membershipPrivacy` })
+              .id(MEMBER_CENTER_AGREEMENT_CHECKBOX_ID)
               .select($$this.vm.selectCheckbox)
               .height(24)
               .width(24)
@@ -193,6 +202,7 @@ export struct MemberCenterPage {
                 .fontColor($r('sys.color.font_secondary'))
 
               Text($r('app.string.member_agreement'))
+                .id(MEMBER_CENTER_AGREEMENT_LINK_ID)
                 .fontSize(12)
                 .fontColor('#E39331')
                 .onClick(() => {
@@ -202,6 +212,7 @@ export struct MemberCenterPage {
           }
 
           Button($r('app.string.open_now'))
+            .id(MEMBER_CENTER_OPEN_NOW_BUTTON_ID)
             .fontColor($r('sys.color.font_on_primary'))
             .backgroundColor('#E39331')
             .width(Constants.FULL_SIZE)

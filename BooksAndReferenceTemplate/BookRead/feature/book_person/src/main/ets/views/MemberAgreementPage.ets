@@ -128,6 +128,7 @@ export struct MemberAgreementPage {
             .backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius(16)
           }
+          .id('member_agreement_page_scroll')
           .width(Constants.FULL_SIZE)
           .padding({
             left: 12,
@@ -135,6 +136,7 @@ export struct MemberAgreementPage {
           })
           .margin({ bottom: 100 })
         }
+        .id('member_agreement_page_root')
         .alignItems(HorizontalAlign.Start)
         .width(Constants.FULL_SIZE)
         .height(Constants.FULL_SIZE)

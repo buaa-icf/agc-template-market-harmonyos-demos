@@ -10,6 +10,7 @@ import { UserInfo } from 'base_common';
 export struct LoginPage {
   logTag: string = 'LoginPage';
   domainId: number = 0x0000;
+  @Param disableAutoQuickLogin: boolean = false;
   @Local userInfo: UserInfo | undefined = undefined;
   @Local avatarIcon: AvatarIcon | undefined = undefined;
   @Local quickLoginAnonymousPhone: ResourceStr = $r('app.string.phone_number');
@@ -58,6 +59,9 @@ export struct LoginPage {
 
   // 传递页面渲染所需的数据，如匿名手机号等
   aboutToAppear(): void {
+    if (this.disableAutoQuickLogin) {
+      return;
+    }
     this.getQuickLoginAnonymousPhone()
   }
 
@@ -321,7 +325,9 @@ export struct LoginPage {
                   },
                   controller: this.controller
                 })
+                .id('login_page_huawei_button_inner')
               }
+              .id('login_page_huawei_button')
               .height(40)
               .margin({
                 top: 56
@@ -332,6 +338,7 @@ export struct LoginPage {
             Row() {
               Row() {
                 Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
+                  .id('login_page_agreement_checkbox')
                   .width(24)
                   .height(24)
                   .focusable(true)
@@ -398,6 +405,7 @@ export struct LoginPage {
             left: 16,
             right: 16
           })
+          .id('login_page_root')
         }
         .padding({ bottom: 20 })
         .width(Constants.FULL_SIZE)
@@ -479,4 +487,3 @@ export enum ErrorCode {
   // 参数错误
   ERROR_CODE_PARAMETER_ERROR = 401
 }
-
