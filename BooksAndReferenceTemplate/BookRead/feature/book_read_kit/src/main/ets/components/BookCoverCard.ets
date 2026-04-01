@@ -69,6 +69,7 @@ export struct BookCoverCard {
             .height(50)
 
           Image(this.isAddSuccess ? $r('app.media.ic_add_book_shelf_success') : $r('app.media.ic_add_book_shelf'))
+            .id('book_cover_card_shelf_action')
             .width(32)
             .height(32)
             .onClick(async () => {
