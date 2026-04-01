@@ -14,6 +14,7 @@ export struct PrivacyPolicyPage {
     NavDestination() {
       Column({ space: 15 }) {
         Text('数据收集')
+          .id('agreement_privacy_page_anchor')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
 

@@ -14,27 +14,41 @@ export struct AgreementDialog {
   @Builder
   bulidSpan(content: ResourceStr, fontColor: Resource | string, fontFamily: Resource, fontWight: number,
     textIndex: number, focusable?: boolean, focusOnTouch?: boolean) {
-    Span(content)
-      .fontSize($r('sys.float.ohos_id_text_size_body1'))
-      .fontColor(fontColor)
-      .fontFamily(fontFamily)
-      .fontWeight(fontWight)
-      .focusable(focusable)
-      .focusOnTouch(focusOnTouch)
-      .onClick(() => {
-        switch (textIndex) {
-          case 1:
-            this.dialogController?.close()
-            this.pathStack?.pushPathByName('TermsOfServicePage', null);
-            break;
-          case 3:
-            this.dialogController?.close()
-            this.pathStack?.pushPathByName('PrivacyPolicyPage', null);
-            break;
-          default:
-            break;
-        }
-      })
+    if (textIndex === 1) {
+      Text(content)
+        .id('loginPanel_agreement_terms_link')
+        .fontSize($r('sys.float.ohos_id_text_size_body1'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+        .onClick(() => {
+          this.dialogController?.close()
+          this.pathStack?.pushPathByName('TermsOfServicePage', null);
+        })
+    } else if (textIndex === 3) {
+      Text(content)
+        .id('loginPanel_agreement_privacy_link')
+        .fontSize($r('sys.float.ohos_id_text_size_body1'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+        .onClick(() => {
+          this.dialogController?.close()
+          this.pathStack?.pushPathByName('PrivacyPolicyPage', null);
+        })
+    } else {
+      Text(content)
+        .fontSize($r('sys.float.ohos_id_text_size_body1'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+    }
   }
 
   build() {
@@ -59,7 +73,7 @@ export struct AgreementDialog {
       })
 
       Row() {
-        Text() {
+        Flex({ wrap: FlexWrap.Wrap }) {
           if (this.privacyText && this.privacyText.length >= 5) {
             this.bulidSpan(this.privacyText[0].text, $r('sys.color.ohos_id_color_text_primary'),
               $r('sys.string.ohos_id_text_font_family_regular'), FontWeight.Regular, 0)
@@ -78,9 +92,7 @@ export struct AgreementDialog {
               $r('sys.string.ohos_id_text_font_family_regular'), FontWeight.Regular, 4)
           }
         }
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .maxLines(10)
-        .textAlign(TextAlign.Start)
+        .width('100%')
         .focusable(true)
         .focusOnTouch(true)
         .padding({ left: 24, right: 24 })

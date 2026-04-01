@@ -1,6 +1,19 @@
 {
   "app": {
     "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/jiaomingyang/.ohos/config/default_SmartHome_S1k87sMGfuNU_yG_X50kcYExdnuMApxFw_ZE1_5LLhs=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BD8D33E59B7E2615D010DFAD94C034D39D2DB3550255C84AD85F5818EAC48E5D5B4AD0F583DEDCB",
+          "profile": "/Users/jiaomingyang/.ohos/config/default_SmartHome_S1k87sMGfuNU_yG_X50kcYExdnuMApxFw_ZE1_5LLhs=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/jiaomingyang/.ohos/config/default_SmartHome_S1k87sMGfuNU_yG_X50kcYExdnuMApxFw_ZE1_5LLhs=.p12",
+          "storePassword": "0000001BE85ED10AC04BBB509AFA298502D7E91B1E6E23E43171D13BBF46370D51A771F9A40EBB9853ABBB"
+        }
+      }
     ],
     "products": [
       {
