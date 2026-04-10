@@ -1,6 +1,7 @@
 import { loginComponentManager } from '@kit.AccountKit';
 import { AgreementDialog } from '../../../../main/ets/view/AgreementView';
 import { PrivacyPolicyPage } from '../../../../main/ets/pages/PrivacyPolicyPage';
+import { QuickLoginPage } from '../../../../main/ets/pages/QuickLoginPage';
 import { TermsOfServicePage } from '../../../../main/ets/pages/TermsOfServicePage';
 
 @Entry
@@ -44,7 +45,9 @@ struct Index {
 
   @Builder
   navDestinationBuilder(name: string, param?: Object) {
-    if (name === 'TermsOfServicePage') {
+    if (name === 'QuickLoginPage') {
+      QuickLoginPage();
+    } else if (name === 'TermsOfServicePage') {
       TermsOfServicePage();
     } else if (name === 'PrivacyPolicyPage') {
       PrivacyPolicyPage();
@@ -64,6 +67,17 @@ struct Index {
           .onClick(() => {
             this.dialogController = this.createDialogController();
             this.dialogController.open();
+          })
+
+        Text('Quick Login UITest Host')
+          .id('quick_login_test_host_anchor')
+          .fontSize(20)
+          .fontWeight(FontWeight.Medium)
+
+        Button('Open Quick Login Page')
+          .id('quick_login_test_open_page')
+          .onClick(() => {
+            this.pathStack.pushPathByName('QuickLoginPage', null);
           })
       }
       .width('100%')

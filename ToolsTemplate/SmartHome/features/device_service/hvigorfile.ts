@@ -30,6 +30,10 @@ const syncAgreementOhosTestHostPagePlugin = {
                         path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/PrivacyPolicyPage.ets'))
                             .replace(/\\/g, '/')
                             .replace(/\.ets$/, '')],
+                    ['../../../../main/ets/pages/QuickLoginPage',
+                        path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/QuickLoginPage.ets'))
+                            .replace(/\\/g, '/')
+                            .replace(/\.ets$/, '')],
                     ['../../../../main/ets/pages/TermsOfServicePage',
                         path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/TermsOfServicePage.ets'))
                             .replace(/\\/g, '/')

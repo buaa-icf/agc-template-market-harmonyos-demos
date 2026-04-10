@@ -196,27 +196,43 @@ export struct QuickLoginPage {
   @Builder
   bulidSpan(content: ResourceStr, fontColor: Resource, fontFamily: Resource, fontWight: number, textIndex: number,
     focusable?: boolean, focusOnTouch?: boolean) {
-    Span(content)
-      .fontSize($r('sys.float.ohos_id_text_size_body3'))
-      .fontColor(fontColor)
-      .fontFamily(fontFamily)
-      .fontWeight(fontWight)
-      .focusable(focusable)
-      .focusOnTouch(focusOnTouch)
-      .onClick(() => {
-        if (this.enableStatus) {
-          switch (textIndex) {
-            case 1:
-              this.pathStack.pushPathByName('TermsOfServicePage', null);
-              break;
-            case 3:
-              this.pathStack.pushPathByName('PrivacyPolicyPage', null);
-              break;
-            default:
-              break;
+    if (textIndex === 1) {
+      Text(content)
+        .id('quick_login_terms_link')
+        .fontSize($r('sys.float.ohos_id_text_size_body3'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+        .onClick(() => {
+          if (this.enableStatus) {
+            this.pathStack.pushPathByName('TermsOfServicePage', null);
           }
-        }
-      })
+        })
+    } else if (textIndex === 3) {
+      Text(content)
+        .id('quick_login_privacy_link')
+        .fontSize($r('sys.float.ohos_id_text_size_body3'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+        .onClick(() => {
+          if (this.enableStatus) {
+            this.pathStack.pushPathByName('PrivacyPolicyPage', null);
+          }
+        })
+    } else {
+      Text(content)
+        .fontSize($r('sys.float.ohos_id_text_size_body3'))
+        .fontColor(fontColor)
+        .fontFamily(fontFamily)
+        .fontWeight(fontWight)
+        .focusable(focusable)
+        .focusOnTouch(focusOnTouch)
+    }
   }
 
   build() {
@@ -316,7 +332,7 @@ export struct QuickLoginPage {
             })
 
             Row() {
-              Text() {
+              Flex({ wrap: FlexWrap.Wrap }) {
                 if (this.privacyText && this.privacyText.length >= 5) {
                   this.bulidSpan(this.privacyText[0].text, $r('sys.color.ohos_id_color_text_secondary'),
                     $r('sys.string.ohos_id_text_font_family_regular'), FontWeight.Regular, 0)
