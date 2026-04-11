@@ -12,7 +12,8 @@
           "strictMode": {
             "useNormalizedOHMUrl": true
           }
-        }
+        },
+        "targetSdkVersion": "5.0.4(16)"
       }
     ],
     "buildModeSet": [
