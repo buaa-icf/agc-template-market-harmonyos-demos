@@ -2,7 +2,8 @@
   "modelVersion": "5.0.2",
   "description": "Please describe the basic information.",
   "dependencies": {
+    "@ohos/hypium": "1.0.21"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {},
+  "dynamicDependencies": {}
 }
