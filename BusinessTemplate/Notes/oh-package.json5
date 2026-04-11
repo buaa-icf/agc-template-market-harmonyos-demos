@@ -7,6 +7,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@ohos/hypium": "^1.0.27"
   },
   "devDependencies": {},
   "dynamicDependencies": {}
