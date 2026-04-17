@@ -7,6 +7,16 @@ import { CommonConstants, FormatUtil } from '@ohos_agcit/office_attendance_commo
 import { ReminderDialog } from './ReminderDialog';
 import { i18n } from '@kit.LocalizationKit';
 
+const SCHEDULE_FORM_ROOT_ID = 'schedule_form_root';
+const SCHEDULE_FORM_ALL_DAY_TOGGLE_ID = 'schedule_form_all_day_toggle';
+const SCHEDULE_FORM_START_TIME_ROW_ID = 'schedule_form_start_time_row';
+const SCHEDULE_FORM_START_TIME_VALUE_ID = 'schedule_form_start_time_value';
+const SCHEDULE_FORM_END_TIME_VALUE_ID = 'schedule_form_end_time_value';
+const SCHEDULE_FORM_REPEAT_TRIGGER_ID = 'schedule_form_repeat_trigger';
+const SCHEDULE_FORM_REPEAT_VALUE_ID = 'schedule_form_repeat_value';
+const SCHEDULE_FORM_REMINDER_VALUE_ID = 'schedule_form_reminder_value';
+const SCHEDULE_FORM_REPEAT_OPTION_PREFIX = 'schedule_form_repeat_option_';
+
 @ComponentV2
 export struct ScheduleForm {
   @Consumer() schedule: ScheduleInfo = { title: '', startTime: '', endTime: '' };
@@ -229,6 +239,7 @@ export struct ScheduleForm {
               this.schedule.recurrenceRule = key;
               this.recurrenceRule = key;
             })
+            .id(`${SCHEDULE_FORM_REPEAT_OPTION_PREFIX}${key}`)
 
             Divider().width('90%').height(1)
           }.height(45)
@@ -375,9 +386,11 @@ export struct ScheduleForm {
               .width(80)
 
               Row() {
-                Toggle({ type: ToggleType.Switch, isOn: $$this.isAllDay }).onChange(isOn => {
-                  this.changePlanTimeType(isOn);
-                })
+                Toggle({ type: ToggleType.Switch, isOn: $$this.isAllDay })
+                  .id(SCHEDULE_FORM_ALL_DAY_TOGGLE_ID)
+                  .onChange(isOn => {
+                    this.changePlanTimeType(isOn);
+                  })
               }.alignItems(VerticalAlign.Center)
               .justifyContent(FlexAlign.End)
               .layoutWeight(1)
@@ -399,6 +412,7 @@ export struct ScheduleForm {
                     .fontSize(14)
                     .fontWeight(FontWeight.Regular)
                     .opacity(0.6)
+                    .id(SCHEDULE_FORM_START_TIME_VALUE_ID)
                   Image($r('app.media.ic_public_small_right'))
                     .height(24)
                     .width(12)
@@ -408,6 +422,7 @@ export struct ScheduleForm {
               .layoutWeight(1)
             }.width('100%')
             .height('32%')
+            .id(SCHEDULE_FORM_START_TIME_ROW_ID)
             .onClick(() => {
               DatePickerDialog.show({
                 start: CommonConstants.DATE_START,
@@ -462,6 +477,7 @@ export struct ScheduleForm {
                   .fontSize(14)
                   .fontWeight(FontWeight.Regular)
                   .opacity(0.6)
+                  .id(SCHEDULE_FORM_END_TIME_VALUE_ID)
                 Image($r('app.media.ic_public_small_right'))
                   .height(24)
                   .width(12)
@@ -526,6 +542,7 @@ export struct ScheduleForm {
                   .fontSize(14)
                   .fontWeight(FontWeight.Regular)
                   .opacity(0.6)
+                  .id(SCHEDULE_FORM_REPEAT_VALUE_ID)
                 Image($r('app.media.ic_public_small_right'))
                   .height(24)
                   .width(12)
@@ -533,6 +550,7 @@ export struct ScheduleForm {
               .justifyContent(FlexAlign.End)
               .width('50%')
             }.height('50%')
+            .id(SCHEDULE_FORM_REPEAT_TRIGGER_ID)
             .bindMenu(this.repeatTypeBuilder, { placement: Placement.Right })
 
             Divider().width('90%').height(1)
@@ -553,6 +571,7 @@ export struct ScheduleForm {
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
                   .textAlign(TextAlign.End)
+                  .id(SCHEDULE_FORM_REMINDER_VALUE_ID)
 
                 Image($r('app.media.ic_public_small_right'))
                   .height(24)
@@ -606,5 +625,6 @@ export struct ScheduleForm {
     .height('90%')
     .backgroundColor('#FAFAFA')
     .borderRadius({ topLeft: 32, topRight: 32 })
+    .id(SCHEDULE_FORM_ROOT_ID)
   }
 }
