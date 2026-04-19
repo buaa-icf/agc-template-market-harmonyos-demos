@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\26305\\.ohos\\config\\default_DriverLicenseExam_avgbGCTNxU0Q-MpgKAutzDm2GKCRKcyikyzs8_Mml1M=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B3EB879BBA8AECBC9E9E0F2B1EE7B7CDFEABA73075E2CA45183D13E76837768D6AE1280E40F05C3",
+          "profile": "C:\\Users\\26305\\.ohos\\config\\default_DriverLicenseExam_avgbGCTNxU0Q-MpgKAutzDm2GKCRKcyikyzs8_Mml1M=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\26305\\.ohos\\config\\default_DriverLicenseExam_avgbGCTNxU0Q-MpgKAutzDm2GKCRKcyikyzs8_Mml1M=.p12",
+          "storePassword": "0000001B6E071E0D4585E1E0EF49A71EBFD76750CCDC8BF19C7DFBC810B0D8C69F85BBE8EBA656442630BB"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
