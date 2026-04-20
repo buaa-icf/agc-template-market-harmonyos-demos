@@ -1,5 +1,5 @@
-import { PersonalSettingBuilder } from '../../../../../../../../src/main/ets/pages/mine/PersonalSetting';
-import { PrivacyAgreementBuilder } from '../../../../../../../../src/main/ets/pages/mine/PrivacyAgreement';
+import { PersonalSettingBuilder } from '../../../../main/ets/pages/mine/PersonalSetting';
+import { PrivacyAgreementBuilder } from '../../../../main/ets/pages/mine/PrivacyAgreement';
 import { CommonModel } from '@ohos_agcit/driver_license_exam_commonlib';
 
 @Entry
@@ -42,4 +42,3 @@ struct Index {
     .navDestination(this.navDestinationBuilder);
   }
 }
-
