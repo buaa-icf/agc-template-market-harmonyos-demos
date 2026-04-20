@@ -1,4 +1,4 @@
-import { QuickLogin } from '../../../../../../../../src/main/ets/components/QuickLogin';
+import { QuickLogin } from '../../../../main/ets/components/QuickLogin';
 
 const QUICK_LOGIN_HOST_ANCHOR_ID: string = 'quick_login_cover_test_host_anchor';
 

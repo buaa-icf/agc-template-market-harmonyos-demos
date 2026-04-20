@@ -7,6 +7,20 @@
       "tablet",
       "2in1"
     ],
+    "description": "$string:module_test_desc",
+    "mainElement": "TestAbility",
+    "pages": "$profile:test_pages",
+    "abilities": [
+      {
+        "name": "TestAbility",
+        "srcEntry": "./ets/testability/TestAbility.ets",
+        "description": "$string:TestAbility_desc",
+        "label": "$string:TestAbility_label",
+        "startWindowIcon": "$media:layered_image",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true
+      }
+    ],
     "deliveryWithInstall": true,
     "installationFree": false
   }
