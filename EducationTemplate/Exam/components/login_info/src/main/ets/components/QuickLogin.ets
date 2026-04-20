@@ -243,6 +243,7 @@ export struct QuickLogin {
       Column() {
         Column() {
           Image(this.icon)
+            .id('quick_login_cover_icon')
             .width(48)
             .height(48)
             .draggable(false)
@@ -253,6 +254,7 @@ export struct QuickLogin {
             })
           Column() {
             Text(this.quickLoginAnonymousPhone)
+              .id('quick_login_cover_phone')
               .fontColor($r('sys.color.ohos_id_color_text_primary'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
               .fontSize(36)
@@ -262,6 +264,7 @@ export struct QuickLogin {
               .constraintSize({ maxWidth: '100%', minHeight: 48 })
               .textAlign(TextAlign.Center)
             Text('华为账号绑定号码')
+              .id('quick_login_cover_desc')
               .fontSize($r('sys.float.ohos_id_text_size_body2'))
               .fontColor($r('sys.color.ohos_id_color_text_secondary'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
@@ -302,6 +305,7 @@ export struct QuickLogin {
               },
               controller: this.controller
             })
+            .id('quick_login_cover_login_button')
           }
           .height(40)
           .width('100%')
@@ -313,6 +317,7 @@ export struct QuickLogin {
         Row() {
           Row() {
             Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
+              .id('quick_login_cover_privacy_checkbox')
               .width(24)
               .height(24)
               .focusable(true)
@@ -359,6 +364,7 @@ export struct QuickLogin {
                 }
               }, (item: loginComponentManager.PrivacyText) => item.text.toString())
             }
+            .id('quick_login_cover_privacy_text')
             .width('100%')
           }
           .margin({ left: 12 })
@@ -379,6 +385,7 @@ export struct QuickLogin {
       })
     }
     .backgroundColor(Color.White)
+    .id('quick_login_cover_root')
     .width('100%')
     .height('100%')
     .padding({ top: '154vp' })

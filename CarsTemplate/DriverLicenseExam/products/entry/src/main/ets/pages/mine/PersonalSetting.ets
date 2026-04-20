@@ -50,6 +50,7 @@ struct PersonalSetting {
     Column() {
       Row() {
         Text('请确认是否退出当前账户？')
+          .id('personal_setting_logout_dialog_content')
           .fontSize(14);
       };
     }
@@ -82,6 +83,7 @@ struct PersonalSetting {
           .onClick(() => {
             this.vm.navStack.pushPathByName('PrivacyAgreement', undefined)
           })
+          .id('personal_setting_item_privacy_policy')
           .width(328)
           .height(61)
           .justifyContent(FlexAlign.SpaceBetween)
@@ -104,6 +106,7 @@ struct PersonalSetting {
           .onClick(() => {
             this.vm.navStack.pushPathByName('PrivacyAgreement', undefined)
           })
+          .id('personal_setting_item_user_agreement')
           .width(328)
           .height(61)
           .justifyContent(FlexAlign.SpaceBetween)
@@ -132,6 +135,7 @@ struct PersonalSetting {
           right: 28,
           bottom: 50
         })
+        .id('personal_setting_logout_button')
 
         .onClick(() => {
           this.logOutDialogController.open();

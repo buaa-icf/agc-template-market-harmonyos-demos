@@ -2,10 +2,9 @@
   "modelVersion": "5.0.0",
   "description": "Please describe the basic information.",
   "dependencies": {
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "@ohos/hypium": "^1.0.27"
   },
-  "devDependencies": {
-    "@ohos/hypium": "1.0.19",
-  },
+  "devDependencies": {},
   "dynamicDependencies": {}
 }
