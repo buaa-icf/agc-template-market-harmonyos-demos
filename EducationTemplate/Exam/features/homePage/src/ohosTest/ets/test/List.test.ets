@@ -15,8 +15,10 @@
 
 import abilityTest from './Ability.test';
 import practiceModeTest from './PracticeMode.test';
+import authenticationPageInstrumentTest from './AuthenticationPage.test';
 
 export default function testsuite() {
   abilityTest();
   practiceModeTest();
+  authenticationPageInstrumentTest();
 }

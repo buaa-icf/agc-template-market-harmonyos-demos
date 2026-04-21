@@ -25,7 +25,12 @@ const copyOhosTestIndexPlugin: HvigorPlugin = {
         return;
       }
       fs.mkdirSync(path.dirname(targetIndex), { recursive: true });
-      fs.copyFileSync(sourceIndex, targetIndex);
+      const sourceContent: string = fs.readFileSync(sourceIndex, 'utf8');
+      const rewrittenContent: string = sourceContent.replace(
+        "../../../../main/ets/pages/AuthenticationPage",
+        "../../../../../../../../src/main/ets/pages/AuthenticationPage.ets"
+      );
+      fs.writeFileSync(targetIndex, rewrittenContent, 'utf8');
     };
 
     node.afterNodeEvaluate((currentNode: HvigorNode) => {
