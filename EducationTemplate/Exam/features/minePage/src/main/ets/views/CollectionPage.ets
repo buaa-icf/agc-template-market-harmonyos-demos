@@ -24,6 +24,10 @@ const COLLECTION_PAGE_LIST_ID: string = 'collection_page_list';
 const COLLECTION_PAGE_DELETE_BUTTON_ID: string = 'collection_page_delete_button';
 const COLLECTION_PAGE_DELETE_TOGGLE_ID: string = 'collection_page_delete_toggle';
 const COLLECTION_PAGE_SELECT_ALL_ID: string = 'collection_page_select_all_toggle';
+const COLLECTION_PAGE_ITEM_CONTENT_PREFIX: string = 'collection_page_item_content_';
+const COLLECTION_PAGE_ITEM_PRICE_PREFIX: string = 'collection_page_item_price_';
+const COLLECTION_PAGE_ITEM_BUYERS_PREFIX: string = 'collection_page_item_buyers_';
+const COLLECTION_PAGE_ITEM_DETAIL_BUTTON_PREFIX: string = 'collection_page_item_detail_button_';
 
 @ComponentV2
 export struct CollectionPage {
@@ -173,6 +177,7 @@ export struct CollectionPage {
             Column() {
               Row() {
                 Text(item.content)
+                  .id(`${COLLECTION_PAGE_ITEM_CONTENT_PREFIX}${index}`)
                   .width('100%')
                   .fontWeight(FontWeight.Medium)
                   .fontSize($r('sys.float.Body_M'))
@@ -184,12 +189,14 @@ export struct CollectionPage {
               Row() {
                 Column() {
                   Text(`￥${item.price}`)
+                    .id(`${COLLECTION_PAGE_ITEM_PRICE_PREFIX}${index}`)
                     .fontSize($r('sys.float.Title_S'))
                     .fontColor($r('sys.color.multi_color_08'))
                     .textAlign(TextAlign.Start)
                     .fontWeight(FontWeight.Medium)
                     .width('100%')
                   Text(`已有 ${item.buyNumbers}人 购买`)
+                    .id(`${COLLECTION_PAGE_ITEM_BUYERS_PREFIX}${index}`)
                     .fontSize($r('sys.float.Body_S'))
                     .fontWeight(FontWeight.Lighter)
                     .textAlign(TextAlign.Start)
@@ -202,6 +209,7 @@ export struct CollectionPage {
                 Column() {
                   Row() {
                     Button('查看详情')
+                      .id(`${COLLECTION_PAGE_ITEM_DETAIL_BUTTON_PREFIX}${index}`)
                       .fontSize($r('sys.float.Body_M'))
                       .fontWeight(FontWeight.Medium)
                       .fontColor($r('app.color.system_color_background_white'))

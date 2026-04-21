@@ -8,6 +8,8 @@ const ABOUT_TO_DISAPPEAR_TRIGGER_ID: string = 'collection_about_to_disappear_tri
 const SWITCH_TO_EMPTY_TRIGGER_ID: string = 'collection_switch_to_empty_trigger';
 const SWITCH_TO_FILLED_TRIGGER_ID: string = 'collection_switch_to_filled_trigger';
 const SHOW_COLLECTION_PAGE_TRIGGER_ID: string = 'collection_show_page_trigger';
+const RESET_COLLECTION_PAGE_TRIGGER_ID: string = 'collection_reset_to_filled_trigger';
+const COLLECTION_HOST_READY_FILLED_MARKER_ID: string = 'collection_host_ready_filled_marker';
 
 @Entry
 @ComponentV2
@@ -27,33 +29,48 @@ struct Index {
         .fontSize(20)
         .fontWeight(FontWeight.Medium)
 
-      Row({ space: 8 }) {
-        Button('Filled')
-          .id(SWITCH_TO_FILLED_TRIGGER_ID)
-          .onClick(() => {
-            this.collectionData.orderInfos = [this.createOrderInfo()];
-          })
-        Button('Empty')
-          .id(SWITCH_TO_EMPTY_TRIGGER_ID)
-          .onClick(() => {
-            this.collectionData.orderInfos = [];
-          })
-        Button('Hide')
-          .id(ABOUT_TO_DISAPPEAR_TRIGGER_ID)
-          .onClick(() => {
-            this.showLifecycleTarget = false;
-          })
-        Button('Show')
-          .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
+      Column({ space: 8 }) {
+        Button('Reset')
+          .id(RESET_COLLECTION_PAGE_TRIGGER_ID)
           .onClick(() => {
             this.aboutToDisappearTriggered = false;
             this.showLifecycleTarget = true;
+            this.collectionData.orderInfos = [this.createOrderInfo()];
           })
+          .width('100%')
+
+        Row({ space: 8 }) {
+          Button('Filled')
+            .id(SWITCH_TO_FILLED_TRIGGER_ID)
+            .onClick(() => {
+              this.collectionData.orderInfos = [this.createOrderInfo()];
+            })
+          Button('Empty')
+            .id(SWITCH_TO_EMPTY_TRIGGER_ID)
+            .onClick(() => {
+              this.collectionData.orderInfos = [];
+            })
+          Button('Hide')
+            .id(ABOUT_TO_DISAPPEAR_TRIGGER_ID)
+            .onClick(() => {
+              this.showLifecycleTarget = false;
+            })
+          Button('Show')
+            .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.aboutToDisappearTriggered = false;
+              this.showLifecycleTarget = true;
+            })
+        }
       }
 
       if (this.aboutToDisappearTriggered) {
         Text('aboutToDisappear triggered')
           .id(ABOUT_TO_DISAPPEAR_MARKER_ID)
+      }
+      if (this.showLifecycleTarget && this.collectionData.orderInfos.length > 0) {
+        Text('collection host filled ready')
+          .id(COLLECTION_HOST_READY_FILLED_MARKER_ID)
       }
 
       Column() {
