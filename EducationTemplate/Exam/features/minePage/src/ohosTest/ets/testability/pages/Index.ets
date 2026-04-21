@@ -46,6 +46,7 @@ struct Index {
         Button('Show')
           .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
           .onClick(() => {
+            this.aboutToDisappearTriggered = false;
             this.showLifecycleTarget = true;
           })
       }
