@@ -1,23 +1,27 @@
+import { AuthenticationPageBuilder } from '../../../../main/ets/pages/AuthenticationPage';
+
+const HOME_PAGE_HOST_ANCHOR_ID: string = 'home_page_instrument_host_anchor';
+const AUTH_PAGE_MOUNT_ID: string = 'authentication_page_mount';
+
 @Entry
-@Component
+@ComponentV2
 struct Index {
   build() {
-    Column({ space: 16 }) {
-      Text('homePage Instrument Host')
-        .fontSize(28)
-        .fontWeight(FontWeight.Bold)
+    Column({ space: 12 }) {
+      Text('homePage Authentication Instrument Host')
+        .id(HOME_PAGE_HOST_ANCHOR_ID)
+        .fontSize(20)
+        .fontWeight(FontWeight.Medium)
 
-      Text('PracticeModeInstrumentTest is running in this host page.')
-        .fontSize(18)
-
-      Text('This page replaces the default Hello World testability page.')
-        .fontSize(16)
-        .opacity(0.8)
+      Column() {
+        AuthenticationPageBuilder();
+      }
+      .id(AUTH_PAGE_MOUNT_ID)
+      .width('100%')
+      .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
-    .padding(24)
+    .padding(16);
   }
 }
