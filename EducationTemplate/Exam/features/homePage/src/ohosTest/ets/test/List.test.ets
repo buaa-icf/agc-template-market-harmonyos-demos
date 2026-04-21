@@ -14,7 +14,9 @@
  */
 
 import abilityTest from './Ability.test';
+import practiceModeTest from './PracticeMode.test';
 
 export default function testsuite() {
   abilityTest();
+  practiceModeTest();
 }
