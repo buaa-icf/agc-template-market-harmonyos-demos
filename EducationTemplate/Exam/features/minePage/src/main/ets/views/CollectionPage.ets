@@ -21,6 +21,9 @@ const TAG = 'CollectionPage';
 const COLLECTION_PAGE_ROOT_ID: string = 'collection_page_root';
 const COLLECTION_PAGE_EMPTY_TEXT_ID: string = 'collection_page_empty_text';
 const COLLECTION_PAGE_LIST_ID: string = 'collection_page_list';
+const COLLECTION_PAGE_DELETE_BUTTON_ID: string = 'collection_page_delete_button';
+const COLLECTION_PAGE_DELETE_TOGGLE_ID: string = 'collection_page_delete_toggle';
+const COLLECTION_PAGE_SELECT_ALL_ID: string = 'collection_page_select_all_toggle';
 
 @ComponentV2
 export struct CollectionPage {
@@ -82,6 +85,7 @@ export struct CollectionPage {
           .margin({ left: $r('app.float.vp_8') })
       }
       .width($r('app.float.vp_312'))
+      .id(COLLECTION_PAGE_DELETE_BUTTON_ID)
       .justifyContent(FlexAlign.Center)
       .borderRadius(20)
       .padding({ top: $r('app.float.vp_8'), bottom: $r('app.float.vp_8') })
@@ -145,6 +149,7 @@ export struct CollectionPage {
                     .margin({ right: $r('app.float.vp_8') })
                     .height($r('app.float.vp_20'))
                 }
+                .id(`collection_page_select_item_${index}`)
                 .height($r('app.float.vp_24'))
                 .onClick(() => {
                   item.isDelete = !item.isDelete
@@ -282,6 +287,7 @@ export struct CollectionPage {
       })
       Row() {
         Image(this.isSelectAll ? $r('app.media.icon_select_all') : $r('app.media.icon_select_all_off'))
+          .id(COLLECTION_PAGE_SELECT_ALL_ID)
           .height($r('app.float.vp_40'))
           .width($r('app.float.vp_40'))
           .onClick(() => {
@@ -294,6 +300,7 @@ export struct CollectionPage {
           .margin({ left: $r('app.float.vp_8') })
           .width($r('app.float.vp_40'))
       }
+      .id(COLLECTION_PAGE_DELETE_TOGGLE_ID)
       .onClick(() => {
         if (!this.swiperDelete && this.propCollect.orderInfos.length > 0) {
           this.isSelectDelete = !this.isSelectDelete
@@ -318,6 +325,4 @@ export struct CollectionPage {
 export function CollectionBuilder() {
   CollectionPage()
 }
-
-
 
