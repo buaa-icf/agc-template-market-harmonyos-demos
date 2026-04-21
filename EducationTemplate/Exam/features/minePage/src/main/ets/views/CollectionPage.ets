@@ -18,6 +18,9 @@ import { SampleCollectInfo, OrderInfo, Logger, TopBar } from 'commonlib';
 import { RouterMap, RouterModule } from 'router_module';
 
 const TAG = 'CollectionPage';
+const COLLECTION_PAGE_ROOT_ID: string = 'collection_page_root';
+const COLLECTION_PAGE_EMPTY_TEXT_ID: string = 'collection_page_empty_text';
+const COLLECTION_PAGE_LIST_ID: string = 'collection_page_list';
 
 @ComponentV2
 export struct CollectionPage {
@@ -26,9 +29,12 @@ export struct CollectionPage {
   @Local isSelectAll: boolean = false
   @Local selectCount: number = 0
   @Local propCollect: SampleCollectInfo = AppStorageV2.connect(SampleCollectInfo, () => new SampleCollectInfo())!;
+  @Param onDisappearEvent: () => void = () => {
+  };
 
   aboutToDisappear(): void {
     Logger.info(TAG, 'aboutToDisappear')
+    this.onDisappearEvent();
   }
 
   build() {
@@ -44,6 +50,7 @@ export struct CollectionPage {
           this.deleteButtonBuilder()
         } else {
           Text('当前暂无收藏的课程。')
+            .id(COLLECTION_PAGE_EMPTY_TEXT_ID)
             .fontSize($r('sys.float.Body_S'))
             .fontColor($r('sys.color.icon_secondary'))
             .height('100%')
@@ -53,6 +60,7 @@ export struct CollectionPage {
       .height('100%')
       .backgroundColor($r('sys.color.background_secondary'))
     }
+    .id(COLLECTION_PAGE_ROOT_ID)
     .width('100%')
     .height('100%')
   }
@@ -235,6 +243,7 @@ export struct CollectionPage {
         })
       }), (item: OrderInfo, index: number) => item.orderNo + index)
     }
+    .id(COLLECTION_PAGE_LIST_ID)
     .width('100%')
     .scrollBar(BarState.Off)
     .padding({
@@ -309,7 +318,6 @@ export struct CollectionPage {
 export function CollectionBuilder() {
   CollectionPage()
 }
-
 
 
 
