@@ -6,7 +6,8 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "common": "file:../../common"
+    "common": "file:../../common",
+    "@ohos/hypium": "1.0.21"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.21"
