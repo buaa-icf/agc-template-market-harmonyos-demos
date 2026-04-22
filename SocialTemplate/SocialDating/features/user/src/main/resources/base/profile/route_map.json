@@ -39,7 +39,7 @@
       "name": "MateCriteriaPage",
       "pageSourceFile": "src/main/ets/pages/MateCriteriaPage.ets",
       "buildFunction": "MateCriteriaPageBuilder"
-    },
+    }
 
   ]
 }
