@@ -14,7 +14,9 @@
  */
 
 import abilityTest from './Ability.test';
+import quickLoginCoverTest from './QuickLogin.test';
 
 export default function testsuite() {
   abilityTest();
+  quickLoginCoverTest();
 }
