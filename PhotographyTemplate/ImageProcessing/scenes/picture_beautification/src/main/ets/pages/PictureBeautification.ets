@@ -217,6 +217,7 @@ export struct PictureBeautification {
           .visibility(this.barIndex === 1 && this.carouselCutTabIndex === 0 ? Visibility.Visible : Visibility.None)
         // 裁剪框
         Canvas(this.cropContext)
+          .id('CropCanvas')
           .position({
             x: this.clipRect.x - 2,
             y: this.clipRect.y - 2
@@ -270,17 +271,30 @@ export struct PictureBeautification {
     .margin({ left: 16, right: 16 })
   }
 
+  aboutToAppear() {
+    const fallback = AppStorage.get<PixelMap>('pictureBeautification.testPixelMap');
+    if (fallback) {
+      this.pushPixelMap(fallback);
+    }
+  }
+
   initData(uri: string) {
-    let resFile: fs.File = fs.openSync(uri, fs.OpenMode.READ_ONLY)
+    if (!uri) {
+      return;
+    }
+    let resFile: fs.File | undefined = undefined;
     try {
+      resFile = fs.openSync(uri, fs.OpenMode.READ_ONLY);
       const imageSource: image.ImageSource = image.createImageSource(resFile.fd);
       imageSource.createPixelMap().then((result: PixelMap) => {
         this.pushPixelMap(result)
       })
     } catch (err) {
-      console.error('init data failed with error message: ' + err.message + ', error code: ' + err.code);
+      console.error('init data failed with error message: ' + (err as Error).message);
     } finally {
-      fs.closeSync(resFile)
+      if (resFile) {
+        fs.closeSync(resFile)
+      }
     }
   }
 
