@@ -1,5 +1,5 @@
-import abilityTest from './Ability.test';
+import stickerToolBarTest from './StickerToolBar.test';
 
 export default function testsuite() {
-  abilityTest();
+  stickerToolBarTest();
 }
