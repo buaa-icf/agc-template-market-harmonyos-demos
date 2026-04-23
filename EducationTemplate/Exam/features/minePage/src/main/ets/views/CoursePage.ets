@@ -18,6 +18,16 @@ import { SampleOrderInfo, OrderInfo, Logger, TopBar } from 'commonlib';
 import { RouterMap, RouterModule } from 'router_module';
 
 const TAG = 'CoursePage';
+const COURSE_PAGE_ROOT_ID: string = 'course_page_root';
+const COURSE_PAGE_EMPTY_TEXT_ID: string = 'course_page_empty_text';
+const COURSE_PAGE_LIST_ID: string = 'course_page_list';
+const COURSE_PAGE_DELETE_BUTTON_ID: string = 'course_page_delete_button';
+const COURSE_PAGE_DELETE_TOGGLE_ID: string = 'course_page_delete_toggle';
+const COURSE_PAGE_SELECT_ALL_ID: string = 'course_page_select_all_toggle';
+const COURSE_PAGE_ITEM_CONTENT_PREFIX: string = 'course_page_item_content_';
+const COURSE_PAGE_ITEM_PRICE_PREFIX: string = 'course_page_item_price_';
+const COURSE_PAGE_ITEM_BUYERS_PREFIX: string = 'course_page_item_buyers_';
+const COURSE_PAGE_ITEM_DETAIL_BUTTON_PREFIX: string = 'course_page_item_detail_button_';
 
 @ComponentV2
 export struct CoursePage {
@@ -45,6 +55,7 @@ export struct CoursePage {
           this.deleteButtonBuilder()
         } else {
           Text('当前暂无课程。')
+            .id(COURSE_PAGE_EMPTY_TEXT_ID)
             .fontColor($r('sys.color.icon_secondary'))
             .fontSize($r('sys.float.Body_S'))
             .height('100%')
@@ -54,6 +65,7 @@ export struct CoursePage {
       .width('100%')
       .backgroundColor($r('sys.color.background_secondary'))
     }
+    .id(COURSE_PAGE_ROOT_ID)
     .width('100%')
     .height('100%')
   }
@@ -75,6 +87,7 @@ export struct CoursePage {
           .margin({ left: $r('app.float.vp_8') })
       }
       .width($r('app.float.vp_312'))
+      .id(COURSE_PAGE_DELETE_BUTTON_ID)
       .justifyContent(FlexAlign.Center)
       .borderRadius(20)
       .padding({ top: $r('app.float.vp_8'), bottom: $r('app.float.vp_8') })
@@ -138,6 +151,7 @@ export struct CoursePage {
                     .width($r('app.float.vp_20'))
                     .margin({ right: $r('app.float.vp_8') })
                 }
+                .id(`course_page_select_item_${index}`)
                 .height($r('app.float.vp_24'))
                 .onClick(() => {
                   item.isDelete = !item.isDelete
@@ -161,6 +175,7 @@ export struct CoursePage {
             Column() {
               Row() {
                 Text(item.content)
+                  .id(`${COURSE_PAGE_ITEM_CONTENT_PREFIX}${index}`)
                   .fontSize($r('sys.float.Body_M'))
                   .width('100%')
                   .fontWeight(FontWeight.Medium)
@@ -173,11 +188,13 @@ export struct CoursePage {
                 Column() {
                   Text(`￥${item.price}`)
                     .fontColor($r('sys.color.multi_color_08'))
+                    .id(`${COURSE_PAGE_ITEM_PRICE_PREFIX}${index}`)
                     .fontSize($r('sys.float.Title_S'))
                     .fontWeight(FontWeight.Medium)
                     .textAlign(TextAlign.Start)
                     .width('100%')
                   Text(`已有 ${item.buyNumbers}人 购买`)
+                    .id(`${COURSE_PAGE_ITEM_BUYERS_PREFIX}${index}`)
                     .fontWeight(FontWeight.Lighter)
                     .fontSize($r('sys.float.Body_S'))
                     .fontColor('rgb(2, 2, 3)')
@@ -192,6 +209,7 @@ export struct CoursePage {
                     Button('查看详情')
                       .fontWeight(FontWeight.Medium)
                       .fontSize($r('sys.float.Body_M'))
+                      .id(`${COURSE_PAGE_ITEM_DETAIL_BUTTON_PREFIX}${index}`)
                       .fontColor($r('app.color.system_color_background_white'))
                       .fontWeight(FontWeight.Bold)
                       .backgroundColor('#4B5CC4')
@@ -236,6 +254,7 @@ export struct CoursePage {
         })
       }), (item: OrderInfo, index: number) => item.orderNo + index)
     }
+    .id(COURSE_PAGE_LIST_ID)
     .scrollBar(BarState.Off)
     .width('100%')
     .padding({
@@ -271,6 +290,7 @@ export struct CoursePage {
       })
       Row() {
         Image(this.isSelectAll ? $r('app.media.icon_select_all') : $r('app.media.icon_select_all_off'))
+          .id(COURSE_PAGE_SELECT_ALL_ID)
           .width($r('app.float.vp_40'))
           .height($r('app.float.vp_40'))
           .onClick(() => {
@@ -283,6 +303,7 @@ export struct CoursePage {
           .opacity(this.swiperDel ? 0.4 : 1)
           .margin({ left: $r('app.float.vp_8') })
       }
+      .id(COURSE_PAGE_DELETE_TOGGLE_ID)
       .onClick(() => {
         if (!this.swiperDel && this.propOrderInfo.orderInfos.length > 0) {
           this.isSelectDelete = !this.isSelectDelete
@@ -307,7 +328,6 @@ export struct CoursePage {
 export function CoursePageBuilder() {
   CoursePage()
 }
-
 
 
 
