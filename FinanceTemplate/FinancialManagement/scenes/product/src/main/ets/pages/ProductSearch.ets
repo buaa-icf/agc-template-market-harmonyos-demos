@@ -16,7 +16,8 @@ struct ProductSearch {
     NavDestination() {
       Column() {
         Row() {
-          Search({ value: this.vm.searchText, placeholder: '请输入产品名称/代码', controller: this.searchController })
+          Search({ value: this.vm.searchText, placeholder: '璇疯緭鍏ヤ骇鍝佸悕绉?浠ｇ爜', controller: this.searchController })
+            .id('product_search_input')
             .width('100%')
             .height(40)
             .placeholderColor($r('sys.color.font_secondary'))
@@ -30,7 +31,8 @@ struct ProductSearch {
         .padding({ left: 16, right: 16 })
 
         Row() {
-          Text(`共款${this.vm.productList.length}产品`)
+          Text(`鍏辨${this.vm.productList.length}浜у搧`)
+            .id('product_search_count')
             .fontSize(14)
             .fontWeight(FontWeight.Regular)
             .fontColor($r('sys.color.font_secondary'))
@@ -45,6 +47,7 @@ struct ProductSearch {
                 Flex({ justifyContent: FlexAlign.SpaceBetween }) {
                   Row() {
                     Text(product.name)
+                      .id(`product_search_name_${product.id}`)
                       .fontSize(14)
                       .fontWeight(FontWeight.Medium)
                       .maxLines(2)
@@ -56,6 +59,7 @@ struct ProductSearch {
 
                   Row() {
                     Text(product.annualizedRate + '%')
+                      .id(`product_search_rate_${product.id}`)
                       .fontColor('#C15F2F')
                       .fontSize(14)
                       .fontWeight(FontWeight.Medium)
@@ -69,6 +73,7 @@ struct ProductSearch {
                 Flex({ justifyContent: FlexAlign.SpaceBetween }) {
                   Row() {
                     Text(product.number)
+                      .id(`product_search_number_${product.id}`)
                       .fontSize(12)
                       .fontWeight(FontWeight.Regular)
                       .fontColor($r('sys.color.font_secondary'))
@@ -78,6 +83,7 @@ struct ProductSearch {
 
                   Row() {
                     Text(product.annualizedCycle)
+                      .id(`product_search_cycle_${product.id}`)
                       .fontSize(12)
                       .fontWeight(FontWeight.Regular)
                       .fontColor($r('sys.color.font_secondary'))
@@ -95,19 +101,22 @@ struct ProductSearch {
               .borderWidth({ bottom: 1 })
               .borderColor('#F1F3F5')
             }
+            .id(`product_search_item_${product.id}`)
             .backgroundColor(Color.White)
             .onClick(() => {
               FormatUtil.jumpToNext(RouterMap.PRODUCT_INFO, product.id)
             })
-          }, (item: IProductItem[]) => JSON.stringify(item))
+          }, (item: IProductItem) => item.id.toString())
         }
+        .id('product_search_list')
         .layoutWeight(1)
         .scrollBar(BarState.Off)
       }
+      .id('product_search_root')
       .alignItems(HorizontalAlign.Start)
     }
     .backgroundColor($r('sys.color.background_secondary'))
-    .title('搜索')
+    .title('鎼滅储')
     .onShown(() => {
       this.vm.init()
     })
