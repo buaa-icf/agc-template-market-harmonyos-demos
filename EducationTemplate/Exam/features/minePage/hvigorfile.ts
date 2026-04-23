@@ -26,9 +26,13 @@ const copyOhosTestIndexPlugin: HvigorPlugin = {
       }
       fs.mkdirSync(path.dirname(targetIndex), { recursive: true });
       const sourceContent: string = fs.readFileSync(sourceIndex, 'utf8');
-      const rewrittenContent: string = sourceContent.replace(
+      let rewrittenContent: string = sourceContent.replace(
         '../../../../main/ets/views/CollectionPage',
         '../../../../../../../../src/main/ets/views/CollectionPage.ets'
+      );
+      rewrittenContent = rewrittenContent.replace(
+        '../../../../main/ets/views/CoursePage',
+        '../../../../../../../../src/main/ets/views/CoursePage.ets'
       );
       fs.writeFileSync(targetIndex, rewrittenContent, 'utf8');
     };

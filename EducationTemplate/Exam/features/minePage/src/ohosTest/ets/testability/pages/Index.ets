@@ -1,6 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { CollectionPage } from '../../../../main/ets/views/CollectionPage';
-import { OrderInfo, OrderState, SampleCollectInfo } from 'commonlib';
+import { CoursePage } from '../../../../main/ets/views/CoursePage';
+import { OrderInfo, OrderState, SampleCollectInfo, SampleOrderInfo } from 'commonlib';
 
 const HOST_ANCHOR_ID: string = 'mine_page_collection_instrument_host_anchor';
 const ABOUT_TO_DISAPPEAR_MARKER_ID: string = 'collection_about_to_disappear_marker';
@@ -10,16 +11,25 @@ const SWITCH_TO_FILLED_TRIGGER_ID: string = 'collection_switch_to_filled_trigger
 const SHOW_COLLECTION_PAGE_TRIGGER_ID: string = 'collection_show_page_trigger';
 const RESET_COLLECTION_PAGE_TRIGGER_ID: string = 'collection_reset_to_filled_trigger';
 const COLLECTION_HOST_READY_FILLED_MARKER_ID: string = 'collection_host_ready_filled_marker';
+const COURSE_HOST_ANCHOR_ID: string = 'mine_page_course_instrument_host_anchor';
+const SHOW_COURSE_PAGE_TRIGGER_ID: string = 'course_show_page_trigger';
+const SWITCH_COURSE_TO_FILLED_TRIGGER_ID: string = 'course_switch_to_filled_trigger';
+const SWITCH_COURSE_TO_EMPTY_TRIGGER_ID: string = 'course_switch_to_empty_trigger';
+const RESET_COURSE_PAGE_TRIGGER_ID: string = 'course_reset_to_filled_trigger';
+const COURSE_HOST_READY_FILLED_MARKER_ID: string = 'course_host_ready_filled_marker';
 
 @Entry
 @ComponentV2
 struct Index {
   @Local private showLifecycleTarget: boolean = true;
+  @Local private showCoursePage: boolean = false;
   @Local private aboutToDisappearTriggered: boolean = false;
   @Local private collectionData: SampleCollectInfo = AppStorageV2.connect(SampleCollectInfo, () => new SampleCollectInfo())!;
+  @Local private courseData: SampleOrderInfo = AppStorageV2.connect(SampleOrderInfo, () => new SampleOrderInfo())!;
 
   aboutToAppear(): void {
     this.collectionData.orderInfos = [this.createOrderInfo()];
+    this.courseData.orderInfos = [this.createCourseOrderInfo()];
   }
 
   build() {
@@ -29,13 +39,41 @@ struct Index {
         .fontSize(20)
         .fontWeight(FontWeight.Medium)
 
+      Text('minePage Course Instrument Host')
+        .id(COURSE_HOST_ANCHOR_ID)
+        .fontSize(20)
+        .fontWeight(FontWeight.Medium)
+
       Column({ space: 8 }) {
+        Button('ShowCollection')
+          .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
+          .onClick(() => {
+            this.showCoursePage = false;
+            this.aboutToDisappearTriggered = false;
+            this.showLifecycleTarget = true;
+          })
+          .width('100%')
+        Button('ShowCourse')
+          .id(SHOW_COURSE_PAGE_TRIGGER_ID)
+          .onClick(() => {
+            this.showCoursePage = true;
+          })
+          .width('100%')
+
         Button('Reset')
           .id(RESET_COLLECTION_PAGE_TRIGGER_ID)
           .onClick(() => {
             this.aboutToDisappearTriggered = false;
             this.showLifecycleTarget = true;
+            this.showCoursePage = false;
             this.collectionData.orderInfos = [this.createOrderInfo()];
+          })
+          .width('100%')
+        Button('CourseReset')
+          .id(RESET_COURSE_PAGE_TRIGGER_ID)
+          .onClick(() => {
+            this.courseData.orderInfos = [this.createCourseOrderInfo()];
+            this.showCoursePage = true;
           })
           .width('100%')
 
@@ -56,10 +94,22 @@ struct Index {
               this.showLifecycleTarget = false;
             })
           Button('Show')
-            .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
+            .id('collection_show_lifecycle_trigger')
             .onClick(() => {
               this.aboutToDisappearTriggered = false;
               this.showLifecycleTarget = true;
+            })
+        }
+        Row({ space: 8 }) {
+          Button('CourseFilled')
+            .id(SWITCH_COURSE_TO_FILLED_TRIGGER_ID)
+            .onClick(() => {
+              this.courseData.orderInfos = [this.createCourseOrderInfo()];
+            })
+          Button('CourseEmpty')
+            .id(SWITCH_COURSE_TO_EMPTY_TRIGGER_ID)
+            .onClick(() => {
+              this.courseData.orderInfos = [];
             })
         }
       }
@@ -72,9 +122,15 @@ struct Index {
         Text('collection host filled ready')
           .id(COLLECTION_HOST_READY_FILLED_MARKER_ID)
       }
+      if (this.showCoursePage && this.courseData.orderInfos.length > 0) {
+        Text('course host filled ready')
+          .id(COURSE_HOST_READY_FILLED_MARKER_ID)
+      }
 
       Column() {
-        if (this.showLifecycleTarget) {
+        if (this.showCoursePage) {
+          CoursePage()
+        } else if (this.showLifecycleTarget) {
           CollectionPage({
             onDisappearEvent: () => {
               this.aboutToDisappearTriggered = true;
@@ -101,6 +157,20 @@ struct Index {
     );
     orderInfo.price = '199';
     orderInfo.buyNumbers = 88;
+    return orderInfo;
+  }
+
+  private createCourseOrderInfo(): OrderInfo {
+    const orderInfo = new OrderInfo(
+      'instrument-course-id',
+      true,
+      OrderState.Paid,
+      'instrument-course-order-no',
+      'Course Instrument Class',
+      false
+    );
+    orderInfo.price = '299';
+    orderInfo.buyNumbers = 36;
     return orderInfo;
   }
 }
