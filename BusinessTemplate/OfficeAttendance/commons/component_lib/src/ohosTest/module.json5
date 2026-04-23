@@ -7,6 +7,6 @@
       "tablet"
     ],
     "deliveryWithInstall": true,
-    "installationFree": true
+    "installationFree": false
   }
 }

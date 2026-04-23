@@ -8,5 +8,8 @@
   "dependencies": {
     "@ohos_agcit/office_attendance_common_lib": "file:../common_lib",
     "@ohos_agcit/office_attendance_network": "file:../network"
+  },
+  "devDependencies": {
+    "@ohos/hypium": "1.0.19"
   }
 }
