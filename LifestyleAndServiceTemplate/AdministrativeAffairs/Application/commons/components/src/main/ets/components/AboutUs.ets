@@ -40,6 +40,7 @@ export struct AboutUsPage {
                   Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
                     Row() {
                       Text($r('app.string.opinions_suggestions'))
+                        .id('about_us_suggestion_text')
                         .fontWeight(FontWeight.Regular)
                         .fontColor($r('sys.color.font_primary'))
                         .fontSize($r('sys.float.Body_M'))
@@ -51,6 +52,7 @@ export struct AboutUsPage {
                       .syncLoad(false)
                       .objectFit(ImageFit.Fill)
                   }
+                  .id('about_us_suggestion_row')
                   .width(Constants.FULL_PERCENT_WIDTH)
                   .padding({ top: $r('app.float.common_margin_sixty'), bottom: $r('app.float.common_margin_sixty') })
                   .onClick(() => {
@@ -61,6 +63,7 @@ export struct AboutUsPage {
                   Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
                     Row() {
                       Text('反馈记录')
+                        .id('about_us_feedback_text')
                         .fontWeight(FontWeight.Regular)
                         .fontColor($r('sys.color.font_primary'))
                         .fontSize($r('sys.float.Body_M'))
@@ -72,6 +75,7 @@ export struct AboutUsPage {
                       .syncLoad(false)
                       .objectFit(ImageFit.Fill)
                   }
+                  .id('about_us_feedback_row')
                   .width(Constants.FULL_PERCENT_WIDTH)
                   .padding({ top: $r('app.float.common_margin_sixty'), bottom: $r('app.float.common_margin_sixty') })
                   .onClick(() => {
@@ -88,6 +92,7 @@ export struct AboutUsPage {
             .padding({ left: $r('app.float.about_padding'), right: $r('app.float.about_padding') })
           }
         }
+        .id('about_us_page_root')
       }.scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring)
     }
     .title('关于我们')
