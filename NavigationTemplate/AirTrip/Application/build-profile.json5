@@ -1,7 +1,6 @@
 {
   "app": {
-    "signingConfigs": [
-    ],
+    "signingConfigs": [],
     "products": [
       {
         "name": "default",
@@ -13,7 +12,8 @@
             "caseSensitiveCheck": true,
             "useNormalizedOHMUrl": true
           }
-        }
+        },
+        "targetSdkVersion": "5.0.0(12)"
       }
     ],
     "buildModeSet": [
