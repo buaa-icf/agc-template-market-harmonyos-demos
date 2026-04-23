@@ -1,7 +1,10 @@
-import { BeautyParam, MyPosition } from 'common';
+import { BeautyParam, MyPosition, StickerShowModel } from 'common';
 import { image } from '@kit.ImageKit';
 import { CarouseCutToolBar } from '../../../../../../../../src/main/ets/components/CarouseCutToolBar';
 import { PictureBeautification } from '../../../../../../../../src/main/ets/pages/PictureBeautification';
+import { StickerToolBar } from '../../../../../../../../src/main/ets/components/StickerToolBar';
+import { StickerModel } from '../../../../../../../../src/main/ets/model/BeautificationParam';
+import { Constants } from '../../../../../../../../src/main/ets/model/Constants';
 
 const HOST_ANCHOR_ID: string = 'carouse_cut_tool_bar_test_host_anchor';
 const RATIO_OUTPUT_ID: string = 'cut_ratio_output';
@@ -12,6 +15,9 @@ const PB_HOST_ANCHOR_ID: string = 'picture_beautification_test_host_anchor';
 const PB_ROUTE_NAME: string = 'pictureBeautification';
 const PB_TEST_PIXEL_MAP_KEY: string = 'pictureBeautification.testPixelMap';
 const PB_RUN_FLAG: string = 'pictureBeautification.runTest';
+
+const STICKER_HOST_ANCHOR_ID: string = 'sticker_toolbar_test_host';
+const STICKER_RUN_FLAG: string = 'stickerToolBar.runTest';
 
 @Entry
 @Component
@@ -24,10 +30,15 @@ struct Index {
   @State barIndexHolder: number = 0;
   @State imageAreaHolder: MyPosition = { x: 0, y: 0, width: 1080, height: 1920 };
 
+  @State stickerBarIndex: number = 4;
+  @State stickerList: StickerModel[] = [];
+  private testSearchList: StickerShowModel[] = Constants.stickerList.slice(0, 2);
+
   pathStack: NavPathStack = new NavPathStack();
   @State ready: boolean = false;
   @State pushed: boolean = false;
   @StorageLink(PB_RUN_FLAG) runPb: boolean = false;
+  @StorageLink(STICKER_RUN_FLAG) runSticker: boolean = false;
 
   async aboutToAppear(): Promise<void> {
     AppStorage.setOrCreate('topRectHeight', 0);
@@ -92,6 +103,18 @@ struct Index {
       }
       .width('100%')
       .height('100%')
+      .backgroundColor(Color.White)
+    } else if (this.runSticker) {
+      Column() {
+        StickerToolBar({
+          barIndex: this.stickerBarIndex,
+          stickerList: this.stickerList,
+          testSearchList: this.testSearchList
+        })
+      }
+      .width('100%')
+      .height('100%')
+      .id(STICKER_HOST_ANCHOR_ID)
       .backgroundColor(Color.White)
     } else {
       Column({ space: 4 }) {
