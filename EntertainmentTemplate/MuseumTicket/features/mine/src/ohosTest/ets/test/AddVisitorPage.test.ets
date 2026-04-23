@@ -1,4 +1,4 @@
-import { beforeAll, describe, it } from '@ohos/hypium';
+import { beforeAll, beforeEach, describe, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
 const UI_TIMEOUT = 10000;
@@ -21,6 +21,21 @@ async function findById(driver: Driver, id: string, timeout: number = UI_TIMEOUT
   return component;
 }
 
+async function ensureHostVisible(driver: Driver): Promise<void> {
+  const hostAnchor = await driver.findComponent(ON.id(HOST_ANCHOR_ID));
+  if (hostAnchor !== null) {
+    return;
+  }
+
+  const cancelButton = await driver.findComponent(ON.id(CANCEL_BUTTON_ID));
+  if (cancelButton !== null) {
+    await cancelButton.click();
+    await waitForIdle(driver);
+  }
+
+  await findById(driver, HOST_ANCHOR_ID);
+}
+
 export default function AddVisitorPageTest() {
   describe('AddVisitorPageTest', () => {
     let driver: Driver;
@@ -28,7 +43,12 @@ export default function AddVisitorPageTest() {
     beforeAll(async () => {
       driver = Driver.create();
       await waitForIdle(driver, 2000);
-      await findById(driver, HOST_ANCHOR_ID);
+      await ensureHostVisible(driver);
+    });
+
+    beforeEach(async () => {
+      await waitForIdle(driver);
+      await ensureHostVisible(driver);
     });
 
     it('build_renders_contact_form', 0, async () => {
