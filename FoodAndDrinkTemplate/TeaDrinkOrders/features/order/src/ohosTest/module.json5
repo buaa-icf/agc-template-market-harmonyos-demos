@@ -6,6 +6,6 @@
       "phone"
     ],
     "deliveryWithInstall": true,
-    "installationFree": true
+    "installationFree": false
   }
 }
