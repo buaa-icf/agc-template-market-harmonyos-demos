@@ -1,20 +1,6 @@
 {
   app: {
-    signingConfigs: [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\txy\\.ohos\\config\\default_Application_QSDJqQqCHHN7d3vYKNn4BTTGATHBxMDH1QCuLVUywkY=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B834F778225D7ABD4EB35E9322734C202E670D92A288B9ECBFE881F15490A63C3EC141B3B9615D6",
-          "profile": "C:\\Users\\txy\\.ohos\\config\\default_Application_QSDJqQqCHHN7d3vYKNn4BTTGATHBxMDH1QCuLVUywkY=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\txy\\.ohos\\config\\default_Application_QSDJqQqCHHN7d3vYKNn4BTTGATHBxMDH1QCuLVUywkY=.p12",
-          "storePassword": "0000001B076F891E0480FB24F42DA642A4BBF61D5369782AF75A9C21A15951B6EDC4C81695276D366801C7"
-        }
-      }
-    ],
+    signingConfigs: [],
     products: [
       {
         name: 'default',
