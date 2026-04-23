@@ -1,19 +1,6 @@
 {
   "app": {
     "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\txy\\.ohos\\config\\default_ShoppingMall_VK9LibAu17tS8l7Iuc2F9JnBj9JCiwyNsMGb_3KNWfs=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001BB00C9C51D3716E733ED6D0F3B0AB67583832C95AC31F0D972A30083CFF3A6A02A2AAFF83FCEE30",
-          "profile": "C:\\Users\\txy\\.ohos\\config\\default_ShoppingMall_VK9LibAu17tS8l7Iuc2F9JnBj9JCiwyNsMGb_3KNWfs=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\txy\\.ohos\\config\\default_ShoppingMall_VK9LibAu17tS8l7Iuc2F9JnBj9JCiwyNsMGb_3KNWfs=.p12",
-          "storePassword": "0000001BE526A1A498E7BE5B647765A7D7344F562E80BDCFF798411A94051D7CAEA7620103A31C2FF17CC1"
-        }
-      }
     ],
     "products": [
       {
