@@ -36,6 +36,7 @@ struct ActivityBooking {
       Column() {
         Column() {
           Text($r('app.string.booking_personal_info'))
+            .id('activity_booking_title')
             .width('100%')
             .fontSize($r('app.string.font_size_18'))
             .fontFamily('HarmonyHeiTi')
@@ -58,6 +59,7 @@ struct ActivityBooking {
                 .width(6)
                 .height(16);
               Text($r('app.string.booking_name'))
+                .id('activity_booking_name_label')
                 .fontSize($r('app.string.font_size_12'))
                 .fontFamily('HarmonyHeiTi')
                 .fontWeight(FontWeight.Regular)
@@ -68,6 +70,7 @@ struct ActivityBooking {
             TextInput({
               placeholder: $r('app.string.booking_name_input'),
             })
+              .id('activity_booking_name_input')
               .height(48)
               .fontSize($r('app.string.font_size_16'))
               .fontFamily('HarmonyHeiTi')
@@ -106,6 +109,7 @@ struct ActivityBooking {
                 .width(6)
                 .height(16);
               Text($r('app.string.booking_telephone'))
+                .id('activity_booking_phone_label')
                 .fontSize($r('app.string.font_size_12'))
                 .fontFamily('HarmonyHeiTi')
                 .fontWeight(FontWeight.Regular)
@@ -116,6 +120,7 @@ struct ActivityBooking {
             TextInput({
               text: this.mainVm.userInfo.phone
             })
+              .id('activity_booking_phone_input')
               .height(48)
               .fontSize($r('app.string.font_size_16'))
               .fontFamily('HarmonyHeiTi')
@@ -154,6 +159,7 @@ struct ActivityBooking {
               .fontWeight(FontWeight.Medium)
               .fontColor('#FFFFFF');
           }
+          .id('activity_booking_submit_btn')
           .backgroundColor('#333333')
           .padding({
             top: $r('app.string.padding_10'),
