@@ -1,4 +1,4 @@
-import {
+﻿import {
   DataStorage,
   RouterPageEnum,
   WebPageParams,
@@ -26,56 +26,56 @@ export function homePageBuilder() {
 @ComponentV2
 export struct HomePage {
   vm: HomePageVM = HomePageVM.instance;
-  // 设置应用全局UI状态存储
+  // 璁剧疆搴旂敤鍏ㄥ眬UI鐘舵€佸瓨鍌?
   @Local dataStorage: DataStorage = AppStorageV2.connect(DataStorage, 'DataStorage', () => new DataStorage())!;
   @Local userInfoStorage: UserInfoStorage =
     PersistenceV2.connect(UserInfoStorage, 'UserInfoStorage', () => new UserInfoStorage())!
-  // 出发地
+  // 鍑哄彂鍦?
   @Local departure: string = '';
-  // 目的地
+  // 鐩殑鍦?
   @Local destination: string = '';
-  // 出发日期
+  // 鍑哄彂鏃ユ湡
   @Local departureDate: DayInfo =
     new DayInfo(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate(), getDayLabel(new Date()));
   @Local weekDay: string = getDayLabel(new Date());
-  // banner轮播图数据
+  // banner杞挱鍥炬暟鎹?
   @Local bannerList: ResourceInfo[] = [];
-  // 首页底部功能区展示的数据
+  // 棣栭〉搴曢儴鍔熻兘鍖哄睍绀虹殑鏁版嵁
   @Local homeFunctionalList: ResourceInfo[] = [];
-  // 当前选择的航程类型：默认选择单程
+  // 褰撳墠閫夋嫨鐨勮埅绋嬬被鍨嬶細榛樿閫夋嫨鍗曠▼
   @Local selectedBarIndex: number = 0;
 
-  // 出发地城市
+  // 鍑哄彂鍦板煄甯?
   @Computed
   get dataStorageDepartureCity() {
     return this.dataStorage.departureCity;
   }
 
-  // 目的地城市
+  // 鐩殑鍦板煄甯?
   @Computed
   get dataStorageDestinationCity() {
     return this.dataStorage.destinationCity;
   }
 
-  // 出发日期
+  // 鍑哄彂鏃ユ湡
   @Computed
   get dataStorageDepartureDate() {
     return this.dataStorage.departureDate;
   }
 
-  // 监听出发地城市的选择变化
+  // 鐩戝惉鍑哄彂鍦板煄甯傜殑閫夋嫨鍙樺寲
   @Monitor('dataStorageDepartureCity')
   onDataStorageDepartureCityChange(monitor: IMonitor) {
     this.departure = this.dataStorageDepartureCity?.cityName ?? this.departure;
   }
 
-  // 监听目的地城市的选择变化
+  // 鐩戝惉鐩殑鍦板煄甯傜殑閫夋嫨鍙樺寲
   @Monitor('dataStorageDestinationCity')
   onDataStorageDestinationCityChange(monitor: IMonitor) {
     this.destination = this.dataStorageDestinationCity?.cityName ?? this.destination;
   }
 
-  // 监听出发日期的选择变化
+  // 鐩戝惉鍑哄彂鏃ユ湡鐨勯€夋嫨鍙樺寲
   @Monitor('dataStorageDepartureDate')
   onDataStorageDepartureDateChange(monitor: IMonitor) {
     if (this.dataStorageDepartureDate) {
@@ -92,26 +92,26 @@ export struct HomePage {
   @Monitor('selectedBarIndex')
   onChangeSelectedBarIndex(monitor: IMonitor) {
     if (monitor.value()?.now === 1) {
-      GlobalDialog.showToast('暂未上线，敬请期待')
+      GlobalDialog.showToast('Coming soon')
       this.selectedBarIndex = 0
     }
   }
 
   aboutToAppear() {
-    // 出发城市 默认选择上海
+    // 鍑哄彂鍩庡競 榛樿閫夋嫨涓婃捣
     let defaultDepartureCity = new City()
-    defaultDepartureCity.cityName = '上海'
+    defaultDepartureCity.cityName = '涓婃捣'
     defaultDepartureCity.cityId = 'shanghai'
     defaultDepartureCity.cityCode = 'shanghai'
     this.dataStorage.departureCity = defaultDepartureCity
-    // 到达城市 默认选择北京
+    // 鍒拌揪鍩庡競 榛樿閫夋嫨鍖椾含
     let defaultDestinationCity = new City()
-    defaultDestinationCity.cityName = '北京'
+    defaultDestinationCity.cityName = '鍖椾含'
     defaultDestinationCity.cityId = 'beijing'
     defaultDestinationCity.cityCode = 'beijing'
     this.dataStorage.destinationCity = defaultDestinationCity
-    this.departure = '上海'
-    this.destination = '北京'
+    this.departure = '涓婃捣'
+    this.destination = '鍖椾含'
 
     this.initResourceData()
   }
@@ -120,7 +120,7 @@ export struct HomePage {
   }
 
   initResourceData() {
-    // 获取预加载的资源文件
+    // 鑾峰彇棰勫姞杞界殑璧勬簮鏂囦欢
     if (AppStorage.get('resourceData')) {
       let resourceData = AppStorage.get('resourceData') as ResourceData
       this.homeFunctionalList = resourceData?.commonServices ?? []
@@ -141,7 +141,7 @@ export struct HomePage {
     emitter.on(event, callback);
   }
 
-  // 机票预订
+  // 鏈虹エ棰勮
   bookFlight() {
     if (this.userInfoStorage.isLogin) {
       AppRouter.push({
@@ -149,18 +149,18 @@ export struct HomePage {
       })
     } else {
       GlobalDialog.showTextDialog({
-        title: '关联账号',
-        content: '请先关联账号',
-        primaryButName: '确定',
-        secondaryButName: '取消',
+        title: '鍏宠仈璐﹀彿',
+        content: '璇峰厛鍏宠仈璐﹀彿',
+        primaryButName: '纭畾',
+        secondaryButName: '鍙栨秷',
         primaryButAction: async () => {
-          // 关闭账号关联弹框
+          // 鍏抽棴璐﹀彿鍏宠仈寮规
           await GlobalDialog.close()
-          // loading弹框
+          // loading寮规
           await GlobalDialog.showLoadingDialog()
           AuthenticationUtil.silentLogin(async (isSuccess: boolean, userInfo: UserInfo) => {
             await GlobalDialog.close()
-            // 账号关联登录成功
+            // 璐﹀彿鍏宠仈鐧诲綍鎴愬姛
             if (isSuccess) {
               this.userInfoStorage.isLogin = true;
               this.userInfoStorage.userInfo = userInfo
@@ -187,16 +187,17 @@ export struct HomePage {
 
       Row() {
         Column({ space: 4 }) {
-          Text('出发城市')
+          Text('鍑哄彂鍩庡競')
             .fontSize(12)
             .fontColor($r('sys.color.ohos_id_color_text_tertiary'))
-          Text(this.departure || '请选择')
+          Text(this.departure || '璇烽€夋嫨')
             .fontColor(this.departure ? $r('sys.color.ohos_id_color_text_primary') :
             $r('sys.color.ohos_id_color_text_tertiary'))
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
             .maxLines(1)
             .textOverflow({overflow: TextOverflow.Ellipsis})
+            .id('home_flight_departure_value')
         }
         .width('40%')
         .justifyContent(FlexAlign.Center)
@@ -204,6 +205,7 @@ export struct HomePage {
         .padding({left: 8, right:8})
         .backgroundColor('#F3F3F3')
         .borderRadius(16)
+        .id('home_flight_departure_selector')
         .onClick(() => {
           let paramData: Record<string, LocationType | boolean> = {
             'type': LocationType.DEPARTURE,
@@ -215,6 +217,7 @@ export struct HomePage {
         });
 
         Image($r('app.media.ic_transfer')).width(36).height(36)
+          .id('home_flight_transfer_button')
           .onClick(() => {
             if (this.departure && this.destination) {
               let temp = this.departure;
@@ -231,16 +234,17 @@ export struct HomePage {
           });
 
         Column({ space: 4 }) {
-          Text('到达城市')
+          Text('鍒拌揪鍩庡競')
             .fontSize(12)
             .fontColor($r('sys.color.ohos_id_color_text_tertiary'))
-          Text(this.destination || '请选择')
+          Text(this.destination || '璇烽€夋嫨')
             .fontColor(this.destination ? $r('sys.color.ohos_id_color_text_primary') :
             $r('sys.color.ohos_id_color_text_tertiary'))
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
             .maxLines(1)
             .textOverflow({overflow: TextOverflow.Ellipsis})
+            .id('home_flight_destination_value')
         }
         .width('40%')
         .justifyContent(FlexAlign.Center)
@@ -248,6 +252,7 @@ export struct HomePage {
         .padding({left: 8, right:8})
         .backgroundColor('#F3F3F3')
         .borderRadius(16)
+        .id('home_flight_destination_selector')
         .onClick(() => {
           let paramData: Record<string, LocationType | boolean> = {
             'type': LocationType.DESTINATION,
@@ -278,6 +283,7 @@ export struct HomePage {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
       .margin({ top: 10 })
+      .id('home_flight_date_selector')
       .onClick(() => {
         AppRouter.push({
           url: 'CalendarPage',
@@ -285,9 +291,10 @@ export struct HomePage {
       });
 
       Row() {
-        Button('机票预订', { type: ButtonType.Capsule, stateEffect: true })
+        Button('鏈虹エ棰勮', { type: ButtonType.Capsule, stateEffect: true })
           .backgroundColor($r('sys.color.ohos_id_color_emphasize')).width('100%')
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+          .id('home_flight_book_button')
           .onClick(() => {
             this.bookFlight()
           });
@@ -299,12 +306,13 @@ export struct HomePage {
     .backgroundColor($r('sys.color.white'))
     .borderRadius(16)
     .padding({ left: 14, right: 14 })
+    .id('home_flight_booking_card')
     .shadow(ShadowStyle.OUTER_DEFAULT_XS);
   }
 
   @Builder
   AdBannerView() {
-    // 轮播图
+    // 杞挱鍥?
     Swiper() {
       ForEach(this.bannerList, (item: ResourceInfo) => {
         Image(item.imgUrl)
@@ -329,7 +337,7 @@ export struct HomePage {
     .duration(100)
     .borderRadius(16)
     .itemSpace(0)
-    .indicator( // 设置圆点导航点样式
+    .indicator( // 璁剧疆鍦嗙偣瀵艰埅鐐规牱寮?
       new DotIndicator()
         .itemWidth(8)
         .itemHeight(8)
@@ -373,9 +381,10 @@ export struct HomePage {
 
   @Builder
   HomeTitleBuilder() {
-    Text('首页')
+    Text('棣栭〉')
       .fontSize($r('app.float.title_lg_font_size'))
       .fontWeight(FontWeight.Bold)
+      .id('home_page_title')
   }
 
   build() {
