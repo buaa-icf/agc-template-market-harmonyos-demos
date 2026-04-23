@@ -14,7 +14,9 @@
  */
 
 import localUnitTest from './LocalUnit.test';
+import answerQuestionsPageTest from './AnswerQuestionsPage.test';
 
 export default function testsuite() {
   localUnitTest();
+  answerQuestionsPageTest();
 }
