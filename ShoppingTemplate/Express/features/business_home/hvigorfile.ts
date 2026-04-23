@@ -42,6 +42,14 @@ hvigor.nodesEvaluated(() => {
   if (!node) {
     return;
   }
+  // Skip during project sync / non-ohosTest builds where ohosTest tasks are not instantiated.
+  const nAny: Record<string, Function> = node as unknown as Record<string, Function>;
+  const hasTask: (name: string) => boolean = typeof nAny.hasTask === 'function'
+    ? (nAny.hasTask as (name: string) => boolean).bind(node)
+    : (name: string): boolean => node.getTaskByName(name) !== undefined;
+  if (!hasTask('ohosTest@GenerateOhosTestTemplate')) {
+    return;
+  }
   const moduleDir: string = nodeDir(node);
   node.registerTask({
     name: 'ohosTest@CopyTestabilityIndex',
@@ -49,7 +57,9 @@ hvigor.nodesEvaluated(() => {
       copyTestabilityIndex(moduleDir);
     },
     dependencies: ['ohosTest@GenerateOhosTestTemplate'],
-    postDependencies: ['ohosTest@OhosTestCompileArkTS']
+    postDependencies: hasTask('ohosTest@OhosTestCompileArkTS')
+      ? ['ohosTest@OhosTestCompileArkTS']
+      : []
   });
 });
 
