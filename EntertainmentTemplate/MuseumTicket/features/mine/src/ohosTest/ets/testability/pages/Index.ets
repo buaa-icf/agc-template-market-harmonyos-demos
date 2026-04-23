@@ -1,5 +1,6 @@
 import { RouterMap, RouterModule } from 'commonlib';
 import { AddVisitorPageBuilder } from '../../../../../../../../src/main/ets/pages/AddVisitorPage';
+import { EditVisitorPageBuilder } from '../../../../../../../../src/main/ets/pages/EditVisitorPage';
 import { Contacts } from '../../../../../../../../src/main/ets/types/Index';
 import { MinePageVM } from '../../../../../../../../src/main/ets/viewModels/MinePageVM';
 
@@ -7,6 +8,7 @@ const HOST_ROUTE = 'add_visitor_test_host';
 const HOST_ANCHOR_ID = 'add_visitor_host_anchor';
 const POPULATED_BUTTON_ID = 'add_visitor_show_populated';
 const EMPTY_BUTTON_ID = 'add_visitor_show_empty';
+const EDIT_POPULATED_BUTTON_ID = 'edit_visitor_show_populated';
 
 function createPopulatedContactInfo(): Contacts {
   return {
@@ -40,6 +42,13 @@ struct Index {
     RouterModule.getStack().pushPathByName(RouterMap.ADD_VISITOR, null);
   }
 
+  private openEditVisitor(contactInfo: Contacts): void {
+    this.vm.clear();
+    RouterModule.clear();
+    RouterModule.getStack().pushPathByName(HOST_ROUTE, null);
+    RouterModule.push({ url: RouterMap.EDIT_VISITOR, param: { contactInfo: contactInfo } });
+  }
+
   @Builder
   private hostPage() {
     NavDestination() {
@@ -60,6 +69,13 @@ struct Index {
           .onClick(() => {
             this.openAddVisitor(undefined);
           })
+
+        Button('打开编辑联系人页')
+          .id(EDIT_POPULATED_BUTTON_ID)
+          .width('100%')
+          .onClick(() => {
+            this.openEditVisitor(createPopulatedContactInfo());
+          })
       }
       .width('100%')
       .height('100%')
@@ -75,6 +91,8 @@ struct Index {
       this.hostPage();
     } else if (name === RouterMap.ADD_VISITOR) {
       AddVisitorPageBuilder();
+    } else if (name === RouterMap.EDIT_VISITOR) {
+      EditVisitorPageBuilder();
     }
   }
 

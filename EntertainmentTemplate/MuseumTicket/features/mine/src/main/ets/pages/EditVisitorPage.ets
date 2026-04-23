@@ -9,7 +9,6 @@ export function EditVisitorPageBuilder() {
   EditVisitorPage();
 }
 
-
 @ComponentV2
 struct EditVisitorPage {
   vm: MinePageVM = MinePageVM.instance;
@@ -87,16 +86,19 @@ struct EditVisitorPage {
         Scroll() {
           Column() {
             Flex({ justifyContent: FlexAlign.SpaceBetween }) {
-              Text('姓名').width(140).labelStyle();
-              TextInput({ placeholder: '请输入', text: this.contactInfo.name }).inputValueStyle().onChange((res) => {
-                this.contactInfo.name = res;
-              });
+              Text('姓名').width(140).labelStyle().id('edit_visitor_name_label');
+              TextInput({ placeholder: '请输入', text: this.contactInfo.name })
+                .inputValueStyle()
+                .id('edit_visitor_name_input')
+                .onChange((res) => {
+                  this.contactInfo.name = res;
+                });
             }.width('100%');
 
             Divider().width('100%').margin({ bottom: 10 }).strokeWidth(1);
             Flex({ justifyContent: FlexAlign.SpaceBetween }) {
-              Text('证件类型').width(140).labelStyle();
-              Text('身份证').labelStyle().textAlign(TextAlign.End);
+              Text('证件类型').width(140).labelStyle().id('edit_visitor_card_type_label');
+              Text('身份证').labelStyle().textAlign(TextAlign.End).id('edit_visitor_card_type_value');
             }.width('100%');
 
             Divider().width('100%').margin({ bottom: 10 }).strokeWidth(1);
@@ -104,6 +106,7 @@ struct EditVisitorPage {
               Text('证件号').width(140).labelStyle();
               TextInput({ placeholder: '请输入证件号', text: this.contactInfo.cardID })
                 .inputValueStyle()
+                .id('edit_visitor_card_id_input')
                 .onChange((res) => {
                   this.contactInfo.cardID = res;
                 });
@@ -112,14 +115,17 @@ struct EditVisitorPage {
             Divider().width('100%').margin({ bottom: 10 }).strokeWidth(1);
             Flex({ justifyContent: FlexAlign.SpaceBetween }) {
               Text('联系电话').width(140).labelStyle();
-              TextInput({ placeholder: '请输入', text: this.contactInfo.phone }).inputValueStyle().onChange((res) => {
-                this.contactInfo.phone = res;
-              });
+              TextInput({ placeholder: '请输入', text: this.contactInfo.phone })
+                .inputValueStyle()
+                .id('edit_visitor_phone_input')
+                .onChange((res) => {
+                  this.contactInfo.phone = res;
+                });
 
             }.width('100%');
 
             Divider().width('100%').strokeWidth(1);
-          }.margin({bottom:20})
+          }.margin({ bottom: 20 })
         }
         .padding({ top: 10, left: 20, right: 20 })
         .height('calc(100% - 75vp)')
@@ -129,6 +135,7 @@ struct EditVisitorPage {
 
         Row({ space: 8 }) {
           Button('保存')
+            .id('edit_visitor_save_button')
             .backgroundColor(CommonConstants.FONT_COLOR_GREEN)
             .type(ButtonType.Normal)
             .borderRadius(20)
@@ -139,6 +146,7 @@ struct EditVisitorPage {
               this.upDateContactInfo();
             });
           Button('取消')
+            .id('edit_visitor_cancel_button')
             .backgroundColor('#0C000000')
             .type(ButtonType.Normal)
             .borderRadius(20)
@@ -156,7 +164,6 @@ struct EditVisitorPage {
       .backgroundColor(CommonConstants.BG_COLOR_GRAY)
       .padding({ top: 10 });
     }.title('编辑常用参观人');
-
   }
 }
 
