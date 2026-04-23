@@ -32,7 +32,7 @@ export struct EventCard {
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Row() {
-          Image($r('app.media.ic_home_Event'))
+          Image($r('app.media.ic_home_event'))
             .width(24)
             .height(24)
             .margin({ right: 4 })

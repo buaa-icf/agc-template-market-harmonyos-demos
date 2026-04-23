@@ -4,5 +4,7 @@
   "dependencies": {
   },
   "devDependencies": {},
-  "dynamicDependencies": {}
+  "dynamicDependencies": {
+    "@ohos/hypium": "1.0.21"
+  }
 }
