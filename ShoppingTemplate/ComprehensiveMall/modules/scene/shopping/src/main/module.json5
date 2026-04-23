@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "shopping",
+    "name": "scene_shopping_v2",
     "type": "har",
     "deviceTypes": [
       "phone"

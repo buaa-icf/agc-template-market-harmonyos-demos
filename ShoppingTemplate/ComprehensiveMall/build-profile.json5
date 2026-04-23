@@ -73,6 +73,28 @@
     {
       "name": "module_login",
       "srcPath": "./components/module_login",
-    }
+    },
+    {
+      "name": "scene_shopping_v2",
+      "srcPath": "./modules/scene/shopping"
+    },
+    { "name": "cache", "srcPath": "./modules/common/cache" },
+    { "name": "const", "srcPath": "./modules/common/const" },
+    { "name": "customtypes", "srcPath": "./modules/common/customtypes" },
+    { "name": "data", "srcPath": "./modules/common/data" },
+    { "name": "network", "srcPath": "./modules/common/network" },
+    { "name": "resource", "srcPath": "./modules/common/resource" },
+    { "name": "router", "srcPath": "./modules/common/router" },
+    { "name": "callbutton", "srcPath": "./modules/components/callbutton" },
+    { "name": "igrid", "srcPath": "./modules/components/igrid" },
+    { "name": "irow", "srcPath": "./modules/components/irow" },
+    { "name": "iwaterflow", "srcPath": "./modules/components/iwaterflow" },
+    { "name": "loginbutton", "srcPath": "./modules/components/loginbutton" },
+    { "name": "tabswiper", "srcPath": "./modules/components/tabswiper" },
+    { "name": "titlebar", "srcPath": "./modules/components/titlebar" },
+    { "name": "browser", "srcPath": "./modules/guis/browser" },
+    { "name": "cards", "srcPath": "./modules/guis/cards" },
+    { "name": "search", "srcPath": "./modules/guis/search" },
+    { "name": "tabs", "srcPath": "./modules/guis/tabs" }
   ]
 }
