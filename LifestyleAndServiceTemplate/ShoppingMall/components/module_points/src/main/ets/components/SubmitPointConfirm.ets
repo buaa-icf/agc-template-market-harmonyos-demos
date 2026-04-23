@@ -1,4 +1,4 @@
-export class PointConfirmParam {
+﻿export class PointConfirmParam {
   type: number = 0;
   content: string = '';
   close: () => void = () => {
@@ -11,11 +11,11 @@ export class PointConfirmParam {
 export function scanPointConfirmBuilder(param: PointConfirmParam) {
   Column() {
     Column() {
-      Text('订单条形码').fontSize(20).fontWeight(FontWeight.Medium).height(56)
-      Text(param.content).fontSize(14)
+      Text('订单条形码').id('scan_point_confirm_title').fontSize(20).fontWeight(FontWeight.Medium).height(56)
+      Text(param.content).id('scan_point_confirm_content').fontSize(14)
 
       Row({ space: 16 }) {
-        Button('取消')
+        Button('鍙栨秷').id('scan_point_confirm_cancel_button')
           .height(40)
           .layoutWeight(1)
           .fontSize($r('sys.float.Body_L'))
@@ -24,7 +24,7 @@ export function scanPointConfirmBuilder(param: PointConfirmParam) {
           .onClick(() => {
             param.close();
           })
-        Button('提交')
+        Button('鎻愪氦').id('scan_point_confirm_submit_button')
           .height(40)
           .layoutWeight(1)
           .fontSize($r('sys.float.Body_L'))
@@ -33,6 +33,7 @@ export function scanPointConfirmBuilder(param: PointConfirmParam) {
             param.confirm();
           })
       }
+      .id('scan_point_confirm_action_row')
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
       .padding({
@@ -56,11 +57,11 @@ export function scanPointConfirmBuilder(param: PointConfirmParam) {
 export function photoPointConfirmBuilder(param: PointConfirmParam) {
   Column() {
     Column({ space: 24 }) {
-      Text('提交审核').fontSize(20).fontWeight(500)
-      Image(param.content).width('100%').constraintSize({ maxHeight: '60%' }).borderRadius(16)
+      Text('提交审核').id('photo_point_confirm_title').fontSize(20).fontWeight(500)
+      Image(param.content).id('photo_point_confirm_image').width('100%').constraintSize({ maxHeight: '60%' }).borderRadius(16)
 
       Row({ space: 16 }) {
-        Button('取消')
+        Button('鍙栨秷').id('photo_point_confirm_cancel_button')
           .height(40)
           .layoutWeight(1)
           .fontSize($r('sys.float.Body_L'))
@@ -69,7 +70,7 @@ export function photoPointConfirmBuilder(param: PointConfirmParam) {
           .onClick(() => {
             param.close();
           })
-        Button('提交')
+        Button('鎻愪氦').id('photo_point_confirm_submit_button')
           .height(40)
           .layoutWeight(1)
           .fontSize($r('sys.float.Body_L'))
@@ -78,6 +79,7 @@ export function photoPointConfirmBuilder(param: PointConfirmParam) {
             param.confirm();
           })
       }
+      .id('photo_point_confirm_action_row')
       .width('100%')
     }
     .padding({
