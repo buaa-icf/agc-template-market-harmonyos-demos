@@ -17,7 +17,6 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { OrderInfo, OrderState, SampleOrderInfo, SampleCollectInfo, TopTabsBuilder } from 'commonlib'
 import { RouterMap, RouterModule } from 'router_module'
 import { MyDataSource, GoodCourse } from '../viewModel/CourseHomeModel'
-import { AggregatedPaymentPicker, ChannelType } from 'aggregated_payment';
 import { UserInfo } from 'login_info';
 
 @ComponentV2
@@ -285,51 +284,45 @@ export struct GoodCourseDetailPage {
 
   @Builder
   paymentChannelSheet() {
-    AggregatedPaymentPicker({
-      price: '288',
-      goodsName: '精华题库中级班',
-      channelInfo: [{
-        channelType: ChannelType.HUAWEI_PAY,
-        name: '华为支付',
-        icon: $r('app.media.hw_pay'),
-        preOrderInfo: '',
-      }, {
-        channelType: ChannelType.WECHAT_PAY,
-        preOrderInfo: '',
-        appId: '',
-        icon: $r('app.media.wechat'),
-        name: '微信支付',
-      }, {
-        channelType: ChannelType.ALI_PAY,
-        name: '支付宝支付',
-        icon: $r('app.media.alipay'),
-        preOrderInfo: '',
-      }],
-      paySuccessEvent: () => {
-        let sampleOrderInfo = AppStorageV2.connect(SampleOrderInfo, () => new SampleOrderInfo())!;
-        let orderNo = '202506' + Date.now()
-        let content = this.courseName
-        let orderInfo =
-          new OrderInfo(this.goodCourse.id, this.goodCourse.isCollect, OrderState.Paid, orderNo, content, false)
-        sampleOrderInfo.orderInfos.unshift(orderInfo)
-        this.showToast('支付成功~');
-        RouterModule.pop();
-        this.isShow = false;
-      },
-      payFailEvent: () => {
-        let sampleOrderInfo = AppStorageV2.connect(SampleOrderInfo, () => new SampleOrderInfo())!;
-        let orderNo = '202506' + Date.now()
-        let content = this.courseName
-        let orderInfo =
-          new OrderInfo(this.goodCourse.id, this.goodCourse.isCollect, OrderState.WaitToPay, orderNo, content, false)
-        orderInfo.startTime = Date.now()
-        sampleOrderInfo.orderInfos.push(orderInfo)
-        AppStorageV2.connect(SampleOrderInfo, () => sampleOrderInfo)!;
-        this.showToast('支付失败~');
-        RouterModule.pop();
-        this.isShow = false;
-      }
-    })
+    Column({ space: $r('app.float.vp_12') }) {
+      Text('Payment Method')
+        .fontColor($r('sys.color.font_primary'))
+        .fontSize($r('sys.float.Subtitle_L'))
+        .fontWeight(FontWeight.Medium)
+
+      Button('Pay Success (Mock)')
+        .width('100%')
+        .onClick(() => {
+          this.onPayResult(true)
+        })
+
+      Button('Pay Fail (Mock)')
+        .width('100%')
+        .onClick(() => {
+          this.onPayResult(false)
+        })
+    }
+    .width('100%')
+    .padding($r('app.float.vp_16'))
+  }
+
+  private onPayResult(success: boolean): void {
+    let sampleOrderInfo = AppStorageV2.connect(SampleOrderInfo, () => new SampleOrderInfo())!;
+    let orderNo = '202506' + Date.now()
+    let content = this.courseName
+    let state: OrderState = success ? OrderState.Paid : OrderState.WaitToPay
+    let orderInfo = new OrderInfo(this.goodCourse.id, this.goodCourse.isCollect, state, orderNo, content, false)
+    if (!success) {
+      orderInfo.startTime = Date.now()
+      sampleOrderInfo.orderInfos.push(orderInfo)
+      AppStorageV2.connect(SampleOrderInfo, () => sampleOrderInfo)!;
+      this.showToast('Payment failed~');
+    } else {
+      sampleOrderInfo.orderInfos.unshift(orderInfo)
+      this.showToast('Payment succeeded~');
+    }
+    RouterModule.pop();
+    this.isShow = false;
   }
 
   showToast(message: string) {
