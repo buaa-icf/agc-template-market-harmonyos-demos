@@ -1,12 +1,11 @@
 {
   "module": {
-    "name": "entry_test",
+    "name": "order_list_test",
     "type": "feature",
     "deviceTypes": [
       "phone"
     ],
     "deliveryWithInstall": true,
-    "installationFree": false,
-    "pages": "$profile:test_pages"
+    "installationFree": false
   }
 }
