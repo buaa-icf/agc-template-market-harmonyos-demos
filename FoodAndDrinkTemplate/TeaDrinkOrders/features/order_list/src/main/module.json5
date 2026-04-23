@@ -7,7 +7,7 @@
       "phone"
     ],
     "deliveryWithInstall": true,
-    "installationFree": true,
+    "installationFree": false,
     "routerMap": "$profile:route_map"
   }
 }

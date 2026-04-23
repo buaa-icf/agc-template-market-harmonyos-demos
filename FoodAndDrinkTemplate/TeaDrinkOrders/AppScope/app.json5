@@ -1,8 +1,8 @@
 {
   "app": {
     // todo 修改元服务包名,
-    "bundleName": "com.atomicservice.xxxxxxxxxxx",
-    "bundleType": "atomicService",
+    "bundleName": "com.example.teadrinkorders",
+    "bundleType": "app",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",
