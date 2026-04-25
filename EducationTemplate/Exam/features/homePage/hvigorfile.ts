@@ -11,7 +11,7 @@ const copyOhosTestIndexPlugin: HvigorPlugin = {
       const sourceIndex: string = path.join(modulePath, 'src', 'ohosTest', 'ets', 'testability', 'pages', 'Index.ets');
       const targetIndex: string = path.join(
         modulePath,
-        '.test',
+        'build',
         'default',
         'intermediates',
         'src',
