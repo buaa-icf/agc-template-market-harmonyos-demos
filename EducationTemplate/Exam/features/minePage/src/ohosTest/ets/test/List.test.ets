@@ -14,11 +14,13 @@
  */
 
 import abilityTest from './Ability.test';
+import authenticationPageInstrumentTest from './AuthenticationPage.test';
 import collectionPageInstrumentTest from './CollectionPage.test';
 import coursePageInstrumentTest from './CoursePage.test';
 
 export default function testsuite() {
   abilityTest();
+  authenticationPageInstrumentTest();
   collectionPageInstrumentTest();
   coursePageInstrumentTest();
 }
