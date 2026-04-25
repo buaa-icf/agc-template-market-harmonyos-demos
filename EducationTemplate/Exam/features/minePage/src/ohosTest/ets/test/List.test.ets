@@ -14,7 +14,11 @@
  */
 
 import abilityTest from './Ability.test';
+import collectionPageInstrumentTest from './CollectionPage.test';
+import coursePageInstrumentTest from './CoursePage.test';
 
 export default function testsuite() {
   abilityTest();
+  collectionPageInstrumentTest();
+  coursePageInstrumentTest();
 }
