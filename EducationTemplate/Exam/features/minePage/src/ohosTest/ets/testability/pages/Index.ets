@@ -1,4 +1,5 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import { AuthenticationPage } from '../../../../main/ets/views/AuthenticationPage';
 import { CollectionPage } from '../../../../main/ets/views/CollectionPage';
 import { CoursePage } from '../../../../main/ets/views/CoursePage';
 import { OrderInfo, OrderState, SampleCollectInfo, SampleOrderInfo } from 'commonlib';
@@ -13,16 +14,19 @@ const RESET_COLLECTION_PAGE_TRIGGER_ID: string = 'collection_reset_to_filled_tri
 const COLLECTION_HOST_READY_FILLED_MARKER_ID: string = 'collection_host_ready_filled_marker';
 const COURSE_HOST_ANCHOR_ID: string = 'mine_page_course_instrument_host_anchor';
 const SHOW_COURSE_PAGE_TRIGGER_ID: string = 'course_show_page_trigger';
+const SHOW_AUTHENTICATION_PAGE_TRIGGER_ID: string = 'authentication_show_page_trigger';
 const SWITCH_COURSE_TO_FILLED_TRIGGER_ID: string = 'course_switch_to_filled_trigger';
 const SWITCH_COURSE_TO_EMPTY_TRIGGER_ID: string = 'course_switch_to_empty_trigger';
 const RESET_COURSE_PAGE_TRIGGER_ID: string = 'course_reset_to_filled_trigger';
 const COURSE_HOST_READY_FILLED_MARKER_ID: string = 'course_host_ready_filled_marker';
+const AUTHENTICATION_HOST_READY_MARKER_ID: string = 'authentication_host_ready_marker';
 
 @Entry
 @ComponentV2
 struct Index {
   @Local private showLifecycleTarget: boolean = true;
   @Local private showCoursePage: boolean = false;
+  @Local private showAuthenticationPage: boolean = false;
   @Local private aboutToDisappearTriggered: boolean = false;
   @Local private collectionData: SampleCollectInfo = AppStorageV2.connect(SampleCollectInfo, () => new SampleCollectInfo())!;
   @Local private courseData: SampleOrderInfo = AppStorageV2.connect(SampleOrderInfo, () => new SampleOrderInfo())!;
@@ -45,37 +49,55 @@ struct Index {
         .fontWeight(FontWeight.Medium)
 
       Column({ space: 8 }) {
-        Button('ShowCollection')
-          .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
-          .onClick(() => {
-            this.showCoursePage = false;
-            this.aboutToDisappearTriggered = false;
-            this.showLifecycleTarget = true;
-          })
-          .width('100%')
-        Button('ShowCourse')
-          .id(SHOW_COURSE_PAGE_TRIGGER_ID)
-          .onClick(() => {
-            this.showCoursePage = true;
-          })
-          .width('100%')
+        Row({ space: 8 }) {
+          Button('ShowCollection')
+            .id(SHOW_COLLECTION_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.showCoursePage = false;
+              this.showAuthenticationPage = false;
+              this.aboutToDisappearTriggered = false;
+              this.showLifecycleTarget = true;
+            })
+            .layoutWeight(1)
+          Button('ShowCourse')
+            .id(SHOW_COURSE_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.showAuthenticationPage = false;
+              this.showCoursePage = true;
+            })
+            .layoutWeight(1)
+          Button('ShowAuthentication')
+            .id(SHOW_AUTHENTICATION_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.showAuthenticationPage = true;
+              this.showCoursePage = false;
+              this.showLifecycleTarget = false;
+            })
+            .layoutWeight(1)
+        }
+        .width('100%')
 
-        Button('Reset')
-          .id(RESET_COLLECTION_PAGE_TRIGGER_ID)
-          .onClick(() => {
-            this.aboutToDisappearTriggered = false;
-            this.showLifecycleTarget = true;
-            this.showCoursePage = false;
-            this.collectionData.orderInfos = [this.createOrderInfo()];
-          })
-          .width('100%')
-        Button('CourseReset')
-          .id(RESET_COURSE_PAGE_TRIGGER_ID)
-          .onClick(() => {
-            this.courseData.orderInfos = [this.createCourseOrderInfo()];
-            this.showCoursePage = true;
-          })
-          .width('100%')
+        Row({ space: 8 }) {
+          Button('Reset')
+            .id(RESET_COLLECTION_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.aboutToDisappearTriggered = false;
+              this.showLifecycleTarget = true;
+              this.showCoursePage = false;
+              this.showAuthenticationPage = false;
+              this.collectionData.orderInfos = [this.createOrderInfo()];
+            })
+            .layoutWeight(1)
+          Button('CourseReset')
+            .id(RESET_COURSE_PAGE_TRIGGER_ID)
+            .onClick(() => {
+              this.courseData.orderInfos = [this.createCourseOrderInfo()];
+              this.showCoursePage = true;
+              this.showAuthenticationPage = false;
+            })
+            .layoutWeight(1)
+        }
+        .width('100%')
 
         Row({ space: 8 }) {
           Button('Filled')
@@ -126,9 +148,15 @@ struct Index {
         Text('course host filled ready')
           .id(COURSE_HOST_READY_FILLED_MARKER_ID)
       }
+      if (this.showAuthenticationPage) {
+        Text('authentication host ready')
+          .id(AUTHENTICATION_HOST_READY_MARKER_ID)
+      }
 
       Column() {
-        if (this.showCoursePage) {
+        if (this.showAuthenticationPage) {
+          AuthenticationPage()
+        } else if (this.showCoursePage) {
           CoursePage()
         } else if (this.showLifecycleTarget) {
           CollectionPage({

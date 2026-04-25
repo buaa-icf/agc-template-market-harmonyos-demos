@@ -3,12 +3,17 @@ export function AuthenticationPageBuilder() {
   AuthenticationPage();
 }
 
+const AUTHENTICATION_PAGE_ROOT_ID: string = 'authentication_page_root';
+const AUTHENTICATION_PAGE_TITLE_ID: string = 'authentication_page_title';
+const AUTHENTICATION_PAGE_CONTENT_ID: string = 'authentication_page_content';
+
 @ComponentV2
 export struct AuthenticationPage {
   build() {
     Column() {
       Row() {
         Text('华为账号用户认证协议')
+          .id(AUTHENTICATION_PAGE_TITLE_ID)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
       }
@@ -65,7 +70,12 @@ export struct AuthenticationPage {
         '\n' +
         '第三方产品或服务由该第三方提供。其产品与服务的合法性、安全性以及真实性，由该产品或服务的经营者负责。华为不为第三方在其产品或服务中提供的任何内容、广告、资源链接或其他信息作出任何形式的承诺、保证或担保。在您使用第三方的产品或服务的过程中，若有需要，包括但不限于该产品或服务使用您的手机号码或其它信息时产生纠纷或者您在使用该产品或服务的过程中遭受权益侵犯等情况，您应自行与该第三方产品或服务的经营者联络解决。\n' +
         '\n')
+        .id(AUTHENTICATION_PAGE_CONTENT_ID)
         .lineHeight(24);
-    }.height('100%').width('100%').padding(16);
+    }
+    .id(AUTHENTICATION_PAGE_ROOT_ID)
+    .height('100%')
+    .width('100%')
+    .padding(16);
   }
 }
