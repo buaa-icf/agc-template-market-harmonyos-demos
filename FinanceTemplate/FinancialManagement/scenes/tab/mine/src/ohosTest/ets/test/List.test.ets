@@ -2,6 +2,7 @@ import EditPhonePageVMTest from './EditPhonePageVM.test'
 import EditNamePageVMTest from './EditNamePageVM.test'
 import EditPhonePageTest from './EditPhonePage.test'
 import EditNamePageTest from './EditNamePage.test'
+import EditPagesRenderTest from './EditPagesRender.test'
 import abilityTest from './Ability.test';
 
 export default function testsuite() {
@@ -10,4 +11,5 @@ export default function testsuite() {
   EditPhonePageTest()
   EditNamePageVMTest()
   EditPhonePageVMTest()
+  EditPagesRenderTest()
 }
