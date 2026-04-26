@@ -45,7 +45,9 @@ export struct SecondListPage {
           // 跳转三级列表页
           let list: string[] = []
           if (this.secondParamObj) {
-            list.push(...this.secondParamObj?.list)
+            this.secondParamObj.list.forEach((item: string) => {
+              list.push(item)
+            })
             list.push(val.title)
             let thirdParamObj: ThirdParam = new ThirdParam(list, val)
             RouterModule.push({ url: 'ThirdListPage', param: thirdParamObj })

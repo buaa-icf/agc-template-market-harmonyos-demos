@@ -3,6 +3,46 @@
     {
       "name": "page_show",
       "value": "page from package"
+    },
+    {
+      "name": "request_failed",
+      "value": "Request failed"
+    },
+    {
+      "name": "cancel_pay",
+      "value": "Payment cancelled"
+    },
+    {
+      "name": "pay_failed",
+      "value": "Payment failed"
+    },
+    {
+      "name": "pay_success",
+      "value": "Payment succeeded"
+    },
+    {
+      "name": "network_error",
+      "value": "Network error"
+    },
+    {
+      "name": "duplicate_request",
+      "value": "Duplicate request"
+    },
+    {
+      "name": "copy_success",
+      "value": "Copied"
+    },
+    {
+      "name": "tab_order",
+      "value": "Order"
+    },
+    {
+      "name": "tab_order_list",
+      "value": "Order List"
+    },
+    {
+      "name": "tab_mine",
+      "value": "Mine"
     }
   ]
 }

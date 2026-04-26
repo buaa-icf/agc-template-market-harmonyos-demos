@@ -3,9 +3,9 @@
     "name": "picture_beautification_test",
     "type": "feature",
     "deviceTypes": [
-      "default",
+      "default"
     ],
     "deliveryWithInstall": true,
-    "installationFree": true
+    "installationFree": false
   }
 }

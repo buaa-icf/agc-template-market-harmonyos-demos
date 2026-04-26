@@ -81,7 +81,9 @@ export struct CarouseCutToolBar {
                   Text(item.text)
                     .fontSize(12)
                     .fontColor(this.cutSelectIndex === index ? '#ED6F21' : Color.Black)
-                }.onClick(() => {
+                }
+                .id('cut_col_' + index)
+                .onClick(() => {
                   this.cutSelectIndex = index
                   this.cropRatio = this.getCropRatio()
                   this.determineCropType()

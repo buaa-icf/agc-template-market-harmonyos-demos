@@ -8,8 +8,9 @@
   "dependencies": {
     "commonlib": "file:../../commons/commonLib",
     "router_module": "file:../../commons/router_module",
-    "aggregated_payment": "file:../../components/aggregated_payment",
     "answer_questions": "file:../../components/answer_questions",
     "login_info": "file:../../components/login_info",
+    "base_select": "file:../../components/base_select",
+    "select_category": "file:../../components/select_category",
   }
 }

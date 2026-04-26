@@ -1,6 +1,6 @@
 import { RouterMap } from 'commonlib'
 import { IProfile } from 'network/src/main/ets/types/responseTypes/GetProductResp'
-import { CommonProductProfile } from '../../../../../../../../src/main/ets/components/CommonProductProfile'
+import { CommonProductProfile } from '../main/ets/components/CommonProductProfile'
 
 const HOST_PAGE_ID: string = 'common_product_profile_host_page'
 const WITH_CONTRACT_BUTTON_ID: string = 'common_product_profile_with_contract_button'

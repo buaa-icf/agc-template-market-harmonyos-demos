@@ -6,6 +6,7 @@
       "phone"
     ],
     "deliveryWithInstall": true,
-    "installationFree": true
+    "installationFree": false,
+    "pages": "$profile:test_pages"
   }
 }
