@@ -7,3 +7,4 @@ build/
 .idea/
 .hvigor/
 .DS_Store
+coverage_exports/

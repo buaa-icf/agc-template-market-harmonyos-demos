@@ -1,7 +1,7 @@
 import { RouterMap, RouterModule } from 'commonlib'
 import { ITransactionItem } from 'network/src/main/ets/types/responseTypes/GetTransactionRecordListResp'
-import { TransactionSearchVM } from '../main/ets/viewModels/TransactionSearchVM'
-import { TransactionSearchBuilder } from '../main/ets/pages/TransactionSearch'
+import { TransactionSearchVM } from '../../../../../../../../src/main/ets/viewModels/TransactionSearchVM'
+import { TransactionSearchBuilder } from '../../../../../../../../src/main/ets/pages/TransactionSearch'
 
 const HOST_ROUTE: string = 'transaction_search_test_host'
 const HOST_PAGE_ID: string = 'transaction_search_host_page'
