@@ -24,6 +24,7 @@ export struct CommonProductProfile {
     Column() {
       Flex({ justifyContent: FlexAlign.Start }) {
         Text('产品档案')
+          .id('common_product_profile_title')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('sys.color.font_primary'))
@@ -44,6 +45,7 @@ export struct CommonProductProfile {
             .width(12)
             .height(12)
         }
+        .id('common_product_profile_contract_action')
         .justifyContent(FlexAlign.End)
         .width('75%')
         .onClick(() => {
@@ -72,6 +74,7 @@ export struct CommonProductProfile {
             .width(12)
             .height(12)
         }
+        .id('common_product_profile_information_action')
         .justifyContent(FlexAlign.End)
         .width('75%')
         .onClick(() => {

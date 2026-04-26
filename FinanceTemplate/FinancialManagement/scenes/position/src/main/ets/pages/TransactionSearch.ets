@@ -31,6 +31,7 @@ struct TransactionSearch {
 
         Row() {
           Text(`共款${this.vm.transactionList.length}产品`)
+            .id('transaction_search_total')
             .fontSize(14)
             .fontWeight(FontWeight.Regular)
             .fontColor($r('sys.color.font_secondary'))
@@ -38,70 +39,86 @@ struct TransactionSearch {
         .padding({ left: 16, right: 16 })
         .margin({ top: 16, bottom: 8 })
 
-        List() {
-          ForEach(this.vm.transactionList, (transaction: ITransactionItem) => {
-            ListItem() {
-              Flex() {
-                Row() {
-                  Text() {
-                    if (transaction.type === 2) {
-                      Span('购买')
-                        .fontColor('#E4480C')
-                    } else if (transaction.type === 3) {
-                      Span('赎回')
-                    } else {
-                      Span('到期')
+        if (this.vm.transactionList.length === 0) {
+          Column() {
+            Text('暂无交易记录')
+              .id('transaction_search_empty')
+              .fontSize(14)
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('sys.color.font_secondary'))
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+        } else {
+          List() {
+            ForEach(this.vm.transactionList, (transaction: ITransactionItem) => {
+              ListItem() {
+                Flex() {
+                  Row() {
+                    Text() {
+                      if (transaction.type === 2) {
+                        Span('购买')
+                          .fontColor('#E4480C')
+                      } else if (transaction.type === 3) {
+                        Span('赎回')
+                      } else {
+                        Span('到期')
+                      }
+                    }
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Medium)
+                    .fontColor($r('sys.color.font_primary'))
+                  }
+                  .margin({ right: 8 })
+                  .flexShrink(0)
+
+                  Column() {
+                    Flex({ justifyContent: FlexAlign.SpaceBetween }) {
+                      Text(transaction.productName)
+                        .id(`transaction_search_name_${transaction.id}`)
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Medium)
+                        .fontColor($r('sys.color.font_primary'))
+                        .margin({ right: 20 })
+                      Text(transaction.amount + '元')
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Medium)
+                        .fontColor($r('sys.color.font_primary'))
+                    }
+                    .margin({ bottom: 20 })
+
+                    Flex({ justifyContent: FlexAlign.SpaceBetween }) {
+                      Text(transaction.date)
+                        .fontSize(12)
+                        .fontWeight(FontWeight.Regular)
+                        .fontColor($r('sys.color.font_secondary'))
+                      Text('份额为' + transaction.share + '份')
+                        .fontSize(12)
+                        .fontWeight(FontWeight.Regular)
+                        .fontColor($r('sys.color.font_secondary'))
                     }
                   }
-                  .fontSize(14)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor($r('sys.color.font_primary'))
+                  .flexGrow(1)
                 }
-                .margin({ right: 8 })
-                .flexShrink(0)
-
-                Column() {
-                  Flex({ justifyContent: FlexAlign.SpaceBetween }) {
-                    Text(transaction.productName)
-                      .fontSize(14)
-                      .fontWeight(FontWeight.Medium)
-                      .fontColor($r('sys.color.font_primary'))
-                      .margin({ right: 20 })
-                    Text(transaction.amount + '元')
-                      .fontSize(14)
-                      .fontWeight(FontWeight.Medium)
-                      .fontColor($r('sys.color.font_primary'))
-                  }
-                  .margin({ bottom: 20 })
-
-                  Flex({ justifyContent: FlexAlign.SpaceBetween }) {
-                    Text(transaction.date)
-                      .fontSize(12)
-                      .fontWeight(FontWeight.Regular)
-                      .fontColor($r('sys.color.font_secondary'))
-                    Text('份额为' + transaction.share + '份')
-                      .fontSize(12)
-                      .fontWeight(FontWeight.Regular)
-                      .fontColor($r('sys.color.font_secondary'))
-                  }
-                }
-                .flexGrow(1)
+                .id(`transaction_search_item_${transaction.id}`)
+                .backgroundColor(Color.White)
+                .padding({
+                  top: 12,
+                  bottom: 12,
+                  left: 16,
+                  right: 16
+                })
+                .onClick(() => {
+                  FormatUtil.jumpToNext(RouterMap.TRANSACTION_RECORD_INFO, transaction.id)
+                })
               }
-              .backgroundColor(Color.White)
-              .padding({
-                top: 12,
-                bottom: 12,
-                left: 16,
-                right: 16
-              })
-              .onClick(() => {
-                FormatUtil.jumpToNext(RouterMap.TRANSACTION_RECORD_INFO, transaction.id)
-              })
-            }
-            .margin({ top: 10 })
-          }, (item: ITransactionItem[]) => JSON.stringify(item))
+              .margin({ top: 10 })
+            }, (item: ITransactionItem[]) => JSON.stringify(item))
+          }
+          .layoutWeight(1)
         }
-        .layoutWeight(1)
       }
       .alignItems(HorizontalAlign.Start)
     }
