@@ -9,6 +9,8 @@
     "@ohos/axios": "^2.2.4",
     "@hw-agconnect/ui-skeleton": "^1.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@ohos/hamock": "1.0.0"
+  },
   "dynamicDependencies": {}
 }

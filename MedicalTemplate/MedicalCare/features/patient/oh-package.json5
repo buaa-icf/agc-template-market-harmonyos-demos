@@ -8,6 +8,8 @@
   "dependencies": {
     "common": "file:../../common/common"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@ohos/hamock": "1.0.0"
+  },
   "dynamicDependencies": {}
 }

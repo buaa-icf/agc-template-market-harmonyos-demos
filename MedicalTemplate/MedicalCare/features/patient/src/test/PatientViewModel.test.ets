@@ -1,4 +1,6 @@
-import { describe, expect, it } from '@ohos/hypium'
+import { afterEach, beforeEach, describe, expect, it } from '@ohos/hypium'
+import { ArgumentMatchers, MockKit, when } from '@ohos/hamock'
+import { ToastUtil } from 'common'
 
 import { PatientModel } from '../main/ets/model/PatientModel'
 import { PatientViewModel } from '../main/ets/viewmodel/PatientViewModel'
@@ -28,6 +30,18 @@ function createViewModel(): PatientViewModel {
 
 export default function PatientViewModelTest() {
   describe('PatientViewModelTest', () => {
+    let mockKit: MockKit = new MockKit();
+
+    beforeEach(() => {
+      mockKit = new MockKit();
+      const mockToast = mockKit.mockFunc(ToastUtil, ToastUtil.showToast);
+      when(mockToast)(ArgumentMatchers.any).afterReturn(undefined);
+    });
+
+    afterEach(() => {
+      mockKit.clearAll();
+    });
+
     it('stops bindPatient when the patient name is blank', 0, () => {
       const viewModel = createViewModel()
       viewModel.patientDetailInfo.patientName = ' '

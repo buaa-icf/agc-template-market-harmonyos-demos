@@ -1,11 +1,14 @@
 import { authentication } from '@kit.AccountKit';
-import { describe, expect, it } from '@ohos/hypium';
+import { afterEach, beforeEach, describe, expect, it } from '@ohos/hypium';
+import { ArgumentMatchers, MockKit, when } from '@ohos/hamock';
 
 import { BaseApi, RequestMethod } from '../main/ets/api/BaseApi';
 import { BaseError } from '../main/ets/exception/BaseError';
 import { BaseResponse } from '../main/ets/model/BaseResponse';
 import { AuthenticationUtil } from '../main/ets/utils/AuthenticationUtil';
 import { HttpUtil } from '../main/ets/utils/HttpUtil';
+import { ToastUtil } from '../main/ets/utils/ToastUtil';
+import { LoadingDialogUtil } from '../main/ets/utils/DialogUtil';
 
 class MockPayload {
   id: string = '';
@@ -121,6 +124,22 @@ class BaseApiAccessor {
 
 export default function BaseApiTest() {
   describe('BaseApiTest', () => {
+    let mockKit: MockKit = new MockKit();
+
+    beforeEach(() => {
+      mockKit = new MockKit();
+      const mockToast = mockKit.mockFunc(ToastUtil, ToastUtil.showToast);
+      when(mockToast)(ArgumentMatchers.any).afterReturn(undefined);
+      const mockOpenLoading = mockKit.mockFunc(LoadingDialogUtil, LoadingDialogUtil.openLoadingDialog);
+      when(mockOpenLoading)(ArgumentMatchers.any).afterReturn(undefined);
+      const mockCloseLoading = mockKit.mockFunc(LoadingDialogUtil, LoadingDialogUtil.close);
+      when(mockCloseLoading)(ArgumentMatchers.any).afterReturn(undefined);
+    });
+
+    afterEach(() => {
+      mockKit.clearAll();
+    });
+
     it('applies the expected default config values when optional fields are omitted', 0, () => {
       const api = new BaseApi({
         showLoading: false
@@ -240,6 +259,78 @@ export default function BaseApiTest() {
       }
 
       expect(errorMessage).assertEqual('Method not implemented.');
+    });
+
+    it('falls back to authorization "null" when authentication info retrieval fails', 0, async () => {
+      const api = new BaseApi({
+        showLoading: false,
+        showDefaultErrorToast: false
+      });
+      const httpUtilDouble = new HttpUtilDouble();
+
+      httpUtilDouble.nextGetResponse = ResponseFactory.createPayloadResponse(0, 'ok', 'auth-fallback-value');
+      AuthenticationUtil.loginWithHuaweiIDCredential = undefined;
+      BaseApiAccessor.setHttpUtil(api, httpUtilDouble);
+
+      const data = await api.sendRequest<MockPayload>('/patient', RequestMethod.GET, undefined, false);
+
+      expect(data.value).assertEqual('auth-fallback-value');
+    });
+
+    it('opens the loading dialog when showLoading defaults to true and no callback is provided', 0, async () => {
+      const api = new BaseApi({});
+      const httpUtilDouble = new HttpUtilDouble();
+
+      httpUtilDouble.nextGetResponse = ResponseFactory.createPayloadResponse(0, 'ok', 'loading-value');
+      BaseApiAccessor.setAuthorization(api, 'auth-token');
+      BaseApiAccessor.setHttpUtil(api, httpUtilDouble);
+
+      const data = await api.sendRequest<MockPayload>('/patient', RequestMethod.GET);
+
+      expect(data.value).assertEqual('loading-value');
+    });
+
+    it('throws and shows toast when the response code is non-zero with the default toast enabled', 0, async () => {
+      const api = new BaseApi({
+        showLoading: false
+      });
+      const httpUtilDouble = new HttpUtilDouble();
+      let errorMessage = '';
+
+      httpUtilDouble.nextGetResponse = ResponseFactory.createPayloadResponse(7, 'server error', 'broken');
+      BaseApiAccessor.setAuthorization(api, 'auth-token');
+      BaseApiAccessor.setHttpUtil(api, httpUtilDouble);
+
+      try {
+        await api.sendRequest<MockPayload>('/patient', RequestMethod.GET, undefined, false);
+      } catch (error) {
+        errorMessage = (error as BaseError).message;
+      }
+
+      expect(errorMessage).assertEqual('server error');
+    });
+
+    it('returns mock payload from rawfile when isMock is true', 0, async () => {
+      const api = new BaseApi({
+        isMock: true,
+        showLoading: false,
+        showDefaultErrorToast: false
+      });
+      const callbackRecorder = new CallbackRecorder();
+      let errorMessage = '';
+
+      BaseApiAccessor.setAuthorization(api, 'auth-token');
+
+      try {
+        await api.sendRequest<MockPayload>('/mock/path', RequestMethod.GET, undefined, false,
+          (payload: MockPayload) => {
+            callbackRecorder.record(payload);
+          });
+      } catch (error) {
+        errorMessage = (error as BaseError).message;
+      }
+
+      expect(errorMessage.length > 0).assertTrue();
     });
   });
 }

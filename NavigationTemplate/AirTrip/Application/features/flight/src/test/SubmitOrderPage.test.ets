@@ -1,8 +1,8 @@
-import { describe, expect, it } from '@ohos/hypium'
+import { afterEach, beforeEach, describe, expect, it } from '@ohos/hypium'
 import { ArgumentMatchers, MockKit, when } from '@ohos/hamock'
 
-import { DataStorage, PassengerInfo } from 'common'
-import { GlobalDialog } from 'components'
+import { AppRouter, DataStorage, PassengerInfo } from 'common'
+import { CreateOrderDialogParam, GlobalDialog } from 'components'
 import { FlightInfo, FlightSpaceInfo } from '../main/ets/model/FlightPageModel'
 import { SubmitOrderPage } from '../main/ets/pages/SubmitOrderPage'
 import { OrderApi } from 'common'
@@ -52,6 +52,18 @@ class MockOrderResult {
 
 export default function SubmitOrderPageTest() {
   describe('SubmitOrderPageTest', () => {
+    let suiteMockKit: MockKit = new MockKit();
+
+    beforeEach(() => {
+      suiteMockKit = new MockKit();
+      const mockToast = suiteMockKit.mockFunc(GlobalDialog, GlobalDialog.showToast);
+      when(mockToast)(ArgumentMatchers.any).afterReturn(undefined);
+    });
+
+    afterEach(() => {
+      suiteMockKit.clearAll();
+    });
+
     it('returns derived flight information labels', 0, () => {
       const page = createPage()
 
@@ -166,6 +178,40 @@ export default function SubmitOrderPageTest() {
 
       expect(page.passengerList.length).assertEqual(1)
       expect(page.selectedCount).assertEqual(1)
+    })
+
+    it('invokes the dialog view and pay callbacks after submitOrder', 0, async () => {
+      const page = createPage()
+      const localMock = new MockKit()
+      const passenger = buildPassenger('张三', '13800138000')
+      passenger.isChecked = true
+      page.passengerList = [passenger]
+      page.selectedCount = 1
+      page.contactName = '联系人'
+      page.contactPhone = '13800138000'
+
+      const captured: CreateOrderDialogParam[] = []
+      const captureDialog = (param: CreateOrderDialogParam) => {
+        captured.push(param)
+      }
+      const mockShow = localMock.mockFunc(GlobalDialog, GlobalDialog.showDialogForCreateOrder)
+      when(mockShow)(ArgumentMatchers.anyObj).afterAction(captureDialog)
+
+      const mockClose = localMock.mockFunc(GlobalDialog, GlobalDialog.close)
+      when(mockClose)(ArgumentMatchers.any).afterReturn(undefined)
+      const mockPush = localMock.mockFunc(AppRouter, AppRouter.push)
+      when(mockPush)(ArgumentMatchers.anyObj).afterReturn(undefined)
+      const mockOrderApi = localMock.mockFunc(OrderApi, OrderApi.addOrUpdateOrder)
+      when(mockOrderApi)(ArgumentMatchers.anyObj).afterReturn(Promise.resolve(new MockOrderResult()))
+
+      page.submitOrder()
+      await Promise.resolve()
+
+      expect(captured.length > 0).assertTrue()
+      captured[0].view!()
+      captured[0].pay!()
+
+      localMock.clearAll()
     })
 
     it('updates payOrderTime when submitOrder receives valid data', 0, async () => {
