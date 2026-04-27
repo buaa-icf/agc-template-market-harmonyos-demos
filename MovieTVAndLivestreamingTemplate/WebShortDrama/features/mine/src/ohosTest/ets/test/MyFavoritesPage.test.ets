@@ -1,5 +1,5 @@
 import { describe, beforeAll, it } from '@ohos/hypium';
-import { Driver, ON, type Component } from '@ohos.UiTest';
+import { Driver, ON, Component } from '@kit.TestKit';
 
 const TITLE_ID = 'my_favorites_title_text';
 const NAV_ID = 'my_favorites_nav_destination';

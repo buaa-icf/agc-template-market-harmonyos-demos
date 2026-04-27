@@ -21,6 +21,7 @@ export struct StickerToolBar {
     Column() {
       Row() {
         Image($r('app.media.xmark'))
+          .id('sticker_toolbar_close_btn')
           .width(24)
           .height(24)
           .margin({ left: 16 })
@@ -31,6 +32,7 @@ export struct StickerToolBar {
         Text('2.5D贴纸')
           .fontSize(16)
         Image($r('app.media.checkMark'))
+          .id('sticker_toolbar_save_btn')
           .width(24)
           .height(24)
           .margin({ right: 16 })
@@ -75,7 +77,7 @@ export struct StickerToolBar {
 
       Row() {
         Grid() {
-          ForEach(this.searchList, (item: StickerShowModel) => {
+          ForEach(this.searchList, (item: StickerShowModel, index: number) => {
             GridItem() {
               Stack() {
                 Image(item.imageSource)
@@ -85,6 +87,7 @@ export struct StickerToolBar {
                   .height(16)
                   .visibility(item.isVip ? Visibility.Visible : Visibility.None)
               }
+              .id(`sticker_search_item_${index}`)
               .height(68)
               .backgroundColor($r('app.color.main_background_color'))
               .borderRadius(8)
@@ -123,6 +126,7 @@ export struct StickerToolBar {
             }
           }, (item: StickerShowModel) => JSON.stringify(item))
         }
+        .id('sticker_search_grid')
         .height(152)
         .columnsTemplate('1fr 1fr 1fr 1fr')
         .rowsGap(16)
@@ -138,7 +142,7 @@ export struct StickerToolBar {
   @Builder
   stickerContentBuilder(list: StickerShowModel[]) {
     Grid() {
-      ForEach(list, (item: StickerShowModel) => {
+      ForEach(list, (item: StickerShowModel, index: number) => {
         GridItem() {
           Stack() {
             Image(item.imageSource)
@@ -148,6 +152,7 @@ export struct StickerToolBar {
               .height(16)
               .visibility(item.isVip ? Visibility.Visible : Visibility.None)
           }
+          .id(`sticker_tab_item_${this.stickerTabIndex}_${index}`)
           .height(68)
           .backgroundColor($r('app.color.main_background_color'))
           .borderRadius(8)
@@ -186,6 +191,7 @@ export struct StickerToolBar {
         }
       }, (item: StickerShowModel) => JSON.stringify(item))
     }
+    .id(`sticker_tab_grid_${this.stickerTabIndex}`)
     .height(152)
     .columnsTemplate('1fr 1fr 1fr 1fr')
     .rowsGap(16)

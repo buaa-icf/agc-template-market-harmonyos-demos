@@ -32,7 +32,7 @@ struct Index {
 
   @State stickerBarIndex: number = 4;
   @State stickerList: StickerModel[] = [];
-  private testSearchList: StickerShowModel[] = Constants.stickerList.slice(0, 2);
+  private testSearchList: StickerShowModel[] = Constants.stickerList.slice(0, 3);
 
   pathStack: NavPathStack = new NavPathStack();
   @State ready: boolean = false;
@@ -109,7 +109,7 @@ struct Index {
         StickerToolBar({
           barIndex: this.stickerBarIndex,
           stickerList: this.stickerList,
-          testSearchList: this.testSearchList
+          searchList: this.testSearchList
         })
       }
       .width('100%')

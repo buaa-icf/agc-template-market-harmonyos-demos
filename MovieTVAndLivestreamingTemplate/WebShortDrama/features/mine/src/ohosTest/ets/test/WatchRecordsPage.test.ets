@@ -1,5 +1,5 @@
 ﻿import { describe, beforeAll, it } from '@ohos/hypium';
-import { Driver, ON, type Component } from '@ohos.UiTest';
+import { Driver, ON, Component } from '@kit.TestKit';
 
 const SWITCH_WATCH_RECORDS_ID = 'mine_test_switch_watch_records';
 const TITLE_ID = 'watch_records_title_text';

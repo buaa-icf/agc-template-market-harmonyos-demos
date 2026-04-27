@@ -1,94 +1,44 @@
+import fs from 'fs';
+import path from 'path';
+import { hvigor } from '@ohos/hvigor';
 import { harTasks } from '@ohos/hvigor-ohos-plugin';
 import type { HvigorPlugin } from '@ohos/hvigor';
-import { hvigor } from '@ohos/hvigor';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname, join } from 'path';
 
-const copyOhosTestHostPagePlugin: HvigorPlugin = {
-  pluginId: 'activities-copy-ohos-test-host-page',
+const ON_DEVICE_TEST_TASK = 'onDeviceTest';
+const GENERATE_OHOS_TEST_TEMPLATE_TASK = 'ohosTest@GenerateOhosTestTemplate';
+const OHOS_TEST_COMPILE_ARK_TS_TASK = 'ohosTest@OhosTestCompileArkTS';
+
+const replaceOhosTestIndexPlugin: HvigorPlugin = {
+  pluginId: 'activities_replace_ohos_test_index',
   apply(node) {
-    const moduleArg = hvigor.getParameter().getExtParam('module') || '';
-    if (!moduleArg.includes('@ohosTest')) {
-      return;
-    }
-
-    const hostSourcePath = join(
-      node.getNodeDir().getPath(),
-      'src',
-      'ohosTest',
-      'ets',
-      'testability',
-      'pages',
-      'Index.ets'
-    );
-
-    const intermediatesHostPath = join(
-      node.getNodeDir().getPath(),
-      '.test',
-      'default',
-      'intermediates',
-      'src',
-      'ohosTest',
-      'ets',
-      'testability',
-      'pages',
-      'Index.ets'
-    );
-    const generatedTestabilityHostPath = join(
-      node.getNodeDir().getPath(),
-      '.test',
-      'default',
-      'intermediates',
-      '.test',
-      'testability',
-      'pages',
-      'Index.ets'
-    );
-
-    const copyHostPages = () => {
-      if (!existsSync(hostSourcePath)) {
+    hvigor.nodesEvaluated(() => {
+      const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
+      if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
         return;
       }
-      mkdirSync(dirname(intermediatesHostPath), { recursive: true });
-      const sourceContent = readFileSync(hostSourcePath, 'utf-8');
-      const contentForSrcIntermediates = sourceContent
-        // Import path must be valid from generated intermediates testability page.
-        .replace(
-          "../../../../main/ets/view/ActivityBooking",
-          "../../../../../../../../src/main/ets/view/ActivityBooking"
-        );
-      writeFileSync(intermediatesHostPath, contentForSrcIntermediates, 'utf-8');
 
-      mkdirSync(dirname(generatedTestabilityHostPath), { recursive: true });
-      const contentForGeneratedTestability = sourceContent
-        .replace(
-          "../../../../main/ets/view/ActivityBooking",
-          "../../../../../../src/main/ets/view/ActivityBooking"
-        )
-        .replace('@ComponentV2', '@Component');
-      writeFileSync(generatedTestabilityHostPath, contentForGeneratedTestability, 'utf-8');
-    };
+      node.registerTask({
+        name: 'ReplaceOhosTestIndex',
+        dependencies: [GENERATE_OHOS_TEST_TEMPLATE_TASK],
+        postDependencies: [OHOS_TEST_COMPILE_ARK_TS_TASK],
+        run(taskContext) {
+          const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
+          const targetPath = path.resolve(taskContext.modulePath,
+            'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
 
-    const generateTemplateTask = node.getTaskByName('ohosTest@GenerateOhosTestTemplate');
-    if (generateTemplateTask) {
-      generateTemplateTask.afterRun(copyHostPages);
-    }
-    const compileResourceTask = node.getTaskByName('ohosTest@CompileResource');
-    if (compileResourceTask) {
-      compileResourceTask.beforeRun(copyHostPages);
-    }
-    const compileArkTsTask = node.getTaskByName('ohosTest@OhosTestCompileArkTS');
-    if (compileArkTsTask) {
-      compileArkTsTask.beforeRun(copyHostPages);
-    }
-    const compileJsTask = node.getTaskByName('ohosTest@OhosTestCompileJS');
-    if (compileJsTask) {
-      compileJsTask.beforeRun(copyHostPages);
-    }
+          if (!fs.existsSync(sourcePath)) {
+            return;
+          }
+
+          fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+          fs.copyFileSync(sourcePath, targetPath);
+        }
+      });
+    });
   }
 };
 
 export default {
-  system: harTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
-  plugins: [copyOhosTestHostPagePlugin] /* Custom plugin to extend the functionality of Hvigor. */
+  system: harTasks,
+  plugins: [replaceOhosTestIndexPlugin]
 }
