@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const SOURCE_RELATIVE: string = 'src/ohosTest/ets/testability/pages/Index.ets';
-const DEST_RELATIVE: string = '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets';
+const DEST_RELATIVE: string = 'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets';
 
 function copyTestabilityIndex(moduleDir: string): void {
   const src: string = path.join(moduleDir, SOURCE_RELATIVE);
