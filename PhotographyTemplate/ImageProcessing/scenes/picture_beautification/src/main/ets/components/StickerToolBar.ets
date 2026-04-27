@@ -9,6 +9,7 @@ export struct StickerToolBar {
   @State stickerTabIndex: number = 0;
   private stickerController: TabsController = new TabsController();
   @State searchList: StickerShowModel[] = []
+  @Prop testSearchList: StickerShowModel[] = []
   @Link stickerList: StickerModel[]
   saveImage?: () => void
   @StorageProp('isVip') @Watch('vipChange') isVip: boolean = false
@@ -23,6 +24,7 @@ export struct StickerToolBar {
         Image($r('app.media.xmark'))
           .width(24)
           .height(24)
+          .id('sticker_toolbar_close_btn')
           .margin({ left: 16 })
           .onClick(() => {
             this.barIndex = -1
@@ -30,9 +32,11 @@ export struct StickerToolBar {
           })
         Text('2.5D贴纸')
           .fontSize(16)
+          .id('sticker_toolbar_title')
         Image($r('app.media.checkMark'))
           .width(24)
           .height(24)
+          .id('sticker_toolbar_save_btn')
           .margin({ right: 16 })
           .onClick(() => {
             if (this.saveImage) {
@@ -50,6 +54,7 @@ export struct StickerToolBar {
           ForEach(Constants.stickerTagList, (item: string, index: number) => {
             Text(item)
               .fontSize(16)
+              .id(`sticker_tab_title_${index}`)
               .fontColor(this.stickerTabIndex === index ? '#ED6F21' : Color.Black)
               .onClick(() => {
                 this.stickerTabIndex = index
@@ -64,9 +69,9 @@ export struct StickerToolBar {
       .margin({ left: 16, right: 16 })
 
       Tabs({ barPosition: BarPosition.Start, controller: this.stickerController }) {
-        ForEach(Constants.stickerTagList, (item: string) => {
+        ForEach(Constants.stickerTagList, (item: string, index: number) => {
           TabContent() {
-            this.stickerContentBuilder(this.getList(item))
+            this.stickerContentBuilder(this.getList(item), index)
           }
         }, (item: string) => item)
       }
@@ -75,7 +80,7 @@ export struct StickerToolBar {
 
       Row() {
         Grid() {
-          ForEach(this.searchList, (item: StickerShowModel) => {
+          ForEach(this.searchList, (item: StickerShowModel, index: number) => {
             GridItem() {
               Stack() {
                 Image(item.imageSource)
@@ -86,6 +91,7 @@ export struct StickerToolBar {
                   .visibility(item.isVip ? Visibility.Visible : Visibility.None)
               }
               .height(68)
+              .id(`sticker_search_item_${index}`)
               .backgroundColor($r('app.color.main_background_color'))
               .borderRadius(8)
               .alignContent(Alignment.BottomStart)
@@ -123,6 +129,7 @@ export struct StickerToolBar {
             }
           }, (item: StickerShowModel) => JSON.stringify(item))
         }
+        .id('sticker_search_grid')
         .height(152)
         .columnsTemplate('1fr 1fr 1fr 1fr')
         .rowsGap(16)
@@ -136,9 +143,9 @@ export struct StickerToolBar {
   }
 
   @Builder
-  stickerContentBuilder(list: StickerShowModel[]) {
+  stickerContentBuilder(list: StickerShowModel[], tabIndex: number) {
     Grid() {
-      ForEach(list, (item: StickerShowModel) => {
+      ForEach(list, (item: StickerShowModel, index: number) => {
         GridItem() {
           Stack() {
             Image(item.imageSource)
@@ -149,11 +156,12 @@ export struct StickerToolBar {
               .visibility(item.isVip ? Visibility.Visible : Visibility.None)
           }
           .height(68)
+          .id(`sticker_tab_item_${tabIndex}_${index}`)
           .backgroundColor($r('app.color.main_background_color'))
           .borderRadius(8)
           .alignContent(Alignment.BottomStart)
           .onClick(() => {
-            if(item.isVip) {
+            if (item.isVip) {
               if (!this.loginState) {
                 this.pathStack.pushPath({ name: 'quickLoginPage' })
               } else {
@@ -186,11 +194,18 @@ export struct StickerToolBar {
         }
       }, (item: StickerShowModel) => JSON.stringify(item))
     }
+    .id(`sticker_tab_grid_${tabIndex}`)
     .height(152)
     .columnsTemplate('1fr 1fr 1fr 1fr')
     .rowsGap(16)
     .columnsGap(19)
     .margin({ left: 16, right: 16 })
+  }
+
+  aboutToAppear() {
+    if (this.testSearchList.length > 0) {
+      this.searchList = this.testSearchList
+    }
   }
 
   getList(tag?: string): StickerShowModel[] {
