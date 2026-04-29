@@ -42,8 +42,18 @@ async function assertIdMissing(id: string, timeout: number = 1500): Promise<void
 }
 
 async function waitForHostPageLoaded(): Promise<void> {
-  await DRIVER.waitForIdle(1000, 10000);
-  await findById(HOST_ABOUT_PAGE_BUTTON_ID, 10000);
+  // Compact recovery loop. Total worst case ~6s, well under hypium's 15s
+  // beforeAll timeout. The first iteration usually wins because the previous
+  // class's afterAll has already settled the screen.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    await DRIVER.waitForIdle(300, 1500);
+    const hostBtn = await DRIVER.waitForComponent(ON.id('about_page_test_open'), 1200);
+    if (hostBtn !== null) {
+      return;
+    }
+    await DRIVER.pressBack();
+  }
+  await findById('about_page_test_open', 3000);
 }
 
 async function waitForAboutPageLoaded(): Promise<void> {
@@ -63,7 +73,8 @@ export default function AboutPageTest() {
     });
 
     afterAll(async () => {
-      await DRIVER.waitForIdle(500, 5000);
+      // Keep afterAll short. Next class.s beforeAll has its own host-page recovery.
+      await DRIVER.waitForIdle(500, 3000);
     });
 
     it('build_renders_about_content_and_contact_sheet', 0, async () => {

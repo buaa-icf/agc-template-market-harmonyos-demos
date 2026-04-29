@@ -2,6 +2,8 @@ import { describe, beforeAll, afterAll, it } from '@ohos/hypium';
 import { Driver, ON, Component } from '@kit.TestKit';
 
 const BACK_BUTTON_ID = 'search_page_back';
+const HISTORY_LABEL_ID = 'search_page_history_label';
+const HOT_LABEL_ID = 'search_page_hot_label';
 const HISTORY_ITEM_ID = 'search_page_history_0';
 const RESULT_SUGGESTION_ID = 'search_page_suggestion_11';
 const RESULT_HOST_BUTTON_ID = 'search_test_host_open_result';
@@ -9,8 +11,14 @@ const EMPTY_HOST_BUTTON_ID = 'search_test_host_open_empty';
 const DRIVER = Driver.create();
 
 async function waitForSearchPageLoaded(): Promise<void> {
-  await DRIVER.waitForIdle(1000, 10000);
-  await DRIVER.waitForComponent(ON.text('历史搜索'), 10000);
+  await DRIVER.waitForIdle(1500, 12000);
+  // History label and hot label must both render before the test queries them.
+  // waitForComponent returns null silently on miss, so use the throwing helper.
+  const historyLabel = await DRIVER.waitForComponent(ON.id(HISTORY_LABEL_ID), 15000);
+  if (historyLabel === null) {
+    throw new Error('SearchPage history label not rendered after 15s wait');
+  }
+  await DRIVER.waitForComponent(ON.id(HOT_LABEL_ID), 5000);
 }
 
 async function waitForHostPageLoaded(): Promise<void> {
@@ -50,9 +58,11 @@ export default function SearchPageTest() {
     });
 
     it('build_switches_between_initial_result_and_empty_states', 0, async () => {
-      await findByText('历史搜索');
-      await findByText('热门搜索');
-      await findByText('热搜榜');
+      // Use ID lookups (rendered into accessibility tree even if Search input
+      // takes focus and shows the soft keyboard, which can hide raw text).
+      await findById(HISTORY_LABEL_ID);
+      await findById(HOT_LABEL_ID);
+      await findByText('热搜榜', 10000);
 
       await clickById(BACK_BUTTON_ID);
       await waitForHostPageLoaded();

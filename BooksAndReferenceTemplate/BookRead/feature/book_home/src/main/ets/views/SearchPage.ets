@@ -244,6 +244,7 @@ export struct SearchPage {
     if (this.searchVM.historyInfo.length) {
       Row() {
         Text($r('app.string.searchHistory')).fontSize($r('sys.float.Body_L'))
+          .id('search_page_history_label')
           .fontColor($r('sys.color.font_primary'))
           .fontWeight(FontWeight.Medium);
 
@@ -279,6 +280,7 @@ export struct SearchPage {
       };
     }
     Text($r('app.string.hotSearch'))
+      .id('search_page_hot_label')
       .fontSize($r('sys.float.Body_L'))
       .fontColor($r('sys.color.font_primary'))
       .fontWeight(FontWeight.Medium)

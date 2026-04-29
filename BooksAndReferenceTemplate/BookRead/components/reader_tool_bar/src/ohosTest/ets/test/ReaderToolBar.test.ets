@@ -53,11 +53,21 @@ export default function ReaderToolBarTest() {
       await assertTextVisible('横滑');
 
       const fontSizeValueBefore = await (await findById(FONT_SIZE_VALUE_ID)).getText();
+      const expectedAfter = Number.parseInt(fontSizeValueBefore) + 1;
       await (await findById(FONT_SIZE_ADD_ID)).click();
-      await DRIVER.waitForIdle(500, 5000);
-      const fontSizeValueAfter = await (await findById(FONT_SIZE_VALUE_ID)).getText();
+      // Increment chains through @Param mutation + setPageConfig + @Local update + re-render.
+      // waitForIdle alone can return before the Text node refreshes, so poll the rendered value.
+      const deadline = new Date().getTime() + 8000;
+      let fontSizeValueAfter = fontSizeValueBefore;
+      while (new Date().getTime() < deadline) {
+        await DRIVER.waitForIdle(300, 2000);
+        fontSizeValueAfter = await (await findById(FONT_SIZE_VALUE_ID)).getText();
+        if (Number.parseInt(fontSizeValueAfter) === expectedAfter) {
+          break;
+        }
+      }
 
-      expect(Number.parseInt(fontSizeValueAfter)).assertEqual(Number.parseInt(fontSizeValueBefore) + 1);
+      expect(Number.parseInt(fontSizeValueAfter)).assertEqual(expectedAfter);
     });
   });
 }

@@ -42,8 +42,18 @@ async function assertTextVisible(text: string, timeout: number = 5000): Promise<
 }
 
 async function waitForHostPageLoaded(): Promise<void> {
-  await DRIVER.waitForIdle(1000, 10000);
-  await findById(HOST_OPEN_BUTTON_ID, 10000);
+  // Compact recovery loop. Total worst case ~6s, well under hypium's 15s
+  // beforeAll timeout. The first iteration usually wins because the previous
+  // class's afterAll has already settled the screen.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    await DRIVER.waitForIdle(300, 1500);
+    const hostBtn = await DRIVER.waitForComponent(ON.id('login_page_test_open'), 1200);
+    if (hostBtn !== null) {
+      return;
+    }
+    await DRIVER.pressBack();
+  }
+  await findById('login_page_test_open', 3000);
 }
 
 async function waitForLoginPageLoaded(): Promise<void> {
@@ -106,7 +116,7 @@ export default function LoginPageTest() {
   describe('LoginPageTest', () => {
     beforeAll(async () => {
       clearLoginStorage();
-      await ensureHostPageLoaded();
+      await waitForHostPageLoaded();
     });
 
     beforeEach(() => {
@@ -119,7 +129,13 @@ export default function LoginPageTest() {
 
     afterAll(async () => {
       clearLoginStorage();
-      await DRIVER.waitForIdle(500, 5000);
+      // Tests 2 and 3 leave the nav stack on LOGIN_ROUTE (via TCRouter.replace).
+      // Press-back from a single-entry stack would pop into an invalid state, so
+      // restore the host route explicitly via the same NavPathStack reference
+      // Navigation already holds. (This works without TCRouter.init() because we
+      // never reallocated the stack.)
+      TCRouter.replace('my_info_card_test_host');
+      await DRIVER.waitForIdle(500, 3000);
     });
 
     it('build_renders_login_content_and_agreement_controls', 0, async () => {
@@ -142,7 +158,10 @@ export default function LoginPageTest() {
       const page = new LoginPage();
       const response = createCredential();
 
-      TCRouter.init();
+      // Do NOT call TCRouter.init() here — that allocates a new NavPathStack
+      // reference and the host page's Navigation keeps holding the old one,
+      // which cascades into "page root not found" errors for every subsequent
+      // test class. The replace path is enough for the login-flow logic test.
       TCRouter.replace(Constants.LOGIN_ROUTE);
       AppStorage.setOrCreate('membershipStatus', true);
       AppStorage.setOrCreate('bookCoins', 18);
@@ -164,7 +183,7 @@ export default function LoginPageTest() {
       const page = new LoginPage();
       const error = createBusinessError(ErrorCode.ERROR_CODE_LOGIN_OUT, 'logout');
 
-      TCRouter.init();
+      // Do NOT call TCRouter.init() — see the comment in the previous test.
       TCRouter.replace(Constants.LOGIN_ROUTE);
       page.handleLoginWithHuaweiIDButton(error, createCredential());
 

@@ -37,8 +37,18 @@ async function scrollToBottomById(id: string, timeout: number = 5000): Promise<v
 }
 
 async function waitForHostPageLoaded(): Promise<void> {
-  await DRIVER.waitForIdle(1000, 10000);
-  await findById(HOST_MEMBER_AGREEMENT_PAGE_BUTTON_ID, 10000);
+  // Compact recovery loop. Total worst case ~6s, well under hypium's 15s
+  // beforeAll timeout. The first iteration usually wins because the previous
+  // class's afterAll has already settled the screen.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    await DRIVER.waitForIdle(300, 1500);
+    const hostBtn = await DRIVER.waitForComponent(ON.id('member_agreement_page_test_open'), 1200);
+    if (hostBtn !== null) {
+      return;
+    }
+    await DRIVER.pressBack();
+  }
+  await findById('member_agreement_page_test_open', 3000);
 }
 
 async function waitForMemberAgreementPageLoaded(): Promise<void> {
@@ -53,7 +63,8 @@ export default function MemberAgreementPageTest() {
     });
 
     afterAll(async () => {
-      await DRIVER.waitForIdle(500, 5000);
+      // Keep afterAll short. Next class.s beforeAll has its own host-page recovery.
+      await DRIVER.waitForIdle(500, 3000);
     });
 
     it('build_renders_member_agreement_sections', 0, async () => {
