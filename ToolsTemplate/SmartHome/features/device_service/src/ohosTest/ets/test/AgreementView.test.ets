@@ -23,13 +23,46 @@ async function click(component: Component, driver: Driver): Promise<void> {
   await waitForIdle(driver);
 }
 
+// IDs that only exist on pushed NavDestination pages. The host screen
+// shows none of them. We rely on these (not the host anchor) to decide
+// whether we are still on a pushed page, because waitForComponent finds
+// the host anchor even when it is visually covered by a pushed page.
+const PUSHED_PAGE_MARKERS: string[] = [
+  'agreement_terms_page_anchor',
+  'agreement_privacy_page_anchor',
+  'login_with_huaweiId_button',
+];
+
+async function onPushedPage(driver: Driver): Promise<boolean> {
+  for (const id of PUSHED_PAGE_MARKERS) {
+    if (await driver.waitForComponent(ON.id(id), 400) !== null) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Tests share one app instance and one NavPathStack. A prior suite can
+// leave the app several NavDestinations deep, so before each test we press
+// BACK until no pushed-page marker is visible (i.e. we are back at the
+// host). This makes every test start from the host screen regardless of
+// suite execution order or where a previous test stopped.
+async function resetToHost(driver: Driver, hostAnchorId: string): Promise<void> {
+  await waitForIdle(driver);
+  for (let i = 0; i < 8 && await onPushedPage(driver); i++) {
+    await driver.triggerKey(KeyCode.KEYCODE_BACK);
+    await waitForIdle(driver);
+  }
+  await findById(driver, hostAnchorId);
+}
+
 export default function AgreementViewTest() {
   describe('AgreementViewTest', () => {
     it('bulidSpan should navigate to linked agreement pages',
       TestType.FUNCTION | Size.MEDIUMTEST | Level.LEVEL3, async () => {
         const driver = Driver.create();
 
-        await waitForIdle(driver);
+        await resetToHost(driver, 'agreement_test_host_anchor');
         await findById(driver, 'agreement_test_host_anchor');
 
         await click(await findById(driver, 'agreement_test_open_dialog'), driver);
