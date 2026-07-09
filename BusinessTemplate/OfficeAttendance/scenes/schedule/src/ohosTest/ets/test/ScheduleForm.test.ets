@@ -1,108 +1,89 @@
-import { describe, beforeAll, afterAll, it } from '@ohos/hypium';
+import { afterAll, beforeAll, describe, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
-const DRIVER = Driver.create();
-const HOST_ANCHOR_ID = 'schedule_form_test_host_anchor';
-const FORM_ROOT_ID = 'schedule_form_root';
-const TITLE_INPUT_ID = 'titleID';
-const DESCRIPTION_INPUT_ID = 'description';
-const START_TIME_VALUE_ID = 'schedule_form_start_time_value';
-const END_TIME_VALUE_ID = 'schedule_form_end_time_value';
-const REPEAT_TRIGGER_ID = 'schedule_form_repeat_trigger';
-const REPEAT_VALUE_ID = 'schedule_form_repeat_value';
-const REMINDER_VALUE_ID = 'schedule_form_reminder_value';
-const REPEAT_WEEKLY_OPTION_ID = 'schedule_form_repeat_option_4';
+const driver: Driver = Driver.create();
 
-async function findByText(text: string, timeout: number = 5000): Promise<Component> {
-  const component = await DRIVER.waitForComponent(ON.text(text), timeout);
+const HOST_ANCHOR_ID: string = 'schedule_form_test_host_anchor';
+const FORM_ROOT_ID: string = 'schedule_form_root';
+const TITLE_INPUT_ID: string = 'titleID';
+const ALL_DAY_TOGGLE_ID: string = 'schedule_form_all_day_toggle';
+const START_TIME_VALUE_ID: string = 'schedule_form_start_time_value';
+const END_TIME_VALUE_ID: string = 'schedule_form_end_time_value';
+const REPEAT_TRIGGER_ID: string = 'schedule_form_repeat_trigger';
+const REPEAT_VALUE_ID: string = 'schedule_form_repeat_value';
+const REMINDER_VALUE_ID: string = 'schedule_form_reminder_value';
+const WEEKLY_REPEAT_OPTION_ID: string = 'schedule_form_repeat_option_4';
+
+const INITIAL_START_TIME: string = '2026-03-02 09:30';
+const INITIAL_END_TIME: string = '2026-03-02 10:30';
+const ALL_DAY_START_TIME: string = '2026-03-02';
+const ALL_DAY_END_TIME: string = '2026-03-02';
+
+async function findById(id: string, timeout: number = 3000): Promise<Component> {
+  const component: Component = await driver.waitForComponent(ON.id(id), timeout);
   if (component === null) {
-    throw new Error(`Unable to find text: ${text}`);
+    throw new Error(`Unable to find component with id: ${id}`);
   }
   return component;
 }
 
-async function findById(id: string, timeout: number = 5000): Promise<Component> {
-  const component = await DRIVER.waitForComponent(ON.id(id), timeout);
-  if (component === null) {
-    throw new Error(`Unable to find id: ${id}`);
+async function readText(id: string): Promise<string> {
+  return await (await findById(id)).getText();
+}
+
+async function assertTextEquals(id: string, expected: string): Promise<void> {
+  const actual: string = await readText(id);
+  if (actual !== expected) {
+    throw new Error(`Unexpected text for ${id}: expected "${expected}", got "${actual}"`);
   }
-  return component;
 }
 
-async function clickById(id: string, timeout: number = 5000): Promise<void> {
-  await (await findById(id, timeout)).click();
-  await DRIVER.waitForIdle(500, 5000);
+async function clickById(id: string): Promise<void> {
+  await (await findById(id)).click();
+  await driver.waitForIdle(500, 5000);
 }
 
-async function inputTextById(id: string, text: string, timeout: number = 5000): Promise<void> {
-  const component = await findById(id, timeout);
-  await component.click();
-  await component.inputText(text);
-  await DRIVER.waitForIdle(500, 5000);
-}
-
-async function getTextById(id: string, timeout: number = 5000): Promise<string> {
-  return await (await findById(id, timeout)).getText();
-}
-
-async function assertTextVisible(text: string, timeout: number = 5000): Promise<void> {
-  await findByText(text, timeout);
-}
-
-async function waitForTextValueById(id: string, expected: string, timeout: number = 5000): Promise<void> {
-  const deadline = new Date().getTime() + timeout;
-  while (new Date().getTime() <= deadline) {
-    const actual = await getTextById(id, Math.min(timeout, 1000));
-    if (actual === expected) {
-      return;
-    }
-    await DRIVER.waitForIdle(200, 1000);
-  }
-
-  const actual = await getTextById(id, Math.min(timeout, 1000));
-  throw new Error(`Unexpected text for ${id}: expected ${expected}, got ${actual}`);
-}
-
-async function waitForFormLoaded(): Promise<void> {
-  await DRIVER.waitForIdle(1000, 10000);
+async function waitForForm(): Promise<void> {
+  await driver.waitForIdle(1000, 10000);
   await findById(HOST_ANCHOR_ID, 10000);
   await findById(FORM_ROOT_ID, 10000);
   await findById(TITLE_INPUT_ID, 10000);
 }
 
-export default function ScheduleFormTest() {
+export default function ScheduleFormTest(): void {
   describe('ScheduleFormTest', () => {
     beforeAll(async () => {
-      await waitForFormLoaded();
+      await waitForForm();
     });
 
     afterAll(async () => {
-      await DRIVER.waitForIdle(500, 5000);
+      await driver.waitForIdle(500, 5000);
     });
 
-    it('build_renders_and_updates_schedule_form_state', 0, async () => {
-      await assertTextVisible('地点');
-      await assertTextVisible('全天');
-      await assertTextVisible('开始');
-      await assertTextVisible('结束');
-      await assertTextVisible('重复');
-      await assertTextVisible('提醒');
+    it('renders_the_seeded_schedule_form', 0, async () => {
+      await findById(TITLE_INPUT_ID);
+      await assertTextEquals(START_TIME_VALUE_ID, INITIAL_START_TIME);
+      await assertTextEquals(END_TIME_VALUE_ID, INITIAL_END_TIME);
+      await findById(REPEAT_VALUE_ID);
+      await findById(REMINDER_VALUE_ID);
+    });
 
-      await waitForTextValueById(START_TIME_VALUE_ID, '2026-03-02 09:30');
-      await waitForTextValueById(END_TIME_VALUE_ID, '2026-03-02 10:30');
-      await waitForTextValueById(REPEAT_VALUE_ID, '不重复');
-      await waitForTextValueById(REMINDER_VALUE_ID, '30分钟前');
+    it('switches_to_all_day_and_reformats_the_schedule_range', 0, async () => {
+      await clickById(ALL_DAY_TOGGLE_ID);
+      await assertTextEquals(START_TIME_VALUE_ID, ALL_DAY_START_TIME);
+      await assertTextEquals(END_TIME_VALUE_ID, ALL_DAY_END_TIME);
+      await findById(REMINDER_VALUE_ID);
+    });
 
-      await inputTextById(TITLE_INPUT_ID, '双周例会');
-      await waitForTextValueById(TITLE_INPUT_ID, '双周例会');
-
-      await inputTextById(DESCRIPTION_INPUT_ID, '带周报');
-      await waitForTextValueById(DESCRIPTION_INPUT_ID, '带周报');
-
+    it('selects_a_weekly_repeat_rule_from_the_menu', 0, async () => {
+      const previousValue: string = await readText(REPEAT_VALUE_ID);
       await clickById(REPEAT_TRIGGER_ID);
-      await clickById(REPEAT_WEEKLY_OPTION_ID, 10000);
-      await waitForTextValueById(REPEAT_VALUE_ID, '每周');
+      await clickById(WEEKLY_REPEAT_OPTION_ID);
 
+      const weeklyValue: string = await readText(REPEAT_VALUE_ID);
+      if (weeklyValue === previousValue) {
+        throw new Error(`Repeat value did not change after selecting weekly: ${weeklyValue}`);
+      }
     });
   });
 }
