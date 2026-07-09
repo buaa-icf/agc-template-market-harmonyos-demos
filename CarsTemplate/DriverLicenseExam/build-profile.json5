@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\RoyCai\\.ohos\\config\\default_DriverLicenseExam_pmH7h0xwGgNBHIZQ0QPKB2FbsAaAJiZGWxejdbgnpBc=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B911E31E9CB1E1F1AFF876879FD2C719F0A56D68A4F7147D3442E0ADCFF736EE00BD47C4F2DB83B",
+          "profile": "C:\\Users\\RoyCai\\.ohos\\config\\default_DriverLicenseExam_pmH7h0xwGgNBHIZQ0QPKB2FbsAaAJiZGWxejdbgnpBc=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\RoyCai\\.ohos\\config\\default_DriverLicenseExam_pmH7h0xwGgNBHIZQ0QPKB2FbsAaAJiZGWxejdbgnpBc=.p12",
+          "storePassword": "0000001BF7D2E0768C1C3614236D431A6083665C652D3F914A5CF47CE40AD542E3C9F64AFDFD07328D15B1"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
