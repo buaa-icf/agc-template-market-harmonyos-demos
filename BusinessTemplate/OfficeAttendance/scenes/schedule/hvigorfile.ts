@@ -169,7 +169,7 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
                 run(taskContext) {
                     const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
                     const targetPath = path.resolve(taskContext.modulePath,
-                        'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+                        '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
 
                     if (!fs.existsSync(sourcePath)) {
                         return;
