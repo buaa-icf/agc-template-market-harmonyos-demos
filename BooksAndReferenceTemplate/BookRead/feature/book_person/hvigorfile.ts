@@ -4,7 +4,7 @@ import { hvigor } from '@ohos/hvigor';
 import { harTasks } from '@ohos/hvigor-ohos-plugin';
 import type { HvigorPlugin } from '@ohos/hvigor';
 
-const ON_DEVICE_TEST_TASK = 'onDeviceTest';
+const BOOK_PERSON_OHOS_TEST_MODULE = 'book_person@ohosTest';
 const GENERATE_OHOS_TEST_TEMPLATE_TASK = 'ohosTest@GenerateOhosTestTemplate';
 const OHOS_TEST_COMPILE_ARK_TS_TASK = 'ohosTest@OhosTestCompileArkTS';
 const OHOS_TEST_CACHE_NATIVE_LIBS_TASK = 'ohosTest@CacheNativeLibs';
@@ -12,12 +12,10 @@ const OHOS_TEST_PACKAGE_HAP_TASK = 'ohosTest@PackageHap';
 const PAYMENT_NATIVE_LIBRARIES = ['libblueshield.so', 'libutdid_native.so'];
 
 function shouldConfigureOhosTest(): boolean {
-  const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
   const parameters = hvigor.getParameter();
   const module = parameters.getExtParam('module') ?? '';
-  const coverage = parameters.getExtParam('coverage') ?? '';
 
-  return entryTasks.has(ON_DEVICE_TEST_TASK) || module.includes('@ohosTest') || coverage === 'true';
+  return module === BOOK_PERSON_OHOS_TEST_MODULE;
 }
 
 function stripPaymentNativeLibraries(modulePath: string): void {
