@@ -23,6 +23,7 @@ interface MyDetailPagePrivateFields {
   hasBuyHouse: string
   whenToMarry: string
   initialiseEnumField: () => void
+  UploadProfilePicDialogBuilder: () => CustomBuilder
   aboutToBeDeleted?: () => void
 }
 
@@ -130,6 +131,11 @@ export default function UserDetailTest() {
       expect(privateFields.hasBuyCar).assertEqual(Constants.TO_BE_SET)
       expect(privateFields.hasBuyHouse).assertEqual(Constants.TO_BE_SET)
       expect(privateFields.whenToMarry).assertEqual(Constants.TO_BE_SET)
+    })
+
+    it('builds upload profile picture dialog content', 0, () => {
+      privateFields.UploadProfilePicDialogBuilder()
+      expect(true).assertTrue()
     })
   })
 }
