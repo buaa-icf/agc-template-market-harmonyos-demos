@@ -12,8 +12,9 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
     pluginId: 'mine_replace_ohos_test_index',
     apply(node) {
         hvigor.nodesEvaluated(() => {
-            const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
-            if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
+            const ohosTestEntryTasks = new Set([ON_DEVICE_TEST_TASK, 'genOnDeviceTestHap']);
+            const commandEntryTasks = hvigor.getCommandEntryTask() ?? [];
+            if (!commandEntryTasks.some(taskName => ohosTestEntryTasks.has(taskName))) {
                 return;
             }
 
