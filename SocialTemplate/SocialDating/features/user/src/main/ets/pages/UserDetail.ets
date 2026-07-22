@@ -779,6 +779,7 @@ export struct MyDetailPage {
     Row() {
       this.buildItemTitle('性别', true)
       Text(`${this.gender}`)
+        .id('user_detail_gender_value')
         .fontSize($r('sys.float.Body_M'))
         .width('60%')
         .fontColor($r('app.color.text_font_color_black'))
@@ -821,6 +822,7 @@ export struct MyDetailPage {
       this.buildItemTitle('现居地')
 
       Text(`${this.userInfo.currentResidence}`)
+        .id('user_detail_current_residence_value')
         .fontSize($r('sys.float.Body_M'))
         .width('60%')
         .fontColor($r('app.color.text_font_color_black'))
