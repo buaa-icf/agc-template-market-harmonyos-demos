@@ -1,12 +1,21 @@
 import { describe, expect, it } from '@ohos/hypium';
-import { BalanceChangeType, BalanceResourceModel } from 'bill_base';
+import { BalanceChangeType, BalanceResourceItemModel, BalanceResourceModel } from 'bill_base';
 import { ResourceManageVM } from '../main/ets/viewmodels/ResourceManageVM';
+
+function createResourceItem(key: number, name: string, sortNum: number): BalanceResourceItemModel {
+  const item = new BalanceResourceItemModel();
+  item.key = key;
+  item.name = name;
+  item.type = BalanceChangeType.EXPENSE;
+  item.sortNum = sortNum;
+  return item;
+}
 
 function createResource(): BalanceResourceModel {
   const resource = new BalanceResourceModel();
   resource.expense = [
-    { key: 1, name: 'Food', type: BalanceChangeType.EXPENSE, sortNum: 10 },
-    { key: 2, name: 'Travel', type: BalanceChangeType.EXPENSE, sortNum: 20 }
+    createResourceItem(1, 'Food', 10),
+    createResourceItem(2, 'Travel', 20)
   ];
   return resource;
 }
