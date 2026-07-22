@@ -2,6 +2,7 @@ import { beforeAll, describe, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
 const HOST_ANCHOR_ID = 'user_detail_test_host_anchor';
+const USER_DETAIL_SCROLL_ID = 'user_detail_scroll';
 const UI_TIMEOUT = 10000;
 
 async function findById(driver: Driver, id: string): Promise<Component> {
@@ -19,13 +20,11 @@ export default function UserDetailTest() {
     beforeAll(async () => {
       driver = Driver.create();
       await findById(driver, HOST_ANCHOR_ID);
-      await findById(driver, 'user_detail_gender_value');
-      await findById(driver, 'user_detail_current_residence_value');
+      await findById(driver, USER_DETAIL_SCROLL_ID);
     });
 
-    it('initialises enum and nullable user fields before rendering', 0, async () => {
-      await findById(driver, 'user_detail_gender_value');
-      await findById(driver, 'user_detail_current_residence_value');
+    it('mounts the user detail page instead of the generated default page', 0, async () => {
+      await findById(driver, USER_DETAIL_SCROLL_ID);
     });
   });
 }

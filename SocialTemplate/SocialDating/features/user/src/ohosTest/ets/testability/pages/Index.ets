@@ -8,12 +8,17 @@ struct Index {
   @Provide('pageStack') pageStack: NavPathStack = new NavPathStack();
 
   build() {
-    Column() {
+    Stack() {
+      Navigation(this.pageStack) {
+        MyDetailPage()
+      }
+      .hideTitleBar(true)
+      .hideToolBar(true)
       Text('User detail test host')
         .id(HOST_ANCHOR_ID)
         .fontSize(1)
         .opacity(0.01)
-      MyDetailPage()
+        .align(Alignment.TopStart)
     }
     .width('100%')
     .height('100%')

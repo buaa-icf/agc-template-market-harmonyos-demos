@@ -147,6 +147,7 @@ export struct MyDetailPage {
         }
       }.scrollable(ScrollDirection.Vertical)
       .scrollBar(BarState.Off)
+      .id('user_detail_scroll')
     }.onReady((context: NavDestinationContext) => {
       this.pageStack = context.pathStack
     }).backgroundColor($r('app.color.page_background_color'))
