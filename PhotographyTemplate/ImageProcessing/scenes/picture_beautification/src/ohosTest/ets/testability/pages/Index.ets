@@ -12,6 +12,7 @@ const CUT_INDEX_OUTPUT_ID: string = 'cut_select_index_output';
 const CLIP_RECT_OUTPUT_ID: string = 'cut_clip_rect_output';
 
 const PB_HOST_ANCHOR_ID: string = 'picture_beautification_test_host_anchor';
+const PB_HOST_LAUNCHER_ID: string = 'picture_beautification_test_host_launcher';
 const PB_ROUTE_NAME: string = 'pictureBeautification';
 const PB_TEST_PIXEL_MAP_KEY: string = 'pictureBeautification.testPixelMap';
 const PB_RUN_FLAG: string = 'pictureBeautification.runTest';
@@ -37,6 +38,7 @@ struct Index {
   pathStack: NavPathStack = new NavPathStack();
   @State ready: boolean = false;
   @State pushed: boolean = false;
+  @State pictureHostRequested: boolean = false;
   @StorageLink(PB_RUN_FLAG) runPb: boolean = false;
   @StorageLink(STICKER_RUN_FLAG) runSticker: boolean = false;
 
@@ -76,7 +78,7 @@ struct Index {
   }
 
   build() {
-    if (this.runPb) {
+    if (this.runPb || this.pictureHostRequested) {
       Stack({ alignContent: Alignment.TopStart }) {
         Navigation(this.pathStack) {
         }
@@ -121,6 +123,13 @@ struct Index {
         Text('CarouseCutToolBar UITest Host')
           .id(HOST_ANCHOR_ID)
           .fontSize(14);
+
+        Text('Launch PictureBeautification UITest Host')
+          .id(PB_HOST_LAUNCHER_ID)
+          .fontSize(14)
+          .onClick(() => {
+            this.pictureHostRequested = true;
+          });
 
         Text(`ratio:${this.cropRatioHolder}`)
           .id(RATIO_OUTPUT_ID)
