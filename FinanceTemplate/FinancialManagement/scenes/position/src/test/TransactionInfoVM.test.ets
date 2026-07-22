@@ -1,7 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, MockKit, when } from '@ohos/hypium';
 import { https } from 'network';
-import { State } from 'network/src/main/ets/types/responseTypes/GetTransactionRecordInfoResp';
+import {
+  ITransactionInfo,
+  ITransactionStatus,
+  State
+} from 'network/src/main/ets/types/responseTypes/GetTransactionRecordInfoResp';
 import { TransactionInfoVM } from '../main/ets/viewModels/TransactionInfoVM';
+
+interface TransactionResponse {
+  code: number;
+  data: ITransactionInfo;
+}
+
+function createInfo(type: number, statuses: ITransactionStatus[]): ITransactionInfo {
+  return {
+    id: 1,
+    type,
+    state: State.IN_PROGRESS,
+    amount: 100,
+    date: '2026-01-01',
+    productName: 'Test product',
+    productNumber: 'P-1',
+    bankCardNumber: '****1234',
+    status: statuses
+  };
+}
 
 export default function TransactionInfoVMTest() {
   describe('TransactionInfoVMTest', () => {
@@ -17,18 +40,12 @@ export default function TransactionInfoVMTest() {
 
     it('maps an in-progress purchase record into its three timeline nodes', 0, async () => {
       const getTransactionRecordInfo = mockKit.mockFunc(https, https.getTransactionRecordInfo);
-      const response = {
-        code: 0,
-        data: {
-          state: State.IN_PROGRESS,
-          type: 2,
-          status: [
-            { status: 1, date: '2026-01-01 10:00' },
-            { status: 2, date: '2026-01-02 10:00' },
-            { status: 3, date: '2026-01-03 10:00' }
-          ]
-        }
-      };
+      const statuses: ITransactionStatus[] = [
+        { status: 1, date: '2026-01-01 10:00' },
+        { status: 2, date: '2026-01-02 10:00' },
+        { status: 3, date: '2026-01-03 10:00' }
+      ];
+      const response: TransactionResponse = { code: 0, data: createInfo(2, statuses) };
       when(getTransactionRecordInfo)(101).afterReturn(Promise.resolve(response));
       const viewModel = new TransactionInfoVM();
 
@@ -43,17 +60,11 @@ export default function TransactionInfoVMTest() {
 
     it('maps an in-progress redemption record into its two timeline nodes', 0, async () => {
       const getTransactionRecordInfo = mockKit.mockFunc(https, https.getTransactionRecordInfo);
-      const response = {
-        code: 0,
-        data: {
-          state: State.IN_PROGRESS,
-          type: 3,
-          status: [
-            { status: 4, date: '2026-01-04 10:00' },
-            { status: 5, date: '2026-01-05 10:00' }
-          ]
-        }
-      };
+      const statuses: ITransactionStatus[] = [
+        { status: 4, date: '2026-01-04 10:00' },
+        { status: 5, date: '2026-01-05 10:00' }
+      ];
+      const response: TransactionResponse = { code: 0, data: createInfo(3, statuses) };
       when(getTransactionRecordInfo)(102).afterReturn(Promise.resolve(response));
       const viewModel = new TransactionInfoVM();
 
