@@ -14,7 +14,9 @@
  */
 
 import localUnitTest from './LocalUnit.test';
+import OrderVMTest from './OrderVM.test';
 
 export default function testsuite() {
   localUnitTest();
+  OrderVMTest();
 }
