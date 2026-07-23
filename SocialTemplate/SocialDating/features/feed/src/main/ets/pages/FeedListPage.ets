@@ -682,6 +682,7 @@ export struct FeedBasic {
     Row() {
       if (this.item != null) {
         Image(this.clickLike ? $r('app.media.has_thumbup') : $r('app.media.thumbup'))
+          .id(this.clickLike ? 'feed_like_active' : 'feed_like_inactive')
           .width(24)
           .height(24)
           .objectFit(ImageFit.Fill)

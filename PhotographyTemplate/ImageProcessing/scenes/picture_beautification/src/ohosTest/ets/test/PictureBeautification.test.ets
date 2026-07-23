@@ -3,6 +3,8 @@ import { Component, Driver, ON } from '@kit.TestKit';
 
 const DRIVER = Driver.create();
 const HOST_ANCHOR_ID = 'picture_beautification_test_host_anchor';
+const DEFAULT_HOST_ANCHOR_ID = 'carouse_cut_tool_bar_test_host_anchor';
+const HOST_LAUNCHER_ID = 'picture_beautification_test_host_launcher';
 const IMAGE_CONTENT_ID = 'ImageContent';
 const CROP_CANVAS_ID = 'CropCanvas';
 
@@ -63,14 +65,17 @@ function boundsChanged(a: Rect, b: Rect): boolean {
 export default function PictureBeautificationTest() {
   describe('PictureBeautificationTest', () => {
     beforeAll(async () => {
-      AppStorage.setOrCreate('pictureBeautification.runTest', true);
+      await DRIVER.waitForIdle(500, 5000);
+      await findById(DEFAULT_HOST_ANCHOR_ID, 8000);
+      await DRIVER.waitForIdle(500, 5000);
+      const pictureHostLauncher = await findById(HOST_LAUNCHER_ID, 8000);
+      await pictureHostLauncher.click();
       await DRIVER.waitForIdle(500, 5000);
       await findById(HOST_ANCHOR_ID, 8000);
       await findById(CROP_CANVAS_ID, 8000);
     });
 
     afterAll(async () => {
-      AppStorage.setOrCreate('pictureBeautification.runTest', false);
       await DRIVER.waitForIdle(500, 5000);
     });
 

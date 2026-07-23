@@ -135,6 +135,7 @@ export default struct HotelOrderPage {
         .formLabelStyle()
         .width('20%');
       TextInput({ text: this.vm.checkInData.guestName, placeholder: '请输入住客姓名' })
+        .id('hotel_order_guest_name_input')
         .formInputStyle()
         .onChange((value: string) => {
           this.vm.checkInData.guestName = value;
@@ -150,6 +151,7 @@ export default struct HotelOrderPage {
         .formLabelStyle()
         .width('20%');
       TextInput({ text: this.vm.checkInData.guestPhone, placeholder: '请输入手机号' })
+        .id('hotel_order_guest_phone_input')
         .formInputStyle()
         .maxLength(11)
         .type(InputType.PhoneNumber)
