@@ -63,17 +63,12 @@ export default function AgreementViewTest() {
         const driver = Driver.create();
 
         await resetToHost(driver, 'agreement_test_host_anchor');
-        await findById(driver, 'agreement_test_host_anchor');
-
         await click(await findById(driver, 'agreement_test_open_dialog'), driver);
         await click(await findById(driver, 'loginPanel_agreement_terms_link'), driver);
         await findById(driver, 'agreement_terms_page_anchor');
+        await click(await findById(driver, 'agreement_terms_page_back'), driver);
 
-        await driver.triggerKey(KeyCode.KEYCODE_BACK);
-        await waitForIdle(driver);
         await findById(driver, 'agreement_test_host_anchor');
-
-        await click(await findById(driver, 'agreement_test_open_dialog'), driver);
         await click(await findById(driver, 'loginPanel_agreement_privacy_link'), driver);
         await findById(driver, 'agreement_privacy_page_anchor');
       });

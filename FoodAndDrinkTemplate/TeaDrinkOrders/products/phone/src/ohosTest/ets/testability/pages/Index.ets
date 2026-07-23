@@ -1,4 +1,5 @@
 import { Good, GoodRouter, OrderDetailRouter, RouterMap } from 'common';
+import { GoodDetailPageBuilder } from 'order';
 
 const HOST_ANCHOR_ID: string = 'order_detail_test_host_anchor';
 const OPEN_PAGE_BUTTON_ID: string = 'order_detail_test_open_page';
@@ -22,6 +23,13 @@ struct Index {
     spec: [],
     boxMoney: '1',
   };
+
+  @Builder
+  testNavDestinationBuilder(name: string, param?: Object) {
+    if (name === RouterMap.GOOD_DETAIL_PAGE) {
+      GoodDetailPageBuilder();
+    }
+  }
 
   build() {
     Navigation(this.pageStack) {
@@ -54,6 +62,7 @@ struct Index {
       .justifyContent(FlexAlign.Center)
     }
     .mode(NavigationMode.Stack)
-    .hideTitleBar(true);
+    .hideTitleBar(true)
+    .navDestination(this.testNavDestinationBuilder);
   }
 }

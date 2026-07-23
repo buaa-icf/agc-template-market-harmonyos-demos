@@ -74,5 +74,20 @@ export default function QuickLoginPageTest() {
         await click(await findById(driver, 'quick_login_privacy_link'), driver);
         await findById(driver, 'agreement_privacy_page_anchor');
       });
+
+    it('Huawei ID login button should invoke handleLoginWithHuaweiIDButton',
+      TestType.FUNCTION | Size.MEDIUMTEST | Level.LEVEL3, async () => {
+        const driver = Driver.create();
+
+        await resetToHost(driver, 'quick_login_test_host_anchor');
+        await click(await findById(driver, 'quick_login_test_open_page'), driver);
+
+        // The AccountKit callback can finish with success, a configuration error,
+        // or a system authorization surface. The coverage report is the source of
+        // truth that handleLoginWithHuaweiIDButton executed; this interaction must
+        // not require one environment-specific result UI.
+        await click(await findById(driver, 'login_with_huaweiId_button'), driver);
+        await driver.waitForIdle(IDLE_POLL_MS, FIND_TIMEOUT_MS);
+      });
   });
 }

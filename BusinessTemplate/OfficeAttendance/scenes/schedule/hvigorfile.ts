@@ -217,7 +217,35 @@ const sanitizeInitCoveragePlugin: HvigorPlugin = {
     }
 };
 
+const sanitizeInitCoverageImmediatelyBeforeReportPlugin: HvigorPlugin = {
+    pluginId: 'schedule_sanitize_init_coverage_before_report',
+    apply(node) {
+        node.afterNodeEvaluate(() => {
+            const generateCoverageTask = node.getTaskByName(GENERATE_DEVICE_COVERAGE_TASK)
+                ?? node.getTaskByName('GenerateDeviceCoverage');
+            if (!generateCoverageTask) {
+                return;
+            }
+
+            generateCoverageTask.beforeRun(() => {
+                const coveragePath = path.resolve(__dirname,
+                    '.test/default/intermediates/ohosTest/init_coverage.json');
+                if (!fs.existsSync(coveragePath)) {
+                    return;
+                }
+
+                const original = fs.readFileSync(coveragePath, 'utf-8');
+                const repaired = repairInitCoverageJson(original);
+                if (repaired !== null && repaired !== original) {
+                    fs.writeFileSync(coveragePath, repaired);
+                }
+            });
+        });
+    }
+};
+
 export default {
     system: harTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
-    plugins:[replaceOhosTestIndexPlugin, sanitizeInitCoveragePlugin]         /* Custom plugin to extend the functionality of Hvigor. */
+    plugins:[replaceOhosTestIndexPlugin, sanitizeInitCoveragePlugin,
+        sanitizeInitCoverageImmediatelyBeforeReportPlugin]         /* Custom plugin to extend the functionality of Hvigor. */
 }

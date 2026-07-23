@@ -101,7 +101,7 @@ export struct AgencyTaskCalender {
   }
 
   aboutToAppear() {
-    let param: DateTimeElement | undefined = RouterModule.getNavParam({ url: DialogMap.AGENCY_TASK_CALENDER }).param;
+    let param: DateTimeElement | undefined = RouterModule.getNavParam({ url: DialogMap.AGENCY_TASK_CALENDER })?.param;
     if (param && param.year > 0) {
       this.selectedTime = param;
       this.showYear = this.selectedTime.year;
@@ -192,6 +192,7 @@ export struct AgencyTaskCalender {
               })
 
               Text(`${this.showYear}-${this.showMonth + 1 >= 10 ? '' : '0'}${this.showMonth + 1}`)
+                .id('agency_calendar_month_value')
                 .fontSize(16)
                 .fontColor(Color.Black)
               Row() {
@@ -296,6 +297,7 @@ export struct AgencyTaskCalender {
         .height('60%')
         .backgroundColor(Color.White)
       }
+      .id('agency_calendar_root')
     }.mode(NavDestinationMode.DIALOG)
     .onBackPressed(() => {
       return false;
