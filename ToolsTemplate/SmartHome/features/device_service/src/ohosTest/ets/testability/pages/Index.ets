@@ -1,8 +1,6 @@
 import { loginComponentManager } from '@kit.AccountKit';
 import { AgreementDialog } from '../../../../main/ets/view/AgreementView';
-import { PrivacyPolicyPage } from '../../../../main/ets/pages/PrivacyPolicyPage';
 import { QuickLoginPage } from '../../../../main/ets/pages/QuickLoginPage';
-import { TermsOfServicePage } from '../../../../main/ets/pages/TermsOfServicePage';
 
 @Entry
 @ComponentV2
@@ -48,9 +46,32 @@ struct Index {
     if (name === 'QuickLoginPage') {
       QuickLoginPage();
     } else if (name === 'TermsOfServicePage') {
-      TermsOfServicePage();
+      NavDestination() {
+        Column({ space: 16 }) {
+          Text('Terms of Service Test Destination')
+            .id('agreement_terms_page_anchor')
+          Button('Back')
+            .id('agreement_terms_page_back')
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+        }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+      }
+      .hideTitleBar(true)
     } else if (name === 'PrivacyPolicyPage') {
-      PrivacyPolicyPage();
+      NavDestination() {
+        Column({ space: 16 }) {
+          Text('Privacy Policy Test Destination')
+            .id('agreement_privacy_page_anchor')
+        }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+      }
+      .hideTitleBar(true)
     }
   }
 

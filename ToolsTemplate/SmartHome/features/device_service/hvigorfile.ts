@@ -1,51 +1,62 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { hvigor } from '@ohos/hvigor';
 import { harTasks } from '@ohos/hvigor-ohos-plugin';
+import type { HvigorPlugin } from '@ohos/hvigor';
 
-const syncAgreementOhosTestHostPagePlugin = {
+const syncAgreementOhosTestHostPagePlugin: HvigorPlugin = {
     pluginId: 'syncAgreementOhosTestHostPagePlugin',
     apply(node) {
-        node.afterNodeEvaluate(() => {
-            const sourcePath = path.resolve(__dirname, 'src/ohosTest/ets/testability/pages/Index.ets');
-            const targetPath = path.resolve(__dirname,
-                'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
-            const compileTask = node.getTaskByName('ohosTest@OhosTestCompileArkTS')
-                ?? node.getTaskByName('OhosTestCompileArkTS');
-
-            if (!compileTask) {
-                return;
-            }
-
-            compileTask.beforeRun(() => {
+        hvigor.nodesEvaluated(() => {
+            node.registerTask({
+                name: 'SyncAgreementOhosTestHostPage',
+                dependencies: ['ohosTest@GenerateOhosTestTemplate'],
+                postDependencies: ['ohosTest@OhosTestCompileArkTS'],
+                run(taskContext) {
+                const sourcePath = path.resolve(taskContext.modulePath,
+                    'src/ohosTest/ets/testability/pages/Index.ets');
+                const targetPaths = [
+                    path.resolve(taskContext.modulePath,
+                        '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'),
+                    path.resolve(taskContext.modulePath,
+                        'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets')
+                ];
                 if (!fs.existsSync(sourcePath)) {
                     return;
                 }
-                const targetDir = path.dirname(targetPath);
-                const importReplacements = new Map([
-                    ['../../../../main/ets/view/AgreementView',
-                        path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/view/AgreementView.ets'))
-                            .replace(/\\/g, '/')
-                            .replace(/\.ets$/, '')],
-                    ['../../../../main/ets/pages/PrivacyPolicyPage',
-                        path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/PrivacyPolicyPage.ets'))
-                            .replace(/\\/g, '/')
-                            .replace(/\.ets$/, '')],
-                    ['../../../../main/ets/pages/QuickLoginPage',
-                        path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/QuickLoginPage.ets'))
-                            .replace(/\\/g, '/')
-                            .replace(/\.ets$/, '')],
-                    ['../../../../main/ets/pages/TermsOfServicePage',
-                        path.relative(targetDir, path.resolve(__dirname, 'src/main/ets/pages/TermsOfServicePage.ets'))
-                            .replace(/\\/g, '/')
-                            .replace(/\.ets$/, '')]
-                ]);
-                let sourceContent = fs.readFileSync(sourcePath, 'utf-8');
+                targetPaths.forEach((targetPath: string) => {
+                    const targetDir = path.dirname(targetPath);
+                    const importReplacements = new Map([
+                        ['../../../../main/ets/view/AgreementView',
+                            path.relative(targetDir, path.resolve(taskContext.modulePath,
+                                'src/main/ets/view/AgreementView.ets'))
+                                .replace(/\\/g, '/')
+                                .replace(/\.ets$/, '')],
+                        ['../../../../main/ets/pages/PrivacyPolicyPage',
+                            path.relative(targetDir, path.resolve(taskContext.modulePath,
+                                'src/main/ets/pages/PrivacyPolicyPage.ets'))
+                                .replace(/\\/g, '/')
+                                .replace(/\.ets$/, '')],
+                        ['../../../../main/ets/pages/QuickLoginPage',
+                            path.relative(targetDir, path.resolve(taskContext.modulePath,
+                                'src/main/ets/pages/QuickLoginPage.ets'))
+                                .replace(/\\/g, '/')
+                                .replace(/\.ets$/, '')],
+                        ['../../../../main/ets/pages/TermsOfServicePage',
+                            path.relative(targetDir, path.resolve(taskContext.modulePath,
+                                'src/main/ets/pages/TermsOfServicePage.ets'))
+                                .replace(/\\/g, '/')
+                                .replace(/\.ets$/, '')]
+                    ]);
+                    let sourceContent = fs.readFileSync(sourcePath, 'utf-8');
 
-                importReplacements.forEach((relativeTargetPath, originalImportPath) => {
-                    sourceContent = sourceContent.replace(originalImportPath, relativeTargetPath);
+                    importReplacements.forEach((relativeTargetPath, originalImportPath) => {
+                        sourceContent = sourceContent.replace(originalImportPath, relativeTargetPath);
+                    });
+                    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+                    fs.writeFileSync(targetPath, sourceContent);
                 });
-                fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-                fs.writeFileSync(targetPath, sourceContent);
+                }
             });
         });
     }

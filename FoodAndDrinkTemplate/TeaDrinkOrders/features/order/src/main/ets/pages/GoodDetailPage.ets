@@ -206,7 +206,9 @@ struct GoodDetailPage {
         }
       }.alignContent(Alignment.Bottom)
 
-    }.hideTitleBar(true).onBackPressed(() => {
+    }
+    .id('good_detail_page_root')
+    .hideTitleBar(true).onBackPressed(() => {
       if (this.specSheetFlag) {
         this.specSheetFlag = false
         return true
@@ -364,6 +366,7 @@ struct GoodDetailPage {
         }
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Start)
+        .id(`good_detail_package_spec_${index}`)
         .padding(12)
         .borderRadius(16)
         .backgroundColor($r('sys.color.background_primary'))
