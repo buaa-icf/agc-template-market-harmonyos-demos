@@ -8,7 +8,11 @@ const plugin: HvigorPlugin = {
   pluginId: 'feed_replace_ohos_test_index',
   apply(node) {
     hvigor.nodesEvaluated(() => {
-      if (!(hvigor.getCommandEntryTask() ?? []).includes('onDeviceTest')) {
+      const ohosTestEntryTasks = new Set(['onDeviceTest', 'genOnDeviceTestHap']);
+      const commandEntryTasks = hvigor.getCommandEntryTask() ?? [];
+      const targetModule = hvigor.getParameter().getExtParam('module');
+      if (targetModule !== 'feed@ohosTest' ||
+        !commandEntryTasks.some(taskName => ohosTestEntryTasks.has(taskName))) {
         return;
       }
       node.registerTask({
@@ -17,11 +21,16 @@ const plugin: HvigorPlugin = {
         postDependencies: ['ohosTest@OhosTestCompileArkTS'],
         run(taskContext) {
           const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
-          const targetPath = path.resolve(taskContext.modulePath,
-            'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
           if (fs.existsSync(sourcePath)) {
-            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-            fs.copyFileSync(sourcePath, targetPath);
+            const targetPaths = [
+              '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets',
+              'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'
+            ];
+            targetPaths.forEach((targetRelativePath: string) => {
+              const targetPath = path.resolve(taskContext.modulePath, targetRelativePath);
+              fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+              fs.copyFileSync(sourcePath, targetPath);
+            });
           }
         }
       });

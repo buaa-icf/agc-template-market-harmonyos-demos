@@ -10,7 +10,9 @@ const plugin: HvigorPlugin = {
     hvigor.nodesEvaluated(() => {
       const ohosTestEntryTasks = new Set(['onDeviceTest', 'genOnDeviceTestHap']);
       const commandEntryTasks = hvigor.getCommandEntryTask() ?? [];
-      if (!commandEntryTasks.some(taskName => ohosTestEntryTasks.has(taskName))) {
+      const targetModule = hvigor.getParameter().getExtParam('module');
+      if (targetModule !== 'user@ohosTest' ||
+        !commandEntryTasks.some(taskName => ohosTestEntryTasks.has(taskName))) {
         return;
       }
       node.registerTask({
