@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { CommonUtils } from 'lib_foundation';
+import { CommonUtils } from 'module_base';
 import { WEEK_LABELS } from './Constant';
 
 export class DayModel {
