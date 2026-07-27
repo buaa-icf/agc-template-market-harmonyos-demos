@@ -158,6 +158,19 @@ export default function PictureBeautificationTest() {
       expect(afterMax.bottom <= image.bottom + tolerance).assertTrue();
     });
 
+    it('moveClipCanvasFreeType_resize_clamps_at_right_boundary', 0, async () => {
+      const initial = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(initial, 0.98, 0.5, -120, 0);
+      const shrunken = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(shrunken, 0.5, 0.5, 800, 0);
+      const atRightBoundary = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(atRightBoundary, 0.98, 0.5, 120, 0);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      expect(after.right <= image.right + tolerance).assertTrue();
+    });
+
     it('moveClipCanvasRatioType_select_1_1_applies_square_ratio', 0, async () => {
       await selectRatio('1:1');
       const rect = await getBoundsById(CROP_CANVAS_ID);
@@ -260,6 +273,20 @@ export default function PictureBeautificationTest() {
       const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
       expect(after.right - after.left <= (image.right - image.left) + tolerance).assertTrue();
       expect(after.bottom - after.top <= (image.bottom - image.top) + tolerance).assertTrue();
+    });
+
+    it('moveClipCanvasRatioType_resize_clamps_at_right_boundary', 0, async () => {
+      await selectRatio('1:1');
+      const initial = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(initial, 0.98, 0.98, -120, -120);
+      const shrunken = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(shrunken, 0.5, 0.5, 800, 0);
+      const atRightBoundary = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(atRightBoundary, 0.98, 0.98, 120, 120);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      expect(after.right <= image.right + tolerance).assertTrue();
     });
   });
 }
