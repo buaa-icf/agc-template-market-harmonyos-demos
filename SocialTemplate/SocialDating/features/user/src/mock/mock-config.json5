@@ -1,2 +1,5 @@
 {
+  "@ohos.multimedia.cameraPicker": {
+    "source": "src/mock/CameraKit.mock.ets"
+  }
 }

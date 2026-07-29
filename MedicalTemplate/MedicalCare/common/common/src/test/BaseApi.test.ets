@@ -9,6 +9,7 @@ import { AuthenticationUtil } from '../main/ets/utils/AuthenticationUtil';
 import { HttpUtil } from '../main/ets/utils/HttpUtil';
 import { ToastUtil } from '../main/ets/utils/ToastUtil';
 import { LoadingDialogUtil } from '../main/ets/utils/DialogUtil';
+import { ResourceUtil } from '../main/ets/utils/ResourceUtil';
 
 class MockPayload {
   id: string = '';
@@ -310,6 +311,27 @@ export default function BaseApiTest() {
       expect(errorMessage).assertEqual('server error');
     });
 
+    it('throws without showing the default toast when the option is disabled after construction', 0, async () => {
+      const api = new BaseApi({
+        showLoading: false
+      });
+      const httpUtilDouble = new HttpUtilDouble();
+      let errorMessage = '';
+      api.config.showDefaultErrorToast = false;
+
+      httpUtilDouble.nextGetResponse = ResponseFactory.createPayloadResponse(9, 'silent error', 'broken');
+      BaseApiAccessor.setAuthorization(api, 'auth-token');
+      BaseApiAccessor.setHttpUtil(api, httpUtilDouble);
+
+      try {
+        await api.sendRequest<MockPayload>('/patient', RequestMethod.GET, undefined, false);
+      } catch (error) {
+        errorMessage = (error as BaseError).message;
+      }
+
+      expect(errorMessage).assertEqual('silent error');
+    });
+
     it('returns mock payload from rawfile when isMock is true', 0, async () => {
       const api = new BaseApi({
         isMock: true,
@@ -331,6 +353,33 @@ export default function BaseApiTest() {
       }
 
       expect(errorMessage.length > 0).assertTrue();
+    });
+
+    it('returns and caches a successful mock payload', 0, async () => {
+      const api = new BaseApi({
+        isMock: true,
+        showLoading: false,
+        showDefaultErrorToast: false
+      });
+      const callbackRecorder = new CallbackRecorder();
+      const preferenceDouble = new PreferenceDouble();
+      const payload = new MockPayload();
+      payload.id = 'mock-id';
+      payload.value = 'mock-value';
+      const mockRead = mockKit.mockFunc(ResourceUtil, ResourceUtil.readObjectFromResource);
+      when(mockRead)(ArgumentMatchers.any).afterReturn(Promise.resolve(payload));
+      BaseApiAccessor.setAuthorization(api, 'auth-token');
+      BaseApiAccessor.setPreferenceUtil(api, preferenceDouble);
+
+      const data = await api.sendRequest<MockPayload>('/mock/path', RequestMethod.GET, undefined, false,
+        (value: MockPayload) => {
+          callbackRecorder.record(value);
+        });
+
+      expect(data.value).assertEqual('mock-value');
+      expect(callbackRecorder.dump()).assertEqual('mock-value');
+      expect(preferenceDouble.savedKey).assertContain('/mock/path_0_auth-token');
+      expect(preferenceDouble.savedValue).assertContain('mock-value');
     });
   });
 }

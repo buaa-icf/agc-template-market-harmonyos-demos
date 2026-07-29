@@ -23,6 +23,7 @@ struct Index {
     type: loginComponentManager.TextType.PLAIN_TEXT
   }];
   dialogController: CustomDialogController = this.createDialogController();
+  emptyDialogController: CustomDialogController = this.createEmptyDialogController();
 
   createDialogController(): CustomDialogController {
     return new CustomDialogController({
@@ -33,6 +34,23 @@ struct Index {
         },
         confirm: () => {
           this.dialogController.close();
+        },
+        pathStack: this.pathStack
+      }),
+      autoCancel: false,
+      alignment: DialogAlignment.Center
+    });
+  }
+
+  createEmptyDialogController(): CustomDialogController {
+    return new CustomDialogController({
+      builder: AgreementDialog({
+        privacyText: [],
+        cancel: () => {
+          this.emptyDialogController.close();
+        },
+        confirm: () => {
+          this.emptyDialogController.close();
         },
         pathStack: this.pathStack
       }),
@@ -88,6 +106,13 @@ struct Index {
           .onClick(() => {
             this.dialogController = this.createDialogController();
             this.dialogController.open();
+          })
+
+        Button('Open Empty Agreement Dialog')
+          .id('agreement_test_open_empty_dialog')
+          .onClick(() => {
+            this.emptyDialogController = this.createEmptyDialogController();
+            this.emptyDialogController.open();
           })
 
         Text('Quick Login UITest Host')

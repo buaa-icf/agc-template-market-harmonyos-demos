@@ -23,6 +23,10 @@ interface ComponentLifecycleLike {
   aboutToBeDeleted?: () => void
 }
 
+interface PictureBeautificationPrivateFields {
+  actionType: number
+}
+
 const createdPages: PictureBeautification[] = []
 
 function buildRect(x: number, y: number, width: number, height: number): MyPosition {
@@ -312,6 +316,35 @@ export default function PictureBeautificationTest() {
       expect(page.clipRect.y).assertEqual(100)
       expect(page.clipRect.width).assertEqual(40)
       expect(page.clipRect.height).assertEqual(40)
+    })
+
+    it('clamps a ratio top-left resize to the image left edge', 0, () => {
+      const page = createPage()
+      page.cropRatio = 1
+      page.imageArea = buildRect(10, 20, 120, 120)
+      page.clipRect = buildRect(30, 40, 40, 40)
+      page.clipRectMaxW = 120
+      page.clipRectMaxH = 120
+
+      chooseRatioAction(page, 10, 10, 100, 80)
+      page.moveClipCanvasRatioType(-100, -100)
+
+      expect(page.clipRect.x).assertEqual(10)
+      expect(page.clipRect.y).assertEqual(20)
+    })
+
+    it('keeps the ratio crop rectangle unchanged for an unknown action', 0, () => {
+      const page = createPage()
+      page.cropRatio = 1
+      const privateFields = page as Object as PictureBeautificationPrivateFields
+      privateFields.actionType = 99
+
+      page.moveClipCanvasRatioType(25, 30)
+
+      expect(page.clipRect.x).assertEqual(30)
+      expect(page.clipRect.y).assertEqual(40)
+      expect(page.clipRect.width).assertEqual(40)
+      expect(page.clipRect.height).assertEqual(30)
     })
 
     it('handles top-right and top-left ratio resize branches for opposite drag directions', 0, () => {

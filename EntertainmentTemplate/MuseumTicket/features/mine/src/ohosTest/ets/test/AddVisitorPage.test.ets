@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, it } from '@ohos/hypium';
+import { beforeAll, beforeEach, describe, expect, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
 const UI_TIMEOUT = 10000;
@@ -106,6 +106,9 @@ export default function AddVisitorPageTest() {
       await findById(driver, 'add_visitor_phone_input');
       await findById(driver, SAVE_BUTTON_ID);
       await findById(driver, CANCEL_BUTTON_ID);
+      expect(await (await findById(driver, 'add_visitor_name_input')).getText()).assertEqual('Test Visitor');
+      expect(await (await findById(driver, 'add_visitor_card_id_input')).getText()).assertEqual('110101199003079876');
+      expect(await (await findById(driver, 'add_visitor_phone_input')).getText()).assertEqual('13812345678');
     });
 
     it('build_can_close_and_reopen_page', 0, async () => {
@@ -123,6 +126,9 @@ export default function AddVisitorPageTest() {
       await (await findById(driver, EMPTY_BUTTON_ID)).click();
       await waitForIdle(driver);
       await findById(driver, SAVE_BUTTON_ID);
+      expect(await (await findById(driver, 'add_visitor_name_input')).getText()).assertEqual('');
+      expect(await (await findById(driver, 'add_visitor_card_id_input')).getText()).assertEqual('');
+      expect(await (await findById(driver, 'add_visitor_phone_input')).getText()).assertEqual('');
     });
 
     it('isContactInfoValid_rejects_missing_name', 0, async () => {

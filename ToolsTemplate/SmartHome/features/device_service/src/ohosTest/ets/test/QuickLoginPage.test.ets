@@ -1,6 +1,10 @@
 import { describe, it, TestType, Size, Level } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 import { KeyCode } from '@ohos.multimodalInput.keyCode';
+import { loginComponentManager } from '@kit.AccountKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { QuickLoginPage } from '../../../main/ets/pages/QuickLoginPage';
+import { LoginErrorCode } from '../../../main/ets/model/ErrorCodeEntity';
 
 const FIND_TIMEOUT_MS: number = 5_000;
 const IDLE_POLL_MS: number = 1_000;
@@ -52,6 +56,23 @@ async function resetToHost(driver: Driver, hostAnchorId: string): Promise<void> 
   await findById(driver, hostAnchorId);
 }
 
+function createBusinessError(code: number): BusinessError {
+  return {
+    code,
+    message: `coverage error ${code}`,
+    name: 'BusinessError'
+  } as BusinessError;
+}
+
+function createCredential(unionID?: string): loginComponentManager.HuaweiIDCredential {
+  return {
+    authorizationCode: 'coverage-auth-code',
+    openID: 'coverage-open-id',
+    unionID,
+    idToken: 'coverage-id-token'
+  } as loginComponentManager.HuaweiIDCredential;
+}
+
 export default function QuickLoginPageTest() {
   describe('QuickLoginPageTest', () => {
     it('bulidSpan should navigate to linked agreement pages on quick login page',
@@ -88,6 +109,65 @@ export default function QuickLoginPageTest() {
         // not require one environment-specific result UI.
         await click(await findById(driver, 'login_with_huaweiId_button'), driver);
         await driver.waitForIdle(IDLE_POLL_MS, FIND_TIMEOUT_MS);
+      });
+
+    it('agreement links should stay inactive while Huawei ID login is in progress',
+      TestType.FUNCTION | Size.MEDIUMTEST | Level.LEVEL3, async () => {
+        const driver = Driver.create();
+
+        await resetToHost(driver, 'quick_login_test_host_anchor');
+        await click(await findById(driver, 'quick_login_test_open_page'), driver);
+
+        const loginButton = await findById(driver, 'login_with_huaweiId_button');
+        const termsLink = await findById(driver, 'quick_login_terms_link');
+        const privacyLink = await findById(driver, 'quick_login_privacy_link');
+
+        await loginButton.click();
+        await termsLink.click();
+        await privacyLink.click();
+        await driver.waitForIdle(IDLE_POLL_MS, FIND_TIMEOUT_MS);
+
+        await findById(driver, 'login_with_huaweiId_button');
+      });
+
+    it('handleLoginWithHuaweiIDButton should cover error and success branches',
+      TestType.FUNCTION | Size.MEDIUMTEST | Level.LEVEL3, async () => {
+        const page = new QuickLoginPage();
+        const credential = createCredential();
+        page.showLoginErrorDialog = (): void => {
+        };
+
+        page.handleLoginWithHuaweiIDButton(
+          createBusinessError(LoginErrorCode.ERROR_CODE_LOGIN_OUT), credential);
+        page.handleLoginWithHuaweiIDButton(
+          createBusinessError(LoginErrorCode.ERROR_CODE_NOT_SUPPORTED), credential);
+        page.handleLoginWithHuaweiIDButton(
+          createBusinessError(LoginErrorCode.ERROR_CODE_NOT_REQUIRED_SCOPE_OR_PERMISSION), credential);
+        page.handleLoginWithHuaweiIDButton(createBusinessError(-1), credential);
+
+        page.handleLoginWithHuaweiIDButton(
+          createBusinessError(LoginErrorCode.ERROR_CODE_AGREEMENT_STATUS_NOT_ACCEPTED), credential);
+        page.agreementDialog.close();
+
+        page.isSelected = false;
+        page.handleLoginWithHuaweiIDButton(undefined, credential);
+        page.agreementDialog.close();
+
+        page.isSelected = true;
+        page.response = createCredential();
+        page.handleLoginWithHuaweiIDButton(undefined, credential);
+
+        page.response = createCredential('existing-union-id');
+        page.handleLoginWithHuaweiIDButton(undefined, credential);
+
+        page.handleLoginWithHuaweiIDButton(
+          createBusinessError(LoginErrorCode.ERROR_CODE_NETWORK_ERROR), credential);
+
+        page.isSelected = true;
+        page.loginResultHook = () => {
+          throw new Error('coverage login failure');
+        };
+        page.handleLoginWithHuaweiIDButton(undefined, credential);
       });
   });
 }
