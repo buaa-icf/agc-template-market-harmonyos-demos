@@ -9,6 +9,9 @@ const DESC_ID = 'quick_login_cover_desc';
 const LOGIN_BUTTON_ID = 'quick_login_cover_login_button';
 const PRIVACY_CHECKBOX_ID = 'quick_login_cover_privacy_checkbox';
 const PRIVACY_TEXT_ID = 'quick_login_cover_privacy_text';
+const SERVICE_POLICY_LINK_ID = 'quick_login_cover_privacy_link_1';
+const PRIVACY_POLICY_LINK_ID = 'quick_login_cover_privacy_link_2';
+const ACCOUNT_ROUTER_LINK_ID = 'quick_login_cover_privacy_link_4';
 
 async function waitForIdle(): Promise<void> {
   await DRIVER.waitForIdle(800, 8000);
@@ -53,6 +56,20 @@ export default function quickLoginCoverTest() {
     it('cover_login_should_show_default_phone_and_description_node', 0, async () => {
       await findByText('177******96');
       await findById(DESC_ID);
+    });
+
+    it('cover_login_checkbox_should_apply_and_remove_agreement', 0, async () => {
+      const checkbox = await findById(PRIVACY_CHECKBOX_ID);
+      await checkbox.click();
+      await waitForIdle();
+      await checkbox.click();
+      await waitForIdle();
+    });
+
+    it('cover_login_should_render_each_privacy_link_as_a_testable_node', 0, async () => {
+      await findById(SERVICE_POLICY_LINK_ID);
+      await findById(PRIVACY_POLICY_LINK_ID);
+      await findById(ACCOUNT_ROUTER_LINK_ID);
     });
   });
 }

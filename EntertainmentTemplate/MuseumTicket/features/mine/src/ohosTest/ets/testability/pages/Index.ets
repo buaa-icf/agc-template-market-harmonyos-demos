@@ -76,13 +76,17 @@ struct Index {
     RouterModule.getStack().pushPathByName(RouterMap.ADD_VISITOR, null);
   }
 
-  private openEditVisitor(contactInfo: Contacts): void {
+  private openEditVisitor(contactInfo: Contacts | undefined): void {
     this.vm.clear();
     this.vm.recommendList = [];
     this.recommendScenario = 'idle';
     RouterModule.clear();
     RouterModule.getStack().pushPathByName(HOST_ROUTE, null);
-    RouterModule.push({ url: RouterMap.EDIT_VISITOR, param: { contactInfo: contactInfo } });
+    if (contactInfo) {
+      RouterModule.push({ url: RouterMap.EDIT_VISITOR, param: { contactInfo: contactInfo } });
+    } else {
+      RouterModule.getStack().pushPathByName(RouterMap.EDIT_VISITOR, null);
+    }
   }
 
   private openEmptyEditVisitor(): void {

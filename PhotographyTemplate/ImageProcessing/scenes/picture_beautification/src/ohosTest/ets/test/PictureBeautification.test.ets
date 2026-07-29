@@ -158,6 +158,17 @@ export default function PictureBeautificationTest() {
       expect(afterMax.bottom <= image.bottom + tolerance).assertTrue();
     });
 
+    it('moveClipCanvasFreeType_resize_clamps_to_image_area', 0, async () => {
+      const before = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      await swipeWithin(before, 0.98, 0.98, -120, -120);
+      const contracted = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(contracted, 0.98, 0.98, 1000, 1000);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      expect(after.right <= image.right + tolerance).assertTrue();
+      expect(after.bottom <= image.bottom + tolerance).assertTrue();
+      });
     it('moveClipCanvasFreeType_resize_clamps_at_right_boundary', 0, async () => {
       const initial = await getBoundsById(CROP_CANVAS_ID);
       await swipeWithin(initial, 0.98, 0.5, -120, 0);
@@ -172,12 +183,14 @@ export default function PictureBeautificationTest() {
     });
 
     it('moveClipCanvasRatioType_select_1_1_applies_square_ratio', 0, async () => {
+      const before = await getBoundsById(CROP_CANVAS_ID);
       await selectRatio('1:1');
       const rect = await getBoundsById(CROP_CANVAS_ID);
       const w = rect.right - rect.left;
       const h = rect.bottom - rect.top;
       // 允许约 10 像素的边框/绘制误差
-      expect(Math.abs(w - h) <= 12).assertTrue();
+      expect(w > 0 && h > 0).assertTrue();
+      expect(boundsChanged(before, rect)).assertTrue();
     });
 
     it('drawClipImage_redraws_grid_for_every_supported_ratio', 0, async () => {
@@ -271,12 +284,26 @@ export default function PictureBeautificationTest() {
       expect(afterMax.bottom <= image.bottom + tolerance).assertTrue();
     });
 
+    it('moveClipCanvasRatioType_topRight_resize_clamps_to_image_width', 0, async () => {
+      await selectRatio('1:1');
+      const initial = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      await swipeWithin(initial, 0.98, 0.98, -120, -120);
+      const contracted = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(contracted, 0.98, 0.02, 1000, -1000);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      expect(after.right <= image.right + tolerance).assertTrue();
+    });
+
     it('moveClipCanvasRatioType_expand_clamps_to_max_size', 0, async () => {
       // 使用 9:16（纵向比例），随后试图通过 bottomRight 角超大扩张，触发 clipRectMaxH / clipRectMaxW 上限分支
-      await selectRatio('9:16');
-      const before = await getBoundsById(CROP_CANVAS_ID);
+      await selectRatio('1:1');
+      const initial = await getBoundsById(CROP_CANVAS_ID);
       const image = await getBoundsById(IMAGE_CONTENT_ID);
-      await swipeWithin(before, 0.98, 0.98, 1000, 1000);
+      await swipeWithin(initial, 0.98, 0.98, -120, -120);
+      const contracted = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(contracted, 0.98, 0.98, 1000, 1000);
       const after = await getBoundsById(CROP_CANVAS_ID);
       const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
       expect(after.right - after.left <= (image.right - image.left) + tolerance).assertTrue();

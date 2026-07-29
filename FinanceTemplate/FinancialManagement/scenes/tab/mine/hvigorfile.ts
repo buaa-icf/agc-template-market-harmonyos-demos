@@ -22,13 +22,19 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
         run(taskContext) {
           const sourcePath = path.resolve(taskContext.modulePath,
             'src/ohosTest/ets/testability/pages/Index.ets');
-          const targetPath = path.resolve(taskContext.modulePath,
-            'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+          const targetPaths = [
+            path.resolve(taskContext.modulePath,
+              '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'),
+            path.resolve(taskContext.modulePath,
+              'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets')
+          ];
           if (!fs.existsSync(sourcePath)) {
             return;
           }
-          fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-          fs.copyFileSync(sourcePath, targetPath);
+          targetPaths.forEach((targetPath) => {
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.copyFileSync(sourcePath, targetPath);
+          });
         }
       });
     });

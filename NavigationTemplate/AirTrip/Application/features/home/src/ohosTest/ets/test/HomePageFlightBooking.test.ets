@@ -3,6 +3,8 @@ import { Driver, ON, MatchPattern, Component } from '@kit.TestKit';
 
 const FIND_TIMEOUT_MS: number = 10_000;
 const IDLE_MS: number = 500;
+const CLEAR_DEPARTURE_ID: string = 'home_test_clear_departure';
+const RESTORE_DEPARTURE_ID: string = 'home_test_restore_departure';
 
 async function waitForIdle(driver: Driver, durationMs: number = IDLE_MS): Promise<void> {
   await driver.delayMs(durationMs);
@@ -72,6 +74,23 @@ export default function homePageFlightBookingTest() {
 
       expect(departureAfter).assertEqual(destinationBefore);
       expect(destinationAfter).assertEqual(departureBefore);
+    });
+
+    it('should render the empty-departure style and recover the default city', 0, async () => {
+      const departureBefore = await (await waitById(driver, 'home_flight_departure_value')).getText();
+      await clickById(driver, CLEAR_DEPARTURE_ID);
+      const emptyDeparture = await (await waitById(driver, 'home_flight_departure_value')).getText();
+      expect(emptyDeparture !== departureBefore).assertTrue();
+
+      await clickById(driver, RESTORE_DEPARTURE_ID);
+      const restoredDeparture = await (await waitById(driver, 'home_flight_departure_value')).getText();
+      expect(restoredDeparture !== emptyDeparture).assertTrue();
+      expect(restoredDeparture.length > 0).assertTrue();
+    });
+
+    it('should invoke the departure-city selector callback without leaving the host', 0, async () => {
+      await clickById(driver, 'home_flight_departure_selector');
+      await waitById(driver, 'home_test_host_anchor');
     });
 
     it('should open and close account-binding dialog when booking', 0, async () => {

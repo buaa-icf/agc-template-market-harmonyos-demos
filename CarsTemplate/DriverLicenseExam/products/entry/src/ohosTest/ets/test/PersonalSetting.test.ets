@@ -5,7 +5,6 @@ const PRIVACY_POLICY_ITEM_ID: string = 'personal_setting_item_privacy_policy';
 const USER_AGREEMENT_ITEM_ID: string = 'personal_setting_item_user_agreement';
 const LOGOUT_BUTTON_ID: string = 'personal_setting_logout_button';
 const LOGOUT_DIALOG_CONTENT_ID: string = 'personal_setting_logout_dialog_content';
-
 const driver: Driver = Driver.create();
 
 async function waitForById(id: string, timeoutMs: number = 12000): Promise<Component> {
@@ -40,6 +39,9 @@ export default function personalSettingTest() {
 
       const dialogContent: Component = await waitForById(LOGOUT_DIALOG_CONTENT_ID);
       expect(dialogContent !== null).assertTrue();
+      await driver.pressBack();
+      await driver.waitForIdle(800, 10000);
+      await waitForById(LOGOUT_BUTTON_ID);
     });
   });
 }

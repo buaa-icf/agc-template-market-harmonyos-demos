@@ -127,6 +127,19 @@ export default function practiceModeTest() {
       expect(listener.addIndexes.length).assertEqual(0);
     });
 
+    it('PracticeDataSource_unregister_unknown_listener_should_be_a_no_op', 0, () => {
+      const dataSource: PracticeDataSource = new PracticeDataSource([]);
+      const registered: MockDataChangeListener = new MockDataChangeListener();
+      const unknown: MockDataChangeListener = new MockDataChangeListener();
+
+      dataSource.registerDataChangeListener(registered);
+      dataSource.unregisterDataChangeListener(unknown);
+      dataSource.notifyDataReload();
+
+      expect(registered.reloadCount).assertEqual(1);
+      expect(unknown.reloadCount).assertEqual(0);
+    });
+
     it('PracticeDataSource_register_same_listener_once_only', 0, () => {
       const dataSource: PracticeDataSource = new PracticeDataSource([]);
       const listener: MockDataChangeListener = new MockDataChangeListener();

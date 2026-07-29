@@ -335,15 +335,16 @@ export struct QuickLogin {
           }
 
           Row() {
-            Text() {
-              ForEach(this.privacyText, (item: loginComponentManager.PrivacyText) => {
+            Row() {
+              ForEach(this.privacyText, (item: loginComponentManager.PrivacyText, index: number) => {
                 if (item?.type === loginComponentManager.TextType.PLAIN_TEXT && item?.text) {
-                  Span(item?.text)
+                  Text(item?.text)
                     .fontColor($r('sys.color.font_secondary'))
                     .fontWeight(FontWeight.Regular)
                     .fontSize($r('sys.float.Body_S'))
                 } else if (item?.type === loginComponentManager.TextType.RICH_TEXT && item?.text) {
-                  Span(item?.text)
+                  Text(item?.text)
+                    .id('quick_login_cover_privacy_link_' + index)
                     .fontColor($r('sys.color.font_primary'))
                     .fontWeight(FontWeight.Medium)
                     .fontSize($r('sys.float.Body_S'))
