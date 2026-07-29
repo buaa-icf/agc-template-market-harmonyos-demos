@@ -4,7 +4,7 @@ import { CommonConstants } from '@ohos_agcit/driver_license_exam_guide';
 
 @Builder
 export function PersonalSettingBuilder() {
-  PersonalSetting();
+  PersonalSetting({ openAgreement: () => CommonModel.instance.navStack.pushPathByName('PrivacyAgreement', undefined) });
 }
 
 @Entry
@@ -14,7 +14,7 @@ struct PersonalSetting {
   topRectHeight: number = AppStorage.get('topRectHeight') || 0;
   @Consumer('appPathStack') appPathStack: NavPathStack = new NavPathStack();
   vm: CommonModel = CommonModel.instance;
-
+  @Event openAgreement: () => void = () => {};
 
 
   // 退出登录对话框
@@ -81,7 +81,7 @@ struct PersonalSetting {
               .margin({ right: 18 })
           }
           .onClick(() => {
-            this.vm.navStack.pushPathByName('PrivacyAgreement', undefined)
+            this.openAgreement()
           })
           .id('personal_setting_item_privacy_policy')
           .width(328)
@@ -104,7 +104,7 @@ struct PersonalSetting {
               .margin({ right: 18 })
           }
           .onClick(() => {
-            this.vm.navStack.pushPathByName('PrivacyAgreement', undefined)
+            this.openAgreement()
           })
           .id('personal_setting_item_user_agreement')
           .width(328)
@@ -152,6 +152,11 @@ struct PersonalSetting {
     })
 
   }
+}
+
+@Builder
+export function PersonalSettingTestBuilder() {
+  PersonalSetting();
 }
 
 

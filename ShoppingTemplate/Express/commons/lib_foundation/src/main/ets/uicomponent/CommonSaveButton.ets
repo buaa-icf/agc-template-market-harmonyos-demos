@@ -1,6 +1,7 @@
 @ComponentV2
 export struct CommonSaveButton {
   @Param value: string = ''
+  @Param testId: string = 'common_save_button'
   @Event changeValue: () => void = () => {
   }
 
@@ -21,6 +22,7 @@ export struct CommonSaveButton {
       }
       .width('100%')
       .height(40)
+      .id(this.testId)
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .onClick(() => {

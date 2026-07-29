@@ -397,7 +397,7 @@ export struct QuickLogin {
     Column() {
       Column() {
         Column() {
-          Image(this.icon)
+          Image(this.icon).id('quick_login_default_icon')
             .width(48)
             .height(48)
             .draggable(false)
@@ -407,7 +407,7 @@ export struct QuickLogin {
             .onError(() => {
             })
           Column() {
-            Text(this.quickLoginAnonymousPhone)
+            Text(this.quickLoginAnonymousPhone).id('quick_login_default_phone')
               .fontSize(36)
               .fontColor($r('sys.color.ohos_id_color_text_primary'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
@@ -456,12 +456,12 @@ export struct QuickLogin {
               verifyPhoneNumber: true
             },
             controller: this.controller
-          })
+          }).id('quick_login_default_login_button')
             .height(40)
             .width('100%')
           Row() {
             Row() {
-              Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
+              Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' }).id('quick_login_default_privacy_checkbox')
                 .width(24)
                 .height(24)
                 .focusable(true)
@@ -479,15 +479,16 @@ export struct QuickLogin {
             }
 
             Row() {
-              Text() {
-                ForEach(this.privacyText, (item: loginComponentManager.PrivacyText) => {
+              Row() {
+                ForEach(this.privacyText, (item: loginComponentManager.PrivacyText, index: number) => {
                   if (item?.type === loginComponentManager.TextType.PLAIN_TEXT && item?.text) {
-                    Span(item?.text)
+                    Text(item?.text)
                       .fontColor($r('sys.color.font_secondary'))
                       .fontWeight(FontWeight.Regular)
                       .fontSize($r('sys.float.Body_S'))
                   } else if (item?.type === loginComponentManager.TextType.RICH_TEXT && item?.text) {
-                    Span(item?.text)
+                    Text(item?.text)
+                      .id('quick_login_default_privacy_link_' + index)
                       .fontColor($r('sys.color.font_primary'))
                       .fontWeight(FontWeight.Medium)
                       .fontSize($r('sys.float.Body_S'))
@@ -495,20 +496,19 @@ export struct QuickLogin {
                       .focusOnTouch(true)
                       .onClick(() => {
                         // 应用需要根据item.tag实现协议页面的跳转逻辑
-                        if (item.tag === QuickLogin.USER_SERVICE_TAG) {
-                          this.onServicePolicy()
-                        }
-                        if (item.tag === QuickLogin.USER_PRIVACY_TAG) {
-                          this.onPrivacyPolicy()
-                        }
-                        if (item.tag === QuickLogin.USER_AUTHENTICATION_TAG) {
-                          this.onHYAccountRouter()
-                        }
+                        if (item.tag === QuickLogin.USER_SERVICE_TAG) { this.onServicePolicy() }
+                        if (item.tag === QuickLogin.USER_PRIVACY_TAG) { this.onPrivacyPolicy() }
+                        if (item.tag === QuickLogin.USER_AUTHENTICATION_TAG) { this.onHYAccountRouter() }
+
+
+
+
+
                       })
                   }
                 }, (item: loginComponentManager.PrivacyText) => item.text.toString())
               }
-              .width('100%')
+              .id('quick_login_default_privacy_text').width('100%')
             }
             .margin({ left: 12 })
             .layoutWeight(1)
@@ -526,7 +526,7 @@ export struct QuickLogin {
         right: 16
       });
     }
-    .width('100%')
+    .id('quick_login_default_root').width('100%')
     .height(500)
   }
 

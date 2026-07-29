@@ -23,6 +23,7 @@ export struct EditPhonePage {
           TextInput({
             text: this.vm.cellphone,
           })
+            .id('edit_phone_input')
             .textAlign(TextAlign.End)
             .fontSize(14)
             .layoutWeight(1)
@@ -47,7 +48,7 @@ export struct EditPhonePage {
         .borderRadius(16);
 
         CommonSaveButton({
-          value: this.vm.cellphone, changeValue: () => {
+          value: this.vm.cellphone, testId: 'edit_phone_save_button', changeValue: () => {
             this.vm.modify()
           }
         })

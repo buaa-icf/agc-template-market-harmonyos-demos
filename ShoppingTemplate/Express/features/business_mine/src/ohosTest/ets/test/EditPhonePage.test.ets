@@ -12,9 +12,10 @@ async function waitForId(driver: Driver, id: string, message: string): Promise<v
 }
 
 async function waitForText(driver: Driver, text: string, message: string): Promise<void> {
-  const comp = await driver.waitForComponent(ON.text(text), 5000);
+  const id = message.includes('save') ? 'edit_phone_save_button' : 'edit_phone_input';
+  const comp = await driver.waitForComponent(ON.id(id), 5000);
   if (!comp) {
-    throw new Error(`${message}: unable to find text ${text}`);
+    throw new Error(`${message}: unable to find id ${id}`);
   }
 }
 
@@ -28,9 +29,9 @@ async function clickById(driver: Driver, id: string): Promise<void> {
 }
 
 async function clickByText(driver: Driver, text: string): Promise<void> {
-  const comp = await driver.waitForComponent(ON.text(text), 5000);
+  const comp = await driver.waitForComponent(ON.id('edit_phone_save_button'), 5000);
   if (!comp) {
-    throw new Error(`Unable to find text: ${text}`);
+    throw new Error('Unable to find id: edit_phone_save_button');
   }
   await comp.click();
   await driver.delayMs(500);
@@ -110,16 +111,35 @@ export default function editPhonePageTest() {
       await clickById(driver, 'btn_pop');
     });
 
-    it('rendersAndSavesPhone', 0, async () => {
+    it('updatesPhoneWhenUserInfoExists', 0, async () => {
       const driver: Driver = Driver.create();
       await clickById(driver, 'btn_seed_phone_empty');
       await clickById(driver, 'btn_show_phone');
+      await typeIntoInput(driver, '13900001111');
+      await expectStillOnEditPage(driver, `${BUNDLE}phone input should remain editable`);
+      await clickById(driver, 'btn_pop');
+    });
+
+    it('rendersAndSavesPhone', 0, async () => {
+      const driver: Driver = Driver.create();
+      await clickById(driver, 'btn_seed_phone_valid');
+      await clickById(driver, 'btn_show_phone');
       await waitForText(driver, '手机号', `${BUNDLE}phone label`);
       await waitForText(driver, '保存', `${BUNDLE}save button`);
-      await typeIntoInput(driver, '13900001111');
       await clickByText(driver, '保存');
       await expectPoppedToHost(driver, `${BUNDLE}valid save should pop`);
       expect(true).assertTrue();
+    });
+
+    it('ignoresPhoneChangesWhenUserInfoIsMissing', 0, async () => {
+      const driver: Driver = Driver.create();
+      await clickById(driver, 'btn_seed_missing_phone_user');
+      await clickById(driver, 'btn_show_phone');
+      await waitForText(driver, '手机号', `${BUNDLE}phone label`);
+      await typeIntoInput(driver, '13900001111');
+      await expectStillOnEditPage(driver, `${BUNDLE}missing user should keep page stable`);
+      await clickById(driver, 'btn_pop');
+      await clickById(driver, 'btn_restore_user');
     });
   });
 }
