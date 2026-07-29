@@ -1,4 +1,6 @@
 import { describe, beforeEach, afterEach, it, expect } from '@ohos/hypium';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { UserInfo } from 'lib_foundation';
 import { EditPhonePageVM } from '../main/ets/viewModels/EditPhonePageVM';
 
 interface FakeMonitor {
@@ -7,6 +9,10 @@ interface FakeMonitor {
 
 interface FakeMonitorValue {
   now: number;
+}
+
+interface EditPhonePageVMPrivateFields {
+  userInfo: UserInfo | undefined;
 }
 
 function buildMonitor(now: number): FakeMonitor {
@@ -38,8 +44,11 @@ export default function editPhonePageVMTest() {
     });
 
     afterEach(() => {
-      vm.userInfo.id = 0;
-      vm.userInfo.cellphone = '';
+      const privateFields = vm as Object as EditPhonePageVMPrivateFields;
+      if (privateFields.userInfo) {
+        privateFields.userInfo.id = 0;
+        privateFields.userInfo.cellphone = '';
+      }
     });
 
     it('checkLogin_setsIsLoginFalseWhenIdZero', 0, () => {
@@ -89,6 +98,24 @@ export default function editPhonePageVMTest() {
       const a = EditPhonePageVM.instance;
       const b = EditPhonePageVM.instance;
       expect(a === b).assertTrue();
+    });
+
+    it('constructor_createsUserInfoWhenStorageIsEmpty', 0, () => {
+      AppStorageV2.remove(UserInfo);
+
+      const freshVM = new EditPhonePageVM();
+
+      expect(freshVM.userInfo !== undefined).assertTrue();
+    });
+
+    it('modify_returnsWhenUserInfoIsMissing', 0, () => {
+      const privateFields = vm as Object as EditPhonePageVMPrivateFields;
+      privateFields.userInfo = undefined;
+      vm.cellphone = '13912345678';
+
+      safeCall((): void => callModify(vm));
+
+      expect(privateFields.userInfo === undefined).assertTrue();
     });
 
     it('modify_doesNotChangeWhenCellphoneEmpty', 0, () => {

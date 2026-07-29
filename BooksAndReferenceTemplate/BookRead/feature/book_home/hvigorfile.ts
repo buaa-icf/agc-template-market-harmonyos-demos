@@ -48,29 +48,49 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
       if (!shouldConfigureOhosTest()) {
         return;
       }
+      const nodeApi = node as unknown as Record<string, Function>;
+      const hasTask: (name: string) => boolean = typeof nodeApi.hasTask === 'function'
+        ? (nodeApi.hasTask as (name: string) => boolean).bind(node)
+        : (name: string): boolean => node.getTaskByName(name) !== undefined;
+      if (!hasTask(GENERATE_OHOS_TEST_TEMPLATE_TASK)) {
+        return;
+      }
 
       node.registerTask({
         name: 'ReplaceOhosTestIndex',
         dependencies: [GENERATE_OHOS_TEST_TEMPLATE_TASK],
-        postDependencies: [OHOS_TEST_COMPILE_ARK_TS_TASK],
+        postDependencies: hasTask(OHOS_TEST_COMPILE_ARK_TS_TASK)
+          ? [OHOS_TEST_COMPILE_ARK_TS_TASK]
+          : [],
         run(taskContext) {
           const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
-          const targetPath = path.resolve(taskContext.modulePath,
-            '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+          const targetPaths = [
+            path.resolve(taskContext.modulePath,
+              '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'),
+            path.resolve(taskContext.modulePath,
+              'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets')
+          ];
 
           if (!fs.existsSync(sourcePath)) {
             return;
           }
 
-          fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-          fs.copyFileSync(sourcePath, targetPath);
+          targetPaths.forEach((targetPath: string) => {
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.copyFileSync(sourcePath, targetPath);
+          });
         }
       });
 
+      if (!hasTask(OHOS_TEST_CACHE_NATIVE_LIBS_TASK)) {
+        return;
+      }
       node.registerTask({
         name: 'StripOhosTestPaymentNativeLibs',
         dependencies: [OHOS_TEST_CACHE_NATIVE_LIBS_TASK],
-        postDependencies: [OHOS_TEST_PACKAGE_HAP_TASK],
+        postDependencies: hasTask(OHOS_TEST_PACKAGE_HAP_TASK)
+          ? [OHOS_TEST_PACKAGE_HAP_TASK]
+          : [],
         run(taskContext) {
           stripPaymentNativeLibraries(taskContext.modulePath);
         }

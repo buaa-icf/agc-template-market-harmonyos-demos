@@ -65,7 +65,7 @@ export class BaseApi {
    * @param onCacheCallback 此项不为undefined则启用缓存，如果缓存存在，直接返回缓存数据；缓存后仍然会继续发起网络请求，并再次回调
    */
   public async sendRequest<T>(url: string, method: RequestMethod, requestData?: object,
-    showLoading?: boolean | undefined, onCacheCallback?: (data: T) => void): Promise<T> {
+    showLoading?: boolean | undefined, onCacheCallback?: BaseApiCacheCallback<T>): Promise<T> {
     LogUtil.debug(`Send request: ${this.config.baseUrl + url} ${JSON.stringify(requestData)}`)
 
     showLoading = showLoading === undefined ? this.config.showLoading : showLoading
@@ -202,3 +202,5 @@ export class BaseApi {
     return key
   }
 }
+
+export type BaseApiCacheCallback<T> = (data: T) => void;

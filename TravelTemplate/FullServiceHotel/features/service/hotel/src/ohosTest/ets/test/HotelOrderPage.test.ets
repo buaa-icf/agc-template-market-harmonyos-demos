@@ -1,4 +1,4 @@
-import { beforeAll, describe, it } from '@ohos/hypium';
+import { beforeAll, describe, expect, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
 const UI_TIMEOUT = 10000;
@@ -25,6 +25,11 @@ export default function HotelOrderPageTest() {
     it('renders both guest input fields with the shared form style', 0, async () => {
       await findById(driver, 'hotel_order_guest_name_input');
       await findById(driver, 'hotel_order_guest_phone_input');
+    });
+
+    it('accepts guest phone information in the styled phone input', 0, async () => {
+      const phoneInput = await findById(driver, 'hotel_order_guest_phone_input');
+      await driver.inputText(await phoneInput.getBoundsCenter(), '13812345678');
     });
   });
 }

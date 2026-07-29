@@ -6,7 +6,10 @@ const OPEN_GOOD_DETAIL_BUTTON_ID: string = 'good_detail_test_open_page';
 const HOST_ANCHOR_TEXT: string = 'Order Detail UITest Host';
 const OPEN_GOOD_DETAIL_BUTTON_TEXT: string = 'Open Good Detail (package)';
 const GOOD_DETAIL_ROOT_ID: string = 'good_detail_page_root';
+const GOOD_DETAIL_LIST_ID: string = 'good_detail_page_list';
 const FIRST_PACKAGE_SPEC_ID: string = 'good_detail_package_spec_0';
+const FIRST_PACKAGE_ADD_ID: string = 'good_detail_package_add_0_0';
+const SECOND_PACKAGE_ADD_ID: string = 'good_detail_package_add_1_0';
 
 const driver: Driver = Driver.create();
 
@@ -53,6 +56,16 @@ export default function goodDetailPageTest() {
       const firstPackageSpec: Component = await waitForById(FIRST_PACKAGE_SPEC_ID);
       expect(detailRoot !== null).assertTrue();
       expect(firstPackageSpec !== null).assertTrue();
+
+      const addButton: Component = await waitForById(FIRST_PACKAGE_ADD_ID, 10000);
+      await addButton.click();
+      await driver.waitForIdle(1000, 5000);
+
+      await (await waitForById(GOOD_DETAIL_LIST_ID, 10000)).scrollToBottom();
+      await driver.waitForIdle(1000, 5000);
+      const secondAddButton: Component = await waitForById(SECOND_PACKAGE_ADD_ID, 10000);
+      await secondAddButton.click();
+      await driver.waitForIdle(1000, 5000);
     });
   });
 }

@@ -1,7 +1,8 @@
 import { describe, beforeAll, afterAll, it } from '@ohos/hypium';
 import { Driver, ON, Component } from '@kit.TestKit';
+import { emitter } from '@kit.BasicServicesKit';
 
-const HOST_OPEN_BUTTON_ID = 'recharge_page_test_open';
+const RECHARGE_TEST_EVENT_ID = 91247;
 const RECHARGE_PAGE_ROOT_ID = 'recharge_page_root';
 const RECHARGE_RECORD_LINK_ID = 'recharge_page_record_link';
 const RECHARGE_PACKAGE_CARD_1_ID = 'recharge_page_package_card_1';
@@ -10,6 +11,7 @@ const RECHARGE_PACKAGE_CARD_6_ID = 'recharge_page_package_card_6';
 const RECHARGE_AGREEMENT_CHECKBOX_ID = 'recharge_page_agreement_checkbox';
 const RECHARGE_AGREEMENT_LINK_ID = 'recharge_page_agreement_link';
 const RECHARGE_SUBMIT_BUTTON_ID = 'recharge_page_submit';
+const HOST_CLOSE_BUTTON_ID = 'recharge_page_test_close';
 const DRIVER = Driver.create();
 
 async function findByText(text: string, timeout: number = 5000): Promise<Component> {
@@ -41,51 +43,28 @@ async function assertTextVisible(text: string, timeout: number = 5000): Promise<
   await findByText(text, timeout);
 }
 
-async function waitForHostPageLoaded(): Promise<void> {
-  // Compact recovery loop. Total worst case ~6s, well under hypium's 15s
-  // beforeAll timeout. The first iteration usually wins because the previous
-  // class's afterAll has already settled the screen.
-  for (let attempt = 0; attempt < 4; attempt++) {
-    await DRIVER.waitForIdle(300, 1500);
-    const hostBtn = await DRIVER.waitForComponent(ON.id('recharge_page_test_open'), 1200);
-    if (hostBtn !== null) {
-      return;
-    }
-    await DRIVER.pressBack();
-  }
-  await findById('recharge_page_test_open', 3000);
-}
-
 async function waitForRechargePageLoaded(): Promise<void> {
   await DRIVER.waitForIdle(1000, 10000);
   await findById(RECHARGE_PAGE_ROOT_ID, 10000);
   await findById(RECHARGE_SUBMIT_BUTTON_ID, 10000);
 }
 
-async function ensureHostPageLoaded(): Promise<void> {
-  const deadline = new Date().getTime() + 15000;
-  while (new Date().getTime() <= deadline) {
-    const hostButton = await findByIdOrNull(HOST_OPEN_BUTTON_ID, 2000);
-    if (hostButton !== null) {
+async function openRechargePageDirectly(): Promise<void> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    emitter.emit({ eventId: RECHARGE_TEST_EVENT_ID });
+    await DRIVER.waitForIdle(300, 1500);
+    if (await findByIdOrNull(RECHARGE_PAGE_ROOT_ID, 1500) !== null) {
       return;
     }
-
-    const rechargePage = await findByIdOrNull(RECHARGE_PAGE_ROOT_ID, 1000);
-    if (rechargePage !== null) {
-      await DRIVER.pressBack();
-      await DRIVER.waitForIdle(1000, 5000);
-    } else {
-      await DRIVER.waitForIdle(1000, 2000);
-    }
   }
-
-  throw new Error('Unable to reach recharge page test host');
+  throw new Error('Unable to render recharge page through test event');
 }
 
 export default function RechargePageTest() {
   describe('RechargePageTest', () => {
     beforeAll(async () => {
-      await waitForHostPageLoaded();
+      await openRechargePageDirectly();
+      await waitForRechargePageLoaded();
     });
 
     afterAll(async () => {
@@ -94,9 +73,6 @@ export default function RechargePageTest() {
     });
 
     it('build_renders_recharge_packages_and_controls', 0, async () => {
-      await ensureHostPageLoaded();
-      await waitForHostPageLoaded();
-      await clickById(HOST_OPEN_BUTTON_ID);
       await waitForRechargePageLoaded();
 
       await assertTextVisible('充值');
@@ -123,8 +99,22 @@ export default function RechargePageTest() {
       await findById(RECHARGE_AGREEMENT_LINK_ID);
       await findById(RECHARGE_SUBMIT_BUTTON_ID);
 
+      await clickById(RECHARGE_PACKAGE_CARD_3_ID);
+      await clickById(RECHARGE_PACKAGE_CARD_6_ID);
+      await clickById(RECHARGE_PACKAGE_CARD_1_ID);
+
+      await clickById(RECHARGE_AGREEMENT_LINK_ID);
+      await clickById(RECHARGE_SUBMIT_BUTTON_ID);
+      await clickById(RECHARGE_AGREEMENT_CHECKBOX_ID);
+      await clickById(RECHARGE_SUBMIT_BUTTON_ID);
       await DRIVER.pressBack();
-      await waitForHostPageLoaded();
+      await DRIVER.waitForIdle(500, 5000);
+
+      await clickById(RECHARGE_RECORD_LINK_ID);
+      await DRIVER.waitForIdle(500, 5000);
+      await waitForRechargePageLoaded();
+
+      await clickById(HOST_CLOSE_BUTTON_ID);
     }, 60000);
   });
 }

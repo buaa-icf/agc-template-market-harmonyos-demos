@@ -1,4 +1,6 @@
 import { describe, beforeEach, afterEach, it, expect } from '@ohos/hypium';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { UserInfo } from 'lib_foundation';
 import { EditNamePageVM } from '../main/ets/viewModels/EditNamePageVM';
 
 interface FakeMonitor {
@@ -7,6 +9,10 @@ interface FakeMonitor {
 
 interface FakeMonitorValue {
   now: number;
+}
+
+interface EditNamePageVMPrivateFields {
+  userInfo: UserInfo | undefined;
 }
 
 function buildMonitor(now: number): FakeMonitor {
@@ -38,8 +44,11 @@ export default function editNamePageVMTest() {
     });
 
     afterEach(() => {
-      vm.userInfo.id = 0;
-      vm.userInfo.nickname = '';
+      const privateFields = vm as Object as EditNamePageVMPrivateFields;
+      if (privateFields.userInfo) {
+        privateFields.userInfo.id = 0;
+        privateFields.userInfo.nickname = '';
+      }
     });
 
     it('checkLogin_setsIsLoginFalseWhenIdZero', 0, () => {
@@ -89,6 +98,24 @@ export default function editNamePageVMTest() {
       const a = EditNamePageVM.instance;
       const b = EditNamePageVM.instance;
       expect(a === b).assertTrue();
+    });
+
+    it('constructor_createsUserInfoWhenStorageIsEmpty', 0, () => {
+      AppStorageV2.remove(UserInfo);
+
+      const freshVM = new EditNamePageVM();
+
+      expect(freshVM.userInfo !== undefined).assertTrue();
+    });
+
+    it('modify_returnsWhenUserInfoIsMissing', 0, () => {
+      const privateFields = vm as Object as EditNamePageVMPrivateFields;
+      privateFields.userInfo = undefined;
+      vm.nickname = 'newName';
+
+      safeCall((): void => callModify(vm));
+
+      expect(privateFields.userInfo === undefined).assertTrue();
     });
 
     it('modify_doesNotChangeWhenNicknameEmpty', 0, () => {

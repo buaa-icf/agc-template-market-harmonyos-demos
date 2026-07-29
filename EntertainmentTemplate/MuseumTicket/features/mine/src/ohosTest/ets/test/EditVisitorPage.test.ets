@@ -1,10 +1,11 @@
-import { beforeAll, beforeEach, describe, it } from '@ohos/hypium';
+import { beforeAll, beforeEach, describe, expect, it } from '@ohos/hypium';
 import { Component, Driver, ON } from '@kit.TestKit';
 
 const UI_TIMEOUT = 10000;
 const IDLE_DELAY = 1200;
 const HOST_ANCHOR_ID = 'add_visitor_host_anchor';
 const OPEN_EDIT_BUTTON_ID = 'edit_visitor_show_populated';
+const OPEN_EMPTY_EDIT_BUTTON_ID = 'edit_visitor_show_empty';
 const SAVE_BUTTON_ID = 'edit_visitor_save_button';
 const CANCEL_BUTTON_ID = 'edit_visitor_cancel_button';
 
@@ -62,6 +63,9 @@ export default function EditVisitorPageTest() {
       await findById(driver, 'edit_visitor_phone_input');
       await findById(driver, SAVE_BUTTON_ID);
       await findById(driver, CANCEL_BUTTON_ID);
+      expect(await (await findById(driver, 'edit_visitor_name_input')).getText()).assertEqual('Test Visitor');
+      expect(await (await findById(driver, 'edit_visitor_card_id_input')).getText()).assertEqual('110101199003079876');
+      expect(await (await findById(driver, 'edit_visitor_phone_input')).getText()).assertEqual('13812345678');
     });
 
     it('build_can_close_and_reopen_page', 0, async () => {
@@ -79,6 +83,15 @@ export default function EditVisitorPageTest() {
       await (await findById(driver, OPEN_EDIT_BUTTON_ID)).click();
       await waitForIdle(driver);
       await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('keeps default contact values when no contact is available to clone', 0, async () => {
+      await (await findById(driver, OPEN_EMPTY_EDIT_BUTTON_ID)).click();
+      await waitForIdle(driver);
+
+      expect(await (await findById(driver, 'edit_visitor_name_input')).getText()).assertEqual('');
+      expect(await (await findById(driver, 'edit_visitor_card_id_input')).getText()).assertEqual('');
+      expect(await (await findById(driver, 'edit_visitor_phone_input')).getText()).assertEqual('');
     });
   });
 }

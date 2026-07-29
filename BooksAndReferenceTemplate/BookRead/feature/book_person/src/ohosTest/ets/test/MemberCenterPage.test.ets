@@ -115,6 +115,13 @@ export default function MemberCenterPageTest() {
       await findById(MEMBER_CENTER_AGREEMENT_LINK_ID);
       await findById(MEMBER_CENTER_OPEN_NOW_BUTTON_ID);
 
+      await clickById(MEMBER_CENTER_PACKAGE_CARD_2_ID);
+      await clickById(MEMBER_CENTER_PACKAGE_CARD_1_ID);
+      await clickById(MEMBER_CENTER_OPEN_NOW_BUTTON_ID);
+      await clickById(MEMBER_CENTER_AGREEMENT_CHECKBOX_ID);
+      await clickById(MEMBER_CENTER_OPEN_NOW_BUTTON_ID);
+      await clickById(MEMBER_CENTER_AGREEMENT_CHECKBOX_ID);
+
       await DRIVER.pressBack();
       await waitForHostPageLoaded();
     }, 60000);
