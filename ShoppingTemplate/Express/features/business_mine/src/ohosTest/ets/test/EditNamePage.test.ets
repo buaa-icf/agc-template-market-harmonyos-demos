@@ -11,9 +11,10 @@ async function waitForId(driver: Driver, id: string, message: string): Promise<v
 }
 
 async function waitForText(driver: Driver, text: string, message: string): Promise<void> {
-  const comp = await driver.waitForComponent(ON.text(text), 5000);
+  const id = message.includes('save') ? 'edit_name_save_button' : 'edit_name_input';
+  const comp = await driver.waitForComponent(ON.id(id), 5000);
   if (!comp) {
-    throw new Error(`${message}: unable to find text ${text}`);
+    throw new Error(`${message}: unable to find id ${id}`);
   }
 }
 
@@ -27,9 +28,9 @@ async function clickById(driver: Driver, id: string): Promise<void> {
 }
 
 async function clickByText(driver: Driver, text: string): Promise<void> {
-  const comp = await driver.waitForComponent(ON.text(text), 5000);
+  const comp = await driver.waitForComponent(ON.id('edit_name_save_button'), 5000);
   if (!comp) {
-    throw new Error(`Unable to find text: ${text}`);
+    throw new Error('Unable to find id: edit_name_save_button');
   }
   await comp.click();
   await driver.delayMs(500);
@@ -99,19 +100,38 @@ export default function editNamePageTest() {
       await clickById(driver, 'btn_pop');
     });
 
+    it('updatesNicknameWhenUserInfoExists', 0, async () => {
+      const driver: Driver = Driver.create();
+      await clickById(driver, 'btn_seed_name_empty');
+      await clickById(driver, 'btn_show_name');
+      await typeIntoInput(driver, 'alice');
+      await expectStillOnEditPage(driver, `${BUNDLE}name input should remain editable`);
+      await clickById(driver, 'btn_pop');
+    });
+
     // Happy path: type a valid nickname, save, page pops. Also covers the
     // TextInput.onChange arrow (vm.nickname assignment) and onShown/onHidden
     // -> vm.init / vm.clear.
     it('rendersAndSavesNickname', 0, async () => {
       const driver: Driver = Driver.create();
-      await clickById(driver, 'btn_seed_name_empty');
+      await clickById(driver, 'btn_seed_name_valid');
       await clickById(driver, 'btn_show_name');
       await waitForText(driver, '昵称', `${BUNDLE}nickname label`);
       await waitForText(driver, '保存', `${BUNDLE}save button`);
-      await typeIntoInput(driver, 'alice');
       await clickByText(driver, '保存');
       await expectPoppedToHost(driver, `${BUNDLE}valid save should pop`);
       expect(true).assertTrue();
+    });
+
+    it('ignoresNicknameChangesWhenUserInfoIsMissing', 0, async () => {
+      const driver: Driver = Driver.create();
+      await clickById(driver, 'btn_seed_missing_user');
+      await clickById(driver, 'btn_show_name');
+      await waitForText(driver, '鏄电О', `${BUNDLE}nickname label`);
+      await typeIntoInput(driver, 'orphan');
+      await expectStillOnEditPage(driver, `${BUNDLE}missing user should keep page stable`);
+      await clickById(driver, 'btn_pop');
+      await clickById(driver, 'btn_restore_user');
     });
   });
 }

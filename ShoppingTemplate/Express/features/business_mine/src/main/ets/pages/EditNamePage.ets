@@ -23,6 +23,7 @@ export struct EditNamePage {
           TextInput({
             text: this.vm.nickname,
           })
+            .id('edit_name_input')
             .textAlign(TextAlign.End)
             .fontSize(14)
             .layoutWeight(1)
@@ -47,7 +48,7 @@ export struct EditNamePage {
         .borderRadius(16);
 
         CommonSaveButton({
-          value: this.vm.nickname, changeValue: () => {
+          value: this.vm.nickname, testId: 'edit_name_save_button', changeValue: () => {
             this.vm.modify()
           }
         })

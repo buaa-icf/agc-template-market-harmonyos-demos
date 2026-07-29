@@ -8,7 +8,7 @@ export class EditNamePageVM {
   private static _instance: EditNamePageVM;
   @Trace isLogin: boolean = false
   @Trace nickname: string = ''
-  @Trace userInfo: UserInfo = AppStorageV2.connect(UserInfo, () => new UserInfo())!;
+  @Trace userInfo: UserInfo | undefined = AppStorageV2.connect(UserInfo, () => new UserInfo());
 
   @Monitor('userInfo.id')
   onChange(monitor: IMonitor) {
@@ -32,6 +32,10 @@ export class EditNamePageVM {
   }
 
   init() {
+    if (!this.userInfo) {
+      this.nickname = ''
+      return
+    }
     this.checkLogin(this.userInfo.id)
     this.nickname = this.userInfo.nickname
   }

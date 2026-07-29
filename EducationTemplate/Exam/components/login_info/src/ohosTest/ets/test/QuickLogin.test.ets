@@ -12,6 +12,15 @@ const PRIVACY_TEXT_ID = 'quick_login_cover_privacy_text';
 const SERVICE_POLICY_LINK_ID = 'quick_login_cover_privacy_link_1';
 const PRIVACY_POLICY_LINK_ID = 'quick_login_cover_privacy_link_2';
 const ACCOUNT_ROUTER_LINK_ID = 'quick_login_cover_privacy_link_4';
+const DEFAULT_ROOT_ID = 'quick_login_default_root';
+const DEFAULT_ICON_ID = 'quick_login_default_icon';
+const DEFAULT_PHONE_ID = 'quick_login_default_phone';
+const DEFAULT_LOGIN_BUTTON_ID = 'quick_login_default_login_button';
+const DEFAULT_PRIVACY_CHECKBOX_ID = 'quick_login_default_privacy_checkbox';
+const DEFAULT_PRIVACY_TEXT_ID = 'quick_login_default_privacy_text';
+const DEFAULT_SERVICE_POLICY_LINK_ID = 'quick_login_default_privacy_link_1';
+const DEFAULT_PRIVACY_POLICY_LINK_ID = 'quick_login_default_privacy_link_2';
+const DEFAULT_ACCOUNT_ROUTER_LINK_ID = 'quick_login_default_privacy_link_4';
 
 async function waitForIdle(): Promise<void> {
   await DRIVER.waitForIdle(800, 8000);
@@ -66,10 +75,37 @@ export default function quickLoginCoverTest() {
       await waitForIdle();
     });
 
-    it('cover_login_should_render_each_privacy_link_as_a_testable_node', 0, async () => {
-      await findById(SERVICE_POLICY_LINK_ID);
-      await findById(PRIVACY_POLICY_LINK_ID);
-      await findById(ACCOUNT_ROUTER_LINK_ID);
+    it('cover_login_should_invoke_each_privacy_link_branch', 0, async () => {
+      await (await findById(SERVICE_POLICY_LINK_ID)).click();
+      await waitForIdle();
+      await (await findById(PRIVACY_POLICY_LINK_ID)).click();
+      await waitForIdle();
+      await (await findById(ACCOUNT_ROUTER_LINK_ID)).click();
+      await waitForIdle();
+    });
+
+    it('default_login_should_render_and_toggle_both_agreement_states', 0, async () => {
+      await DRIVER.pressBack();
+      await waitForIdle();
+
+      await findById(DEFAULT_ROOT_ID, 12000);
+      await findById(DEFAULT_ICON_ID);
+      await findById(DEFAULT_PHONE_ID);
+      await findById(DEFAULT_LOGIN_BUTTON_ID);
+      await findById(DEFAULT_PRIVACY_TEXT_ID);
+
+      const checkbox = await findById(DEFAULT_PRIVACY_CHECKBOX_ID);
+      await checkbox.click();
+      await waitForIdle();
+      await checkbox.click();
+      await waitForIdle();
+
+      await (await findById(DEFAULT_SERVICE_POLICY_LINK_ID)).click();
+      await waitForIdle();
+      await (await findById(DEFAULT_PRIVACY_POLICY_LINK_ID)).click();
+      await waitForIdle();
+      await (await findById(DEFAULT_ACCOUNT_ROUTER_LINK_ID)).click();
+      await waitForIdle();
     });
   });
 }
