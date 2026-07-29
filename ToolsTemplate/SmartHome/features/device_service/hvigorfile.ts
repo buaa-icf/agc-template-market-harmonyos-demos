@@ -8,10 +8,19 @@ const syncAgreementOhosTestHostPagePlugin: HvigorPlugin = {
     pluginId: 'syncAgreementOhosTestHostPagePlugin',
     apply(node) {
         hvigor.nodesEvaluated(() => {
+            const nodeApi = node as unknown as Record<string, Function>;
+            const hasTask: (name: string) => boolean = typeof nodeApi.hasTask === 'function'
+                ? (nodeApi.hasTask as (name: string) => boolean).bind(node)
+                : (name: string): boolean => node.getTaskByName(name) !== undefined;
+            if (!hasTask('ohosTest@GenerateOhosTestTemplate')) {
+                return;
+            }
             node.registerTask({
                 name: 'SyncAgreementOhosTestHostPage',
                 dependencies: ['ohosTest@GenerateOhosTestTemplate'],
-                postDependencies: ['ohosTest@OhosTestCompileArkTS'],
+                postDependencies: hasTask('ohosTest@OhosTestCompileArkTS')
+                    ? ['ohosTest@OhosTestCompileArkTS']
+                    : [],
                 run(taskContext) {
                 const sourcePath = path.resolve(taskContext.modulePath,
                     'src/ohosTest/ets/testability/pages/Index.ets');

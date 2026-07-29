@@ -16,8 +16,8 @@ const RECHARGE_SUBMIT_BUTTON_ID = 'recharge_page_submit';
 @Preview
 @ComponentV2
 export struct RechargePage {
+  @Param testDirectRender: boolean = false;
   vm: RechargeVM = new RechargeVM();
-
   aboutToAppear(): void {
     this.vm.getRechargePackages();
   }
@@ -34,9 +34,9 @@ export struct RechargePage {
     emitter.emit(Constants.LOGIN_CHANGE);
   }
 
-  build() {
-    NavDestination() {
-      Stack() {
+  @Builder
+  private rechargeContent() {
+    Stack() {
         Image($r('app.media.rbg'))
           .height(350)
           .objectFit(ImageFit.Fill)
@@ -223,8 +223,18 @@ export struct RechargePage {
         .width(Constants.FULL_SIZE)
       }
       .alignContent(Alignment.Top)
+  }
+
+
+  build() {
+    if (this.testDirectRender) {
+      this.rechargeContent();
+    } else {
+      NavDestination() {
+        this.rechargeContent();
+      }
+      .hideTitleBar(true)
     }
-    .hideTitleBar(true)
   }
 
   @Builder
