@@ -1,6 +1,5 @@
 import { describe, beforeAll, it, expect } from '@ohos/hypium';
-import { abilityDelegatorRegistry, Driver, ON } from '@kit.TestKit';
-import { Want } from '@kit.AbilityKit';
+import { Driver, ON } from '@kit.TestKit';
 
 const BUNDLE: string = 'EditNamePageUiTest_';
 
@@ -73,12 +72,6 @@ export default function editNamePageTest() {
   describe('EditNamePageTest', () => {
 
     beforeAll(async () => {
-      const delegator = abilityDelegatorRegistry.getAbilityDelegator();
-      const want: Want = {
-        bundleName: abilityDelegatorRegistry.getArguments().bundleName,
-        abilityName: 'TestAbility'
-      };
-      await delegator.startAbility(want);
       const driver: Driver = Driver.create();
       await driver.delayMs(1500);
       await waitForId(driver, 'scenario_bar', `${BUNDLE}host not launched`);
