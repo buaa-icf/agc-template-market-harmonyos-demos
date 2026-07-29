@@ -10,6 +10,7 @@ const HOST_ANCHOR_ID = 'add_visitor_host_anchor';
 const POPULATED_BUTTON_ID = 'add_visitor_show_populated';
 const EMPTY_BUTTON_ID = 'add_visitor_show_empty';
 const EDIT_POPULATED_BUTTON_ID = 'edit_visitor_show_populated';
+const EDIT_EMPTY_BUTTON_ID = 'edit_visitor_show_empty';
 const RECOMMEND_POPULATED_BUTTON_ID = 'mine_recommend_show_populated';
 const RECOMMEND_EMPTY_BUTTON_ID = 'mine_recommend_show_empty';
 const RECOMMEND_DETAIL_PARAM_ID = 'mine_recommend_detail_param';
@@ -75,13 +76,17 @@ struct Index {
     RouterModule.getStack().pushPathByName(RouterMap.ADD_VISITOR, null);
   }
 
-  private openEditVisitor(contactInfo: Contacts): void {
+  private openEditVisitor(contactInfo: Contacts | undefined): void {
     this.vm.clear();
     this.vm.recommendList = [];
     this.recommendScenario = 'idle';
     RouterModule.clear();
     RouterModule.getStack().pushPathByName(HOST_ROUTE, null);
-    RouterModule.push({ url: RouterMap.EDIT_VISITOR, param: { contactInfo: contactInfo } });
+    if (contactInfo) {
+      RouterModule.push({ url: RouterMap.EDIT_VISITOR, param: { contactInfo: contactInfo } });
+    } else {
+      RouterModule.getStack().pushPathByName(RouterMap.EDIT_VISITOR, null);
+    }
   }
 
   private openRecommend(scenario: string): void {
@@ -122,6 +127,13 @@ struct Index {
           .width('100%')
           .onClick(() => {
             this.openEditVisitor(createPopulatedContactInfo());
+          })
+
+        Button('Open Empty Edit Visitor')
+          .id(EDIT_EMPTY_BUTTON_ID)
+          .width('100%')
+          .onClick(() => {
+            this.openEditVisitor(undefined);
           })
 
         Button('Show Mine Recommend')

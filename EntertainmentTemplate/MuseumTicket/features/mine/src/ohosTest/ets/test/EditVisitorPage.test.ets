@@ -5,6 +5,7 @@ const UI_TIMEOUT = 10000;
 const IDLE_DELAY = 1200;
 const HOST_ANCHOR_ID = 'add_visitor_host_anchor';
 const OPEN_EDIT_BUTTON_ID = 'edit_visitor_show_populated';
+const OPEN_EMPTY_EDIT_BUTTON_ID = 'edit_visitor_show_empty';
 const SAVE_BUTTON_ID = 'edit_visitor_save_button';
 const CANCEL_BUTTON_ID = 'edit_visitor_cancel_button';
 
@@ -33,6 +34,49 @@ async function ensureHostVisible(driver: Driver): Promise<void> {
   }
 
   await findById(driver, HOST_ANCHOR_ID);
+}
+
+async function enterText(driver: Driver, id: string, value: string): Promise<void> {
+  const input = await findById(driver, id);
+  const point = await input.getBoundsCenter();
+  await driver.inputText(point, value);
+  await waitForIdle(driver, 100);
+  try {
+    await driver.pressBack();
+  } catch (_error) {
+  }
+  await waitForIdle(driver, 100);
+}
+
+async function openEmptyForm(driver: Driver): Promise<void> {
+  await ensureHostVisible(driver);
+  await (await findById(driver, OPEN_EMPTY_EDIT_BUTTON_ID)).click();
+  await waitForIdle(driver);
+  await findById(driver, SAVE_BUTTON_ID);
+}
+
+async function closeForm(driver: Driver): Promise<void> {
+  const cancel = await driver.findComponent(ON.id(CANCEL_BUTTON_ID));
+  if (cancel !== null) {
+    await cancel.click();
+    await waitForIdle(driver);
+  }
+  await ensureHostVisible(driver);
+}
+
+async function submitForm(driver: Driver, name: string, cardId: string, phone: string): Promise<void> {
+  await openEmptyForm(driver);
+  if (name.length > 0) {
+    await enterText(driver, 'edit_visitor_name_input', name);
+  }
+  if (cardId.length > 0) {
+    await enterText(driver, 'edit_visitor_card_id_input', cardId);
+  }
+  if (phone.length > 0) {
+    await enterText(driver, 'edit_visitor_phone_input', phone);
+  }
+  await (await findById(driver, SAVE_BUTTON_ID)).click();
+  await waitForIdle(driver, 500);
 }
 
 export default function EditVisitorPageTest() {
@@ -79,6 +123,42 @@ export default function EditVisitorPageTest() {
       await (await findById(driver, OPEN_EDIT_BUTTON_ID)).click();
       await waitForIdle(driver);
       await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('isContactInfoValid_rejects_missing_name', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, '', '', '');
+      await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('isContactInfoValid_rejects_missing_card_id', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, 'Test Visitor', '', '');
+      await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('isContactInfoValid_rejects_invalid_card_id', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, 'Test Visitor', 'invalid-card', '');
+      await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('isContactInfoValid_rejects_missing_phone', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, 'Test Visitor', '110101199003079876', '');
+      await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('isContactInfoValid_rejects_invalid_phone', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, 'Test Visitor', '110101199003079876', '123');
+      await findById(driver, SAVE_BUTTON_ID);
+    });
+
+    it('upDateContactInfo_saves_a_valid_contact', 0, async () => {
+      await closeForm(driver);
+      await submitForm(driver, 'Test Visitor', '110101199003079876', '13812345678');
+      await ensureHostVisible(driver);
     });
   });
 }
