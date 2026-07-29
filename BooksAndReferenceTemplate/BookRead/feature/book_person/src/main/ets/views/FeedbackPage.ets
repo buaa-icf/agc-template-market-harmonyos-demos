@@ -18,7 +18,8 @@ export struct FeedbackPage {
   @Local feedbackItem: FeedbackItem = new FeedbackItem('', [], '')
   @Local feedbackRecord:FeedbackRecord =
     AppStorageV2.connect(FeedbackRecord, 'feedbackRecord', () => new FeedbackRecord())!
-  @Local stageImageUris: Array<string> = [];
+  @Local stageImageUris: Array<string> =
+    AppStorage.get<Array<string>>('feedbackPageTestStageImageUris') ?? [];
   private imageUris: Array<string> = [];
 
 
@@ -89,6 +90,7 @@ export struct FeedbackPage {
                             .borderRadius(5)
                             .margin(5)
                           Image($r('app.media.ic_public_close'))
+                            .id(`feedback_page_screenshot_remove_${index}`)
                             .width(20)
                             .height(20)
                             .margin({ right: 5, top: 5 })

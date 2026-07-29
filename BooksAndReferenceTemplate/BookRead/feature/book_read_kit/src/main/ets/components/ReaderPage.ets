@@ -9,6 +9,15 @@ import { BookCoverCard } from './BookCoverCard';
 import { ReaderToolBar } from 'reader_tool_bar';
 import { baseActionSheet,UserInfo } from 'base_common';
 
+export class ReaderPageTestBridge {
+  static enabled: boolean = false;
+  static catalogItemList: bookParser.CatalogItem[] = [];
+  static spineList: bookParser.SpineItem[] = [];
+  static pageData: readerCore.PageDataInfo | undefined = undefined;
+  static userInfo: UserInfo | undefined = undefined;
+  static onComplete: ((lockedCount: number, chapterId: number, isLoading: boolean) => void) | undefined = undefined;
+}
+
 @ComponentV2
 export struct ReaderPage {
   @Local userInfo: UserInfo | undefined
@@ -16,8 +25,8 @@ export struct ReaderPage {
   @Local catalogItemList: bookParser.CatalogItem[] = [];
   @Local lockedStatus: boolean[] = []
   @Local curChapterId: number = 0
-  @Local readerComponentController: readerCore.ReaderComponentController =
-    new readerCore.ReaderComponentController();
+  @Local readerComponentController: readerCore.ReaderComponentController | null =
+    ReaderPageTestBridge.enabled ? null : new readerCore.ReaderComponentController();
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
   @Local bookParserHandler: bookParser.BookParserHandler | null = null;
   @Local spineList: bookParser.SpineItem[] = []
@@ -34,6 +43,10 @@ export struct ReaderPage {
   windowTopHeight: number = AppStorage.get('windowTopHeight') as number
   bottomRectHeight: number = AppStorage.get('bottomRectHeight') as number
   textClockController: TextClockController = new TextClockController();
+
+  private getReaderComponentController(): readerCore.ReaderComponentController {
+    return this.readerComponentController!;
+  }
 
   @Builder
   buildBuyChapter(index: number) {
@@ -115,8 +128,12 @@ export struct ReaderPage {
   }
 
   private async preprocess() {
+    if (ReaderPageTestBridge.enabled) {
+      this.catalogItemList = ReaderPageTestBridge.catalogItemList;
+      this.spineList = ReaderPageTestBridge.spineList;
+    } else {
     let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    let initPromise: Promise<void> = this.readerComponentController.init(context);
+      let initPromise: Promise<void> = this.getReaderComponentController().init(context);
     let defaultHandlerPromise: Promise<bookParser.BookParserHandler> =
       bookParser.getDefaultHandler(this.book?.localPath);
     let result: [bookParser.BookParserHandler, void] = await Promise.all([defaultHandlerPromise, initPromise]);
@@ -125,6 +142,7 @@ export struct ReaderPage {
     this.catalogItemList = this.bookParserHandler.getCatalogList() || [];
     // 获取书脊内容列表
     this.spineList = this.bookParserHandler.getSpineList();
+    }
     if (this.book?.isFree! === '2') {
       this.lockedStatus = AppStorageV2.connect(Array, 'lockedStatus', () => []) as boolean[]
       if (AppStorage.has('paidPageData')) {
@@ -150,8 +168,7 @@ export struct ReaderPage {
         this.lockedStatus.push(false)
       }
     }
-    this.readerComponentController.on('resourceRequest', this.resourceRequest);
-    this.readerComponentController.on('pageShow', (data: readerCore.PageDataInfo): void => {
+    let pageShow = (data: readerCore.PageDataInfo): void => {
       hilog.info(0x0000, 'testTag', 'pageshow: data is: ' + JSON.stringify(data));
       if (data.state === readerCore.PageState.PAGE_ON_SHOW) {
         this.isLoading = false;
@@ -177,7 +194,7 @@ export struct ReaderPage {
                 onWillDismiss: (dismissSheetAction: DismissSheetAction) => {
                   this.isShowBuySheet = false
                   if (this.lockedStatus[this.curChapterId]) {
-                    this.readerComponentController.startPlay(this.pageData!.resourceIndex, this.pageData!.startDomPos)
+                    this.getReaderComponentController().startPlay(this.pageData!.resourceIndex, this.pageData!.startDomPos)
                     dismissSheetAction.dismiss();
                   }
                 }
@@ -188,7 +205,18 @@ export struct ReaderPage {
           this.pageData = data
         }
       }
-    });
+    };
+    if (ReaderPageTestBridge.enabled) {
+      if (ReaderPageTestBridge.pageData) {
+        pageShow(ReaderPageTestBridge.pageData);
+      }
+      if (ReaderPageTestBridge.onComplete) {
+        ReaderPageTestBridge.onComplete(this.lockedStatus.length, this.curChapterId, this.isLoading);
+      }
+    } else {
+      this.getReaderComponentController().on('resourceRequest', this.resourceRequest);
+      this.getReaderComponentController().on('pageShow', pageShow);
+    }
   }
 
   async startPlay() {
@@ -200,9 +228,9 @@ export struct ReaderPage {
         domPos = this.pageData.startDomPos
       }
       if (this.bookParserHandler) {
-        this.readerComponentController.registerBookParser(this.bookParserHandler);
-        this.readerComponentController.setPageConfig(this.readerSetting)
-        this.readerComponentController.startPlay(spineIndex, domPos);
+        this.getReaderComponentController().registerBookParser(this.bookParserHandler);
+        this.getReaderComponentController().setPageConfig(this.readerSetting)
+        this.getReaderComponentController().startPlay(spineIndex, domPos);
       }
     } catch (err) {
       hilog.error(0x0000, 'testTag', `failed to startPlay, Code is ${err.code}, message is ${err.message}`);
@@ -220,11 +248,11 @@ export struct ReaderPage {
     this.endTime = systemDateTime.getTime(false)
     this.userInfo!.totalReading += Math.ceil((this.endTime - this.startTime) / 60000)
     AppStorage.set('userInfo', this.userInfo)
-    this.readerComponentController.off('resourceRequest');
-    this.readerComponentController.off('pageShow');
+    this.getReaderComponentController().off('resourceRequest');
+    this.getReaderComponentController().off('pageShow');
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT)
     // 退出需要释放阅读器实例
-    this.readerComponentController.releaseBook();
+    this.getReaderComponentController().releaseBook();
     this.notFullScreen()
   }
 
@@ -238,14 +266,21 @@ export struct ReaderPage {
 
   build() {
     NavDestination() {
-
+      if (ReaderPageTestBridge.enabled) {
+        Column() {
+          Text('ReaderPage preprocess host')
+        }
+        .id('reader_page_preprocess_host')
+        .width('100%')
+        .height('100%')
+      } else {
       Swiper() {
 
         BookCoverCard({ book: this.book })
 
         Stack() {
           ReadPageComponent({
-            controller: this.readerComponentController,
+            controller: this.getReaderComponentController(),
             readerCallback: (err: BusinessError, data: readerCore.ReaderComponentController) => {
               this.readerComponentController = data;
             }
@@ -257,7 +292,7 @@ export struct ReaderPage {
               } else {
                 this.setFullScreen()
               }
-              this.readerComponentController.setPageConfig(this.readerSetting)
+              this.getReaderComponentController().setPageConfig(this.readerSetting)
             })
           if (this.showController) {
             Column() {
@@ -276,7 +311,7 @@ export struct ReaderPage {
                 lockedStatus: this.lockedStatus,
                 curChapterId: this.curChapterId,
                 bookParserHandler: this.bookParserHandler,
-                readerComponentController: this.readerComponentController,
+                readerComponentController: this.getReaderComponentController(),
               })
             }
             // 透传点击事件
@@ -315,6 +350,7 @@ export struct ReaderPage {
       })
       .indicator(false)
       .loop(false)
+      }
     }
     .hideTitleBar(true)
     .onWillAppear(async () => {
@@ -324,6 +360,11 @@ export struct ReaderPage {
       }
     })
     .onWillShow(async () => {
+      if (ReaderPageTestBridge.enabled) {
+        this.userInfo = ReaderPageTestBridge.userInfo
+        await this.preprocess()
+        return
+      }
       await this.loadBook()
       await this.preprocess()
       await this.startPlay()

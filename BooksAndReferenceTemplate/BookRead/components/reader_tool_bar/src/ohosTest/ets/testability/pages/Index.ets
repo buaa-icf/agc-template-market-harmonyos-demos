@@ -53,7 +53,7 @@ struct Index {
   private readerSetting: MockReaderSetting = {
     fontName: '',
     fontPath: '',
-    fontSize: 18,
+    fontSize: 1,
     fontColor: '#000000E6',
     fontWeight: 100,
     lineHeight: 2,

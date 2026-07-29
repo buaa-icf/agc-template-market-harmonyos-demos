@@ -1,37 +1,63 @@
-import { BookInfo } from 'common';
+import { BookInfo, TCRouter } from 'common';
 import { BookCoverCard } from '../../../../../../../../src/main/ets/components/BookCoverCard';
 
-const HOST_PAGE_ID = 'book_cover_card_host_page';
+const BOOK_COVER_HOST_ID = 'book_cover_card_host_page';
+const HOST_ROUTE = 'book_read_kit_test_host';
 
 @Entry
 @ComponentV2
 struct Index {
-  private book: BookInfo = {
+  private coverBook: BookInfo = {
     id: 'book-cover-card-test-book',
-    name: '三体',
-    author: '刘慈欣',
+    name: '\u4e09\u4f53',
+    author: '\u5218\u6148\u6b23',
     coverUrl: $r('app.media.book_image_1'),
     rate: '9.6',
-    description: '用于 BookCoverCard build 测试的宿主数据',
+    description: 'BookCoverCard instrument test data',
     localPath: '',
     epubUrl: '',
-    category: '科幻',
+    category: '\u79d1\u5e7b',
     count: '52.1',
     popular: '88.8'
   };
 
   aboutToAppear(): void {
     AppStorage.setOrCreate('windowTopHeight', 0);
+    AppStorage.setOrCreate('bottomRectHeight', 0);
     AppStorage.setOrCreate('favBooks', [] as BookInfo[]);
+    TCRouter.init();
+    TCRouter.replace(HOST_ROUTE);
+  }
+
+  @Builder
+  hostPage() {
+    NavDestination() {
+      Column() {
+        BookCoverCard({ book: this.coverBook })
+      }
+      .id(BOOK_COVER_HOST_ID)
+      .width('100%')
+      .height('100%')
+      .backgroundColor($r('sys.color.background_primary'));
+    }
+    .hideTitleBar(true)
+  }
+
+  @Builder
+  routerMap(name: string) {
+    if (name === HOST_ROUTE) {
+      this.hostPage();
+    }
   }
 
   build() {
-    Column() {
-      BookCoverCard({ book: this.book })
+    Navigation(TCRouter.getStack()) {
     }
-    .id(HOST_PAGE_ID)
+    .hideNavBar(true)
+    .hideTitleBar(true)
+    .mode(NavigationMode.Stack)
     .width('100%')
     .height('100%')
-    .backgroundColor($r('sys.color.background_primary'));
+    .navDestination(this.routerMap);
   }
 }

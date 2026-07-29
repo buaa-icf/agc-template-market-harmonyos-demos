@@ -2,7 +2,12 @@ import { describe, beforeAll, afterAll, it, expect } from '@ohos/hypium';
 import { Driver, ON, Component } from '@kit.TestKit';
 
 const FONT_SIZE_ADD_ID: string = 'reader_tool_bar_font_size_add';
+const FONT_SIZE_SUB_ID: string = 'reader_tool_bar_font_size_sub';
 const FONT_SIZE_VALUE_ID: string = 'reader_tool_bar_font_size_value';
+const FONT_CHOICE_SYSTEM_ID: string = 'reader_tool_bar_font_choice_0';
+const FONT_CHOICE_BLACK_ID: string = 'reader_tool_bar_font_choice_1';
+const FLIP_SIMULATION_ID: string = 'reader_tool_bar_flip_simulation';
+const FLIP_SWIPER_ID: string = 'reader_tool_bar_flip_swiper';
 const DRIVER = Driver.create();
 
 async function waitForReaderToolBarLoaded(): Promise<void> {
@@ -68,6 +73,16 @@ export default function ReaderToolBarTest() {
       }
 
       expect(Number.parseInt(fontSizeValueAfter)).assertEqual(expectedAfter);
+
+      await (await findById(FONT_SIZE_SUB_ID)).click();
+      await DRIVER.waitForIdle(500, 5000);
+      await (await findById(FONT_SIZE_SUB_ID)).click();
+      await DRIVER.waitForIdle(500, 5000);
+      await (await findById(FONT_CHOICE_BLACK_ID)).click();
+      await (await findById(FONT_CHOICE_SYSTEM_ID)).click();
+      await (await findById(FLIP_SWIPER_ID)).click();
+      await (await findById(FLIP_SIMULATION_ID)).click();
+      await DRIVER.waitForIdle(500, 5000);
     });
   });
 }

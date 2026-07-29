@@ -19,7 +19,7 @@ export struct LoginPage {
   private USER_SERVICE_TAG = '用户服务协议';
   private PRIVACY_TAG = '隐私协议';
   // 定义LoginWithHuaweiIDButton展示的隐私文本，展示应用的用户服务协议、隐私协议和华为账号用户认证协议
-  privacyText: loginComponentManager.PrivacyText[] = [{
+  @Param privacyText: loginComponentManager.PrivacyText[] = [{
     text: '已阅读并同意',
     type: loginComponentManager.TextType.PLAIN_TEXT
   }, {
@@ -346,28 +346,28 @@ export struct LoginPage {
                   .margin({ top: 0 })
                   .select(this.isSelected)
                   .onChange((value: boolean) => {
-                    if (value) {
-                      this.isSelected = true;
-                      this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.ACCEPTED);
-                    } else {
-                      this.isSelected = false;
-                      this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.NOT_ACCEPTED);
-                    }
+                    this.isSelected = value;
+                    const agreementStatuses: loginComponentManager.AgreementStatus[] = [
+                      loginComponentManager.AgreementStatus.NOT_ACCEPTED,
+                      loginComponentManager.AgreementStatus.ACCEPTED
+                    ];
+                    this.controller.setAgreementStatus(agreementStatuses[Number(value)]);
                     hilog.info(this.domainId, this.logTag, `agreementChecked: ${value}`);
                   })
               }
 
               Row() {
-                Text() {
+                Row() {
                   ForEach(this.privacyText, (item: loginComponentManager.PrivacyText) => {
                     if (item?.type === loginComponentManager.TextType.PLAIN_TEXT && item?.text) {
-                      Span(item?.text)
+                      Text(item?.text)
                         .fontColor($r('sys.color.ohos_id_color_text_secondary'))
                         .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
                         .fontWeight(FontWeight.Regular)
                         .fontSize($r('sys.float.ohos_id_text_size_body3'))
                     } else if (item?.type === loginComponentManager.TextType.RICH_TEXT && item?.text) {
-                      Span(item?.text)
+                      Text(item?.text)
+                        .id(this.getPrivacyTextId(item))
                         .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
                         .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
                         .fontWeight(FontWeight.Medium)
@@ -378,11 +378,8 @@ export struct LoginPage {
                           // 应用需要根据item.tag实现协议页面的跳转逻辑
                           hilog.info(this.domainId, this.logTag, `click privacy text tag: ${item.tag}`);
                           // 华为账号用户认证协议
-                          if (item.tag === this.PRIVACY_TAG) {
-                            TCRouter.push(Constants.PRIVACY_ROUTE, true);
-                          } else {
-                            TCRouter.push(Constants.PRIVACY_ROUTE, false);
-                          }
+                          const isPrivacyAgreement: boolean = item.tag === this.PRIVACY_TAG;
+                          TCRouter.push(Constants.PRIVACY_ROUTE, isPrivacyAgreement);
                         })
                     }
                   }, (item: loginComponentManager.PrivacyText) => item.text.toString())
@@ -418,6 +415,16 @@ export struct LoginPage {
   }
 
   //两种模拟登录方式，quick为一键登录+匿名，mock为普通假登录
+  private getPrivacyTextId(item: loginComponentManager.PrivacyText): string {
+    if (item.tag === this.PRIVACY_TAG) {
+      return 'login_page_privacy_link';
+    }
+    if (item.tag === this.USER_SERVICE_TAG) {
+      return 'login_page_service_link';
+    }
+    return 'login_page_other_rich_text';
+  }
+
   quickLogin(openId:string, avatarUri:string, nickName:string){
     // 恢复之前保存的会员状态和书币信息
 

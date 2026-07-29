@@ -180,6 +180,14 @@ export default function PictureBeautificationTest() {
       expect(Math.abs(w - h) <= 12).assertTrue();
     });
 
+    it('drawClipImage_redraws_grid_for_every_supported_ratio', 0, async () => {
+      const ratios: string[] = ['1:1', '3:2', '4:3', '9:16', '16:9'];
+      for (let index = 0; index < ratios.length; index++) {
+        await selectRatio(ratios[index]);
+        await findById(CROP_CANVAS_ID);
+      }
+    });
+
     it('moveClipCanvasRatioType_move_branch_updates_clip_rect', 0, async () => {
       await selectRatio('1:1');
       const before = await getBoundsById(CROP_CANVAS_ID);

@@ -51,6 +51,8 @@ struct Index {
         Button('Open Good Detail (package)')
           .id(OPEN_GOOD_DETAIL_BUTTON_ID)
           .onClick(() => {
+            AppStorage.setOrCreate('goodDetailPackageCoverageTest', true);
+            AppStorage.set('goodDetailPackageCoverageTest', true);
             this.pageStack.pushPathByName(
               RouterMap.GOOD_DETAIL_PAGE,
               { goodInfo: this.packageGood } as GoodRouter,

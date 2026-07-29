@@ -41,7 +41,23 @@ export default function AgencyTaskCalenderTest(): void {
     it('today_restores_the_current_month', 0, async () => {
       await click('pre_month');
       await click('today');
+      await click('today');
       await findById('agency_calendar_month_value');
+    });
+
+    it('crosses_year_boundaries_in_both_directions', 0, async () => {
+      for (let index: number = 0; index < 13; index++) {
+        await click('pre_month');
+      }
+      for (let index: number = 0; index < 13; index++) {
+        await click('next_month');
+      }
+      await findById('agency_calendar_month_value');
+    });
+
+    it('selects_a_calendar_day_and_opens_plan_time', 0, async () => {
+      await click('agency_calendar_day_0_0');
+      await click('agency_calendar_plan_time');
     });
   });
 }
