@@ -48,7 +48,7 @@ export default function authenticationPageInstrumentTest() {
       await findByText('华为账号用户认证协议');
     });
 
-    it('instrument_host_should_not_fall_back_to_hello_world_page', 0, async () => {
+    it('instrument_host_should_not_render_the_template_page', 0, async () => {
       await ensureTextNotVisible('Hello World');
       await ensureTextNotVisible('Hello world');
     });

@@ -1,5 +1,5 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { AuthenticationPage } from '../../../../main/ets/views/AuthenticationPage';
+import { AuthenticationPageBuilder } from '../../../../main/ets/views/AuthenticationPage';
 import { CollectionPage } from '../../../../main/ets/views/CollectionPage';
 import { CoursePage } from '../../../../main/ets/views/CoursePage';
 import { OrderInfo, OrderState, SampleCollectInfo, SampleOrderInfo } from 'commonlib';
@@ -155,7 +155,7 @@ struct Index {
 
       Column() {
         if (this.showAuthenticationPage) {
-          AuthenticationPage()
+          AuthenticationPageBuilder()
         } else if (this.showCoursePage) {
           CoursePage()
         } else if (this.showLifecycleTarget) {

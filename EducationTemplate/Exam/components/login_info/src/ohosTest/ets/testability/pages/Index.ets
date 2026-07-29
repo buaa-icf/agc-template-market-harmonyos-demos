@@ -35,6 +35,19 @@ struct Index {
       })
         .width('100%')
         .height('100%')
+
+      if (this.servicePolicyClicked) {
+        Text('service policy clicked')
+          .id('quick_login_cover_service_policy_clicked')
+      }
+      if (this.privacyPolicyClicked) {
+        Text('privacy policy clicked')
+          .id('quick_login_cover_privacy_policy_clicked')
+      }
+      if (this.accountRouterClicked) {
+        Text('account router clicked')
+          .id('quick_login_cover_account_router_clicked')
+      }
     }
     .width('100%')
     .height('100%')
