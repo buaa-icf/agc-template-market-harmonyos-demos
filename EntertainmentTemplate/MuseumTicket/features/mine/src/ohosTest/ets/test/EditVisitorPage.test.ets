@@ -111,6 +111,17 @@ export default function EditVisitorPageTest() {
       expect(await (await findById(driver, 'edit_visitor_phone_input')).getText()).assertEqual('13812345678');
     });
 
+    it('cloneContact_restores_the_populated_contact_after_an_empty_form', 0, async () => {
+      await closeForm(driver);
+      await openEmptyForm(driver);
+      await closeForm(driver);
+      await (await findById(driver, OPEN_EDIT_BUTTON_ID)).click();
+      await waitForIdle(driver);
+
+      expect(await (await findById(driver, 'edit_visitor_name_input')).getText()).assertEqual('Test Visitor');
+      expect(await (await findById(driver, 'edit_visitor_phone_input')).getText()).assertEqual('13812345678');
+    });
+
     it('build_can_close_and_reopen_page', 0, async () => {
       await (await findById(driver, OPEN_EDIT_BUTTON_ID)).click();
       await waitForIdle(driver);
