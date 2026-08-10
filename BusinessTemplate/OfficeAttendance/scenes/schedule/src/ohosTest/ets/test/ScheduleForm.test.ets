@@ -81,6 +81,7 @@ export default function ScheduleFormTest(): void {
     });
 
     it('renders_the_seeded_schedule_form', 0, async () => {
+      await findById(FORM_ROOT_ID);
       await findById(TITLE_INPUT_ID);
       await assertTextEquals(START_TIME_VALUE_ID, INITIAL_START_TIME);
       await assertTextEquals(END_TIME_VALUE_ID, INITIAL_END_TIME);
@@ -93,6 +94,9 @@ export default function ScheduleFormTest(): void {
       await assertTextEquals(START_TIME_VALUE_ID, ALL_DAY_START_TIME);
       await assertTextEquals(END_TIME_VALUE_ID, ALL_DAY_END_TIME);
       await findById(REMINDER_VALUE_ID);
+      await findById(START_TIME_ROW_ID);
+      await findById(END_TIME_ROW_ID);
+      await findById(REMINDER_ROW_ID);
       await clickById(ALL_DAY_TOGGLE_ID);
       const restoredStartTime: string = await readText(START_TIME_VALUE_ID);
       const restoredEndTime: string = await readText(END_TIME_VALUE_ID);

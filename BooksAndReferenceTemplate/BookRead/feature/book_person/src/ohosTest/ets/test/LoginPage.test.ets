@@ -143,7 +143,12 @@ export default function LoginPageTest() {
     it('build_renders_login_content_and_agreement_controls', 0, async () => {
       await ensureHostPageLoaded();
       await clickById(HOST_OPEN_BUTTON_ID);
-      await wait(1000);
+      await waitForLoginPageLoaded();
+      await findById(LOGIN_PAGE_ROOT_ID);
+      await findById(LOGIN_PAGE_HUAWEI_BUTTON_ID);
+      await findById(LOGIN_PAGE_AGREEMENT_CHECKBOX_ID);
+      await findById(LOGIN_PAGE_SERVICE_LINK_ID);
+      await findById(LOGIN_PAGE_PRIVACY_LINK_ID);
       TCRouter.replace('my_info_card_test_host');
       await waitForHostPageLoaded();
     }, 60000);
