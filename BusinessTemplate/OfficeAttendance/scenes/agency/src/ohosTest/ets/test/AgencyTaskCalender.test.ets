@@ -56,6 +56,7 @@ export default function AgencyTaskCalenderTest(): void {
     });
 
     it('selects_a_calendar_day_and_opens_plan_time', 0, async () => {
+      await findById('agency_calendar_root');
       await click('agency_calendar_day_0_0');
       await click('agency_calendar_plan_time');
     });

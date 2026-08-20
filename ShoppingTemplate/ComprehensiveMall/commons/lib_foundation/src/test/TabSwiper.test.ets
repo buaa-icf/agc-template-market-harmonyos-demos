@@ -294,5 +294,18 @@ export default function TabSwiperTest() {
       expect(harness.changeIndexCalls.length).assertEqual(0);
       expect(harness.onChangeCalls.length).assertEqual(0);
     });
+
+    it('keeps state unchanged when the monitor has no dirty attributes', 0, () => {
+      const swiperObject: ESObject = harness.swiper as ESObject;
+      const monitor: FakeMonitor = new FakeMonitor();
+
+      harness.swiper.onTabSwiperAttributeChange(monitor);
+
+      expect(swiperObject['swiperIndex'] as number).assertEqual(0);
+      expect(swiperObject['dataId'] as string).assertEqual('tab-a');
+      expect(harness.getLayoutCalls()).assertEqual(0);
+      expect(harness.changeIndexCalls.length).assertEqual(0);
+      expect(harness.onChangeCalls.length).assertEqual(0);
+    });
   });
 }
