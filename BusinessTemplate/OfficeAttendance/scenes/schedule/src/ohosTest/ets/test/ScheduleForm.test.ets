@@ -13,6 +13,11 @@ const REPEAT_TRIGGER_ID: string = 'schedule_form_repeat_trigger';
 const REPEAT_VALUE_ID: string = 'schedule_form_repeat_value';
 const REMINDER_VALUE_ID: string = 'schedule_form_reminder_value';
 const WEEKLY_REPEAT_OPTION_ID: string = 'schedule_form_repeat_option_4';
+const TITLE_BAR_LEFT_ACTION_ID: string = 'schedule_title_bar_left_action';
+const TITLE_BAR_RIGHT_ACTION_ID: string = 'schedule_title_bar_right_action';
+const START_TIME_ROW_ID: string = 'schedule_form_start_time_row';
+const END_TIME_ROW_ID: string = 'schedule_form_end_time_row';
+const REMINDER_ROW_ID: string = 'schedule_form_reminder_row';
 
 const INITIAL_START_TIME: string = '2026-03-02 09:30';
 const INITIAL_END_TIME: string = '2026-03-02 10:30';
@@ -40,6 +45,21 @@ async function assertTextEquals(id: string, expected: string): Promise<void> {
 
 async function clickById(id: string): Promise<void> {
   await (await findById(id)).click();
+  await driver.waitForIdle(500, 5000);
+}
+
+async function clickIfPresent(id: string): Promise<boolean> {
+  const component: Component = await driver.waitForComponent(ON.id(id), 1500);
+  if (component === null) {
+    return false;
+  }
+  await component.click();
+  await driver.waitForIdle(500, 5000);
+  return true;
+}
+
+async function closeSystemDialog(): Promise<void> {
+  await driver.pressBack();
   await driver.waitForIdle(500, 5000);
 }
 
@@ -73,6 +93,15 @@ export default function ScheduleFormTest(): void {
       await assertTextEquals(START_TIME_VALUE_ID, ALL_DAY_START_TIME);
       await assertTextEquals(END_TIME_VALUE_ID, ALL_DAY_END_TIME);
       await findById(REMINDER_VALUE_ID);
+      await clickById(ALL_DAY_TOGGLE_ID);
+      const restoredStartTime: string = await readText(START_TIME_VALUE_ID);
+      const restoredEndTime: string = await readText(END_TIME_VALUE_ID);
+      if (restoredStartTime === ALL_DAY_START_TIME || !restoredStartTime.includes(' ')) {
+        throw new Error(`Start time was not restored after disabling all-day: ${restoredStartTime}`);
+      }
+      if (restoredEndTime === ALL_DAY_END_TIME || !restoredEndTime.includes(' ')) {
+        throw new Error(`End time was not restored after disabling all-day: ${restoredEndTime}`);
+      }
     });
 
     it('selects_a_weekly_repeat_rule_from_the_menu', 0, async () => {
@@ -84,6 +113,36 @@ export default function ScheduleFormTest(): void {
       if (weeklyValue === previousValue) {
         throw new Error(`Repeat value did not change after selecting weekly: ${weeklyValue}`);
       }
+
+      await findById(REPEAT_VALUE_ID);
     });
+
+    it('covers_safe_actions_without_using_the_input_method', 0, async () => {
+      await clickIfPresent(TITLE_BAR_RIGHT_ACTION_ID);
+      await clickIfPresent(TITLE_BAR_LEFT_ACTION_ID);
+
+      if (await clickIfPresent(REMINDER_ROW_ID)) {
+        await driver.pressBack();
+        await driver.waitForIdle(500, 5000);
+      }
+
+      if (await clickIfPresent(START_TIME_ROW_ID)) {
+        await closeSystemDialog();
+      }
+      if (await clickIfPresent(END_TIME_ROW_ID)) {
+        await closeSystemDialog();
+      }
+
+      if (await clickIfPresent(ALL_DAY_TOGGLE_ID)) {
+        if (await clickIfPresent(START_TIME_ROW_ID)) {
+          await closeSystemDialog();
+        }
+        if (await clickIfPresent(END_TIME_ROW_ID)) {
+          await closeSystemDialog();
+        }
+        await clickIfPresent(ALL_DAY_TOGGLE_ID);
+      }
+    });
+
   });
 }

@@ -11,10 +11,12 @@ const SCHEDULE_FORM_ROOT_ID = 'schedule_form_root';
 const SCHEDULE_FORM_ALL_DAY_TOGGLE_ID = 'schedule_form_all_day_toggle';
 const SCHEDULE_FORM_START_TIME_ROW_ID = 'schedule_form_start_time_row';
 const SCHEDULE_FORM_START_TIME_VALUE_ID = 'schedule_form_start_time_value';
+const SCHEDULE_FORM_END_TIME_ROW_ID = 'schedule_form_end_time_row';
 const SCHEDULE_FORM_END_TIME_VALUE_ID = 'schedule_form_end_time_value';
 const SCHEDULE_FORM_REPEAT_TRIGGER_ID = 'schedule_form_repeat_trigger';
 const SCHEDULE_FORM_REPEAT_VALUE_ID = 'schedule_form_repeat_value';
 const SCHEDULE_FORM_REMINDER_VALUE_ID = 'schedule_form_reminder_value';
+const SCHEDULE_FORM_REMINDER_ROW_ID = 'schedule_form_reminder_row';
 const SCHEDULE_FORM_REPEAT_OPTION_PREFIX = 'schedule_form_repeat_option_';
 
 @ComponentV2
@@ -320,11 +322,11 @@ export struct ScheduleForm {
                   Image($r('app.media.ic_location'))
                     .width(12)
                     .height(15)
-                    .visibility(this.location ? Visibility.None : Visibility.Visible)
+                    .visibility(this.getLocationVisibility())
                   FunctionalButton({
                     params: {
                       openType: functionalButtonComponentManager.OpenType.CHOOSE_LOCATION,
-                      label: this.location ? this.location : $r('app.string.location_label'),
+                      label: this.getLocationLabel(),
                       styleOption: {
                         size: functionalButtonComponentManager.SizeType.DEFAULT,
                         plain: true,
@@ -335,23 +337,23 @@ export struct ScheduleForm {
                         hoverStayTime: 0,
                         styleConfig: new functionalButtonComponentManager.ButtonConfig()
                           .fontSize(14)
-                          .fontColor(this.location ? Color.Black : '#3093FA')
+                          .fontColor(this.getLocationFontColor())
                           .borderWidth(0)
                       },
                     },
                     controller: new functionalButtonComponentManager.FunctionalButtonController()
-                      .onChooseLocation((err, data) => {
-                        if (err) {
-                          hilog.error(0x0000, 'NewSchedule', 'error： %{public}d %{public}s', err.code, err.message);
-                          return;
-                        }
-                        this.schedule.location = data.address;
-                        this.location = data.address;
-                        this.schedule.longitude = data.longitude;
-                        this.schedule.latitude = data.latitude;
-                        this.longitude = data.longitude;
-                        this.latitude = data.latitude;
-                      })
+                      .onChooseLocation(this.handleLocationResult)
+
+
+
+
+
+
+
+
+
+
+
                   })
                 }
                 .layoutWeight(1)
@@ -441,25 +443,25 @@ export struct ScheduleForm {
                   color: $r('app.color.sys_default_blue'),
                   font: { size: '18', weight: FontWeight.Bold }
                 },
-                onDateAccept: (value: Date) => {
-                  let diff = 0;
-                  if (this.startDate) {
-                    diff = value.getTime() - this.startDate.getTime();
-                  }
-                  if (this.endDate) {
-                    this.endDate = new Date(this.endDate.getTime() + diff);
-                  }
-                  if (this.isAllDay) {
-                    this.schedule.startTime = FormatUtil.formatDate(value, FormatUtil.DATE_YYYY_MM_DD)
-                    this.schedule.endTime = FormatUtil.formatDate(this.endDate, FormatUtil.DATE_YYYY_MM_DD)
-                  } else {
-                    this.schedule.startTime = FormatUtil.formatDate(value, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
-                    this.schedule.endTime = FormatUtil.formatDate(this.endDate, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
-                  }
-                  this.startTime = this.schedule.startTime;
-                  this.endTime = this.schedule.endTime;
-                  this.startDate = value;
-                }
+                onDateAccept: this.handleStartDateAccept
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               })
             })
 
@@ -486,6 +488,7 @@ export struct ScheduleForm {
               .layoutWeight(1)
             }.width('100%')
             .layoutWeight(1)
+            .id(SCHEDULE_FORM_END_TIME_ROW_ID)
             .onClick(() => {
               DatePickerDialog.show({
                 start: CommonConstants.DATE_START,
@@ -504,19 +507,19 @@ export struct ScheduleForm {
                   color: $r('app.color.sys_default_blue'),
                   font: { size: '18', weight: FontWeight.Bold }
                 },
-                onDateAccept: (value: Date) => {
-                  let tmpEndDate = value;
-                  if (this.startDate && tmpEndDate.getTime() < this.startDate.getTime()) {
-                    tmpEndDate = new Date(this.startDate.getTime() + CommonConstants.HALF_HOUR)
-                  }
-                  if (this.isAllDay) {
-                    this.schedule.endTime = FormatUtil.formatDate(tmpEndDate, FormatUtil.DATE_YYYY_MM_DD)
-                  } else {
-                    this.schedule.endTime = FormatUtil.formatDate(tmpEndDate, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
-                  }
-                  this.endTime = this.schedule.endTime
-                  this.endDate = tmpEndDate;
-                },
+                onDateAccept: this.handleEndDateAccept,
+
+
+
+
+
+
+
+
+
+
+
+
               })
             })
           }
@@ -580,6 +583,7 @@ export struct ScheduleForm {
               .justifyContent(FlexAlign.End)
               .width('60%')
             }.layoutWeight(1)
+            .id(SCHEDULE_FORM_REMINDER_ROW_ID)
             .onClick(() => {
               this.reminderController.open();
             })
@@ -627,4 +631,79 @@ export struct ScheduleForm {
     .borderRadius({ topLeft: 32, topRight: 32 })
     .id(SCHEDULE_FORM_ROOT_ID)
   }
+
+  private getLocationVisibility(): Visibility {
+    return this.location ? Visibility.None : Visibility.Visible;
+  }
+
+  private getLocationLabel(): ResourceStr {
+    return this.location ? this.location : $r('app.string.location_label');
+  }
+
+  private getLocationFontColor(): ResourceColor {
+    return this.location ? Color.Black : '#3093FA';
+  }
+
+  private handleLocationResult = (err: ScheduleLocationError | undefined, data: ScheduleLocationData): void => {
+    if (err) {
+      hilog.error(0x0000, 'NewSchedule', 'error： %{public}d %{public}s', err.code, err.message);
+      return;
+    }
+    this.schedule.location = data.address;
+    this.location = data.address;
+    this.schedule.longitude = data.longitude;
+    this.schedule.latitude = data.latitude;
+    this.longitude = data.longitude;
+    this.latitude = data.latitude;
+  };
+
+  private shiftEndDate(value: Date): void {
+    let diff = 0;
+    if (this.startDate) {
+      diff = value.getTime() - this.startDate.getTime();
+    }
+    if (this.endDate) {
+      this.endDate = new Date(this.endDate.getTime() + diff);
+    }
+  }
+
+  private handleStartDateAccept = (value: Date): void => {
+    this.shiftEndDate(value);
+    const adjustedEndDate: Date = this.endDate === undefined ? value : this.endDate;
+    if (this.isAllDay) {
+      this.schedule.startTime = FormatUtil.formatDate(value, FormatUtil.DATE_YYYY_MM_DD)
+      this.schedule.endTime = FormatUtil.formatDate(adjustedEndDate, FormatUtil.DATE_YYYY_MM_DD)
+    } else {
+      this.schedule.startTime = FormatUtil.formatDate(value, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
+      this.schedule.endTime = FormatUtil.formatDate(adjustedEndDate, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
+    }
+    this.startTime = this.schedule.startTime;
+    this.endTime = this.schedule.endTime;
+    this.startDate = value;
+  };
+
+  private handleEndDateAccept = (value: Date): void => {
+    let tmpEndDate = value;
+    if (this.startDate && tmpEndDate.getTime() < this.startDate.getTime()) {
+      tmpEndDate = new Date(this.startDate.getTime() + CommonConstants.HALF_HOUR)
+    }
+    if (this.isAllDay) {
+      this.schedule.endTime = FormatUtil.formatDate(tmpEndDate, FormatUtil.DATE_YYYY_MM_DD)
+    } else {
+      this.schedule.endTime = FormatUtil.formatDate(tmpEndDate, FormatUtil.DATE_YYYY_MM_DD_24H_mm)
+    }
+    this.endTime = this.schedule.endTime
+    this.endDate = tmpEndDate;
+  };
+}
+
+interface ScheduleLocationError {
+  code: number;
+  message: string;
+}
+
+interface ScheduleLocationData {
+  address: string;
+  longitude: number;
+  latitude: number;
 }

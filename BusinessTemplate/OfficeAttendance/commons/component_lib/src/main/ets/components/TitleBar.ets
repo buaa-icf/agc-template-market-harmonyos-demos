@@ -30,7 +30,7 @@ export struct TitleBar {
           Text(this.titleResID === '' ? '' : $r(this.titleResID))
             .fontSize(20).fontWeight(FontWeight.Bold)
         }
-      }.align(Alignment.Start).onClick(() => {
+      }.id('schedule_title_bar_left_action').align(Alignment.Start).onClick(() => {
         this.hide();
       }).height(40).width('70%')
 
@@ -46,6 +46,7 @@ export struct TitleBar {
           .height(40)
           .width(40)
           .borderRadius(20)
+          .id('schedule_title_bar_right_action')
           .onClick(() => {
             this.callback();
           })

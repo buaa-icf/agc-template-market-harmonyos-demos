@@ -8,6 +8,10 @@ const AREA_HEIGHT_ID = 'tui_swiper_area_height';
 const MOUNT_FLAT_ID = 'tui_swiper_mount_flat';
 const MOUNT_COVERED_ID = 'tui_swiper_mount_covered';
 const MOUNT_OVERSIZE_ID = 'tui_swiper_mount_oversize';
+const MOUNT_FLAT_UNDERSIZE_ID = 'tui_swiper_mount_flat_undersize';
+const MOUNT_COVERED_OVERSIZE_ID = 'tui_swiper_mount_covered_oversize';
+const MOUNT_COVERED_UNDERSIZE_ID = 'tui_swiper_mount_covered_undersize';
+const MOUNT_INVALID_ID = 'tui_swiper_mount_invalid';
 const UNMOUNT_ID = 'tui_swiper_unmount';
 
 async function findById(id: string, timeout: number = 8000): Promise<Component> {
@@ -86,6 +90,30 @@ export default function tuiSwiperTest() {
       await waitForMode('oversize');
       const h: number = await waitForPositiveHeight();
       expect(h > 0).assertTrue();
+    });
+
+    it('initDataByIsCovered_flat_undersized_dimensions_are_expanded', 0, async () => {
+      await clickId(MOUNT_FLAT_UNDERSIZE_ID);
+      await waitForMode('flat-small');
+      expect(await waitForPositiveHeight() > 0).assertTrue();
+    });
+
+    it('initDataByIsCovered_covered_oversized_dimensions_are_clamped', 0, async () => {
+      await clickId(MOUNT_COVERED_OVERSIZE_ID);
+      await waitForMode('cover-big');
+      expect(await waitForPositiveHeight() > 0).assertTrue();
+    });
+
+    it('initDataByIsCovered_covered_undersized_dimensions_are_expanded', 0, async () => {
+      await clickId(MOUNT_COVERED_UNDERSIZE_ID);
+      await waitForMode('cover-small');
+      expect(await waitForPositiveHeight() > 0).assertTrue();
+    });
+
+    it('initDataByIsCovered_rejects_non_positive_dimensions', 0, async () => {
+      await clickId(MOUNT_INVALID_ID);
+      await waitForMode('invalid');
+      await findById(HOST_ANCHOR_ID);
     });
   });
 }

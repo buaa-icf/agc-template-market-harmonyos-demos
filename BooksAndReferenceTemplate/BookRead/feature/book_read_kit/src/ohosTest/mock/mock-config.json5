@@ -1,0 +1,5 @@
+{
+  "@kit.ReaderKit": {
+    "source": "src/ohosTest/mock/ReaderKit.mock.ets"
+  }
+}

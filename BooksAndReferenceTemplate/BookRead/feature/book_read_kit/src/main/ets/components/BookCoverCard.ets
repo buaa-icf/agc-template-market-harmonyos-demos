@@ -75,7 +75,7 @@ export struct BookCoverCard {
             .onClick(async () => {
               if (!this.isAddSuccess) {
                 await this.addBook2Shelf(true, $r('app.string.add_shelf_success'));
-              } else if (this.isAddSuccess) {
+              } else {
                 //   再次点击从书架删除
                 await this.addBook2Shelf(false, $r('app.string.del_shelf_success'));
               }

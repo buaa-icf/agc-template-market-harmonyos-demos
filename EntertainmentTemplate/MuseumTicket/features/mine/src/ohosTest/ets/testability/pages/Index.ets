@@ -89,6 +89,15 @@ struct Index {
     }
   }
 
+  private openEmptyEditVisitor(): void {
+    this.vm.clear();
+    this.vm.recommendList = [];
+    this.recommendScenario = 'idle';
+    RouterModule.clear();
+    RouterModule.getStack().pushPathByName(HOST_ROUTE, null);
+    RouterModule.getStack().pushPathByName(RouterMap.EDIT_VISITOR, null);
+  }
+
   private openRecommend(scenario: string): void {
     this.recommendScenario = scenario;
     this.vm.recommendList = scenario === 'empty' ? [] : createRecommendItems();
@@ -133,7 +142,7 @@ struct Index {
           .id(EDIT_EMPTY_BUTTON_ID)
           .width('100%')
           .onClick(() => {
-            this.openEditVisitor(undefined);
+            this.openEmptyEditVisitor();
           })
 
         Button('Show Mine Recommend')

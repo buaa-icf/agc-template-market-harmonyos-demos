@@ -5,6 +5,7 @@ const QUICK_LOGIN_HOST_ANCHOR_ID: string = 'quick_login_cover_test_host_anchor';
 @Entry
 @ComponentV2
 struct Index {
+  @Local private showCover: boolean = true;
   @Local private servicePolicyClicked: boolean = false;
   @Local private privacyPolicyClicked: boolean = false;
   @Local private accountRouterClicked: boolean = false;
@@ -17,7 +18,7 @@ struct Index {
         .fontWeight(FontWeight.Medium)
 
       QuickLogin({
-        isBindContentCover: true,
+        isBindContentCover: this.showCover,
         icon: $r('app.media.icon_exam_login'),
         loginBtnBgColor: '#4B5CC4',
         appName: 'Exam',
@@ -31,6 +32,9 @@ struct Index {
         },
         onHYAccountRouter: () => {
           this.accountRouterClicked = true;
+        },
+        shouldDismiss: () => {
+          this.showCover = false;
         }
       })
         .width('100%')

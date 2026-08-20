@@ -19,13 +19,15 @@ export interface CategoryInfo {
 
 @ComponentV2
 export struct SearchPage {
-  @Local category: string | undefined = '';
-  @Local isCategory: boolean | undefined = false;
-  @Local submitValue: string | undefined = '';
-  @Local isSubmit: boolean = false;
-  @Local isUpdater: boolean = false;
-  @Local isSure: boolean = false;
-  @Local books: BookInfo[] = [];
+  @Param testScenario: number = 0;
+  @Param testBooks: BookInfo[] = [];
+  @Local category: string | undefined = this.testScenario === 4 ? 'CategoryProbe' : '';
+  @Local isCategory: boolean | undefined = this.testScenario === 4;
+  @Local submitValue: string | undefined = this.testScenario === 4 ? 'CategoryProbe' : '\u8bdb\u4ed9';
+  @Local isSubmit: boolean = this.testScenario > 0;
+  @Local isUpdater: boolean = this.testScenario === 2 || this.testScenario === 4;
+  @Local isSure: boolean = this.testScenario === 2 || this.testScenario === 4;
+  @Local books: BookInfo[] = this.testBooks;
   @Local rankInfos: LazyDataVM<rankListInfo> | undefined = undefined;
   controller: SearchController = new SearchController();
   windowTopHeight: number = AppStorage.get('windowTopHeight') as number || 38.77;
@@ -94,7 +96,7 @@ export struct SearchPage {
               .id('search_page_back')
               .margin({ top: 16 + this.windowTopHeight, right: '8vp' })
               .onClick(() => {
-                TCRouter.pop();
+                this.closePage();
               })
 
             Search({
@@ -120,26 +122,7 @@ export struct SearchPage {
                 this.isUpdater = false;
               })
               .onChange((value: string) => {
-                this.searchVM.keyword = value;
-                if (value.length === 0) {
-                  this.submitValue = value;
-                  this.isSubmit = false;
-                  this.isUpdater = false;
-                } else {
-                  this.submitValue = value;
-                  this.isSubmit = true;
-                  this.isUpdater = this.isSure ? true : false
-
-                  this.isSure = false;
-                  if (this.isCategory) {
-                    this.searchCategoryBook(this.submitValue);
-                  } else {
-                    this.searchBook(this.submitValue);
-                  }
-                  this.isCategory = false;
-
-                }
-
+                this.handleSearchChange(value);
               })
               .margin({ top: 16 + this.windowTopHeight });
 
@@ -201,11 +184,7 @@ export struct SearchPage {
                             }
                             .id(`search_page_suggestion_${item.id}`)
                             .onClick(() => {
-                              this.searchVM.keyword = item.name;
-                              this.submitValue = item.name;
-                              this.isSure = true;
-                              this.isSubmit = true;
-                              this.isUpdater = true;
+                              this.selectSuggestion(item);
                             })
                             .height('100%')
                             .width('100%')
@@ -316,6 +295,38 @@ export struct SearchPage {
     .margin({ top: 24, bottom: 24 })
     .cachedCount(3)
     .layoutWeight(1)
+  }
+
+  private handleSearchChange(value: string): void {
+    this.searchVM.keyword = value;
+    if (value.length === 0) {
+      this.submitValue = value;
+      this.isSubmit = false;
+      this.isUpdater = false;
+    } else {
+      this.submitValue = value;
+      this.isSubmit = true;
+      this.isUpdater = this.isSure;
+      this.isSure = false;
+      if (this.isCategory) {
+        this.searchCategoryBook(this.submitValue);
+      } else {
+        this.searchBook(this.submitValue);
+      }
+      this.isCategory = false;
+    }
+  }
+
+  private closePage(): void {
+    TCRouter.pop();
+  }
+
+  private selectSuggestion(item: BookInfo): void {
+    this.searchVM.keyword = item.name;
+    this.submitValue = item.name;
+    this.isSure = true;
+    this.isSubmit = true;
+    this.isUpdater = true;
   }
 }
 

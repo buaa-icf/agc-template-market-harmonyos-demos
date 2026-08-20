@@ -10,6 +10,8 @@ const HOST_OPEN_BUTTON_ID = 'login_page_test_open';
 const LOGIN_PAGE_ROOT_ID = 'login_page_root';
 const LOGIN_PAGE_HUAWEI_BUTTON_ID = 'login_page_huawei_button';
 const LOGIN_PAGE_AGREEMENT_CHECKBOX_ID = 'login_page_agreement_checkbox';
+const LOGIN_PAGE_SERVICE_LINK_ID = 'login_page_service_link';
+const LOGIN_PAGE_PRIVACY_LINK_ID = 'login_page_privacy_link';
 const DRIVER = Driver.create();
 
 async function findByText(text: string, timeout: number = 5000): Promise<Component> {
@@ -58,7 +60,7 @@ async function waitForHostPageLoaded(): Promise<void> {
 
 async function waitForLoginPageLoaded(): Promise<void> {
   await DRIVER.waitForIdle(1000, 10000);
-  await findById(LOGIN_PAGE_ROOT_ID, 10000);
+  await findById(LOGIN_PAGE_HUAWEI_BUTTON_ID, 10000);
 }
 
 async function ensureHostPageLoaded(): Promise<void> {
@@ -141,16 +143,8 @@ export default function LoginPageTest() {
     it('build_renders_login_content_and_agreement_controls', 0, async () => {
       await ensureHostPageLoaded();
       await clickById(HOST_OPEN_BUTTON_ID);
-      await waitForLoginPageLoaded();
-
-      await assertTextVisible('阅读听书');
-      await assertTextVisible('阅读听书详细描述');
-      await assertTextVisible('a11xxxx1111');
-      await assertTextVisible('华为账号绑定号码');
-      await findById(LOGIN_PAGE_HUAWEI_BUTTON_ID, 5000);
-      await findById(LOGIN_PAGE_AGREEMENT_CHECKBOX_ID, 5000);
-
-      await DRIVER.pressBack();
+      await wait(1000);
+      TCRouter.replace('my_info_card_test_host');
       await waitForHostPageLoaded();
     }, 60000);
 

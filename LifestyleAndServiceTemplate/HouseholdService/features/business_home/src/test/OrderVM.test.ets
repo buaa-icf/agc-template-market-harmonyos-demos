@@ -36,5 +36,39 @@ export default function OrderVMTest() {
 
       expect(viewModel.getTotalCash()).assertEqual(CommonUtils.handleCash(120));
     });
+
+    it('falls back to the vip price when the selected service item is missing', 0, () => {
+      const viewModel: OrderVM = OrderVM.instance(true) as OrderVM;
+      const good: GoodInfo = new GoodInfo();
+      good.vipPrice = 88;
+      const serviceDetail: IServiceDetail = {
+        title: 'cleaning',
+        subTitle: 'standard',
+        prices: []
+      };
+      good.serviceDetailList = [serviceDetail];
+      viewModel.goodInfo = good;
+      viewModel.selectServiceOutIndex = 0;
+      viewModel.selectServiceInsideIndex = 0;
+
+      expect(viewModel.getTotalCash()).assertEqual(CommonUtils.handleCash(88));
+    });
+
+    it('falls back to the vip price when the selected service group is invalid', 0, () => {
+      const viewModel: OrderVM = OrderVM.instance(true) as OrderVM;
+      const good: GoodInfo = new GoodInfo();
+      good.vipPrice = 88;
+      const serviceDetail: IServiceDetail = {
+        title: 'cleaning',
+        subTitle: 'standard',
+        prices: []
+      };
+      good.serviceDetailList = [serviceDetail];
+      viewModel.goodInfo = good;
+      viewModel.selectServiceOutIndex = 1;
+      viewModel.selectServiceInsideIndex = 0;
+
+      expect(viewModel.getTotalCash()).assertEqual(CommonUtils.handleCash(88));
+    });
   });
 }

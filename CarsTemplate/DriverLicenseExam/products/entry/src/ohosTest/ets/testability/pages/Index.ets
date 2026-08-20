@@ -1,4 +1,4 @@
-import { PersonalSettingBuilder } from '../../../../../../../../src/main/ets/pages/mine/PersonalSetting';
+import { PersonalSettingTestBuilder } from '../../../../../../../../src/main/ets/pages/mine/PersonalSetting';
 import { CommonModel } from '@ohos_agcit/driver_license_exam_commonlib';
 
 @Entry
@@ -10,7 +10,7 @@ struct Index {
   @Builder
   navDestinationBuilder(name: string, param?: Object) {
     if (name === 'PersonalSetting') {
-      PersonalSettingBuilder();
+      PersonalSettingTestBuilder();
     }
   }
 

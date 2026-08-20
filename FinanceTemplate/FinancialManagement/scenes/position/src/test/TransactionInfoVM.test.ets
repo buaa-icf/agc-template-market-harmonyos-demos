@@ -74,5 +74,20 @@ export default function TransactionInfoVMTest() {
       expect(viewModel.timeLineList.length).assertEqual(2);
       expect(viewModel.timeLineList[0].nextNodeStatus).assertEqual(5);
     });
+
+    it('leaves the current state unchanged when the request fails', 0, async () => {
+      const getTransactionRecordInfo = mockKit.mockFunc(https, https.getTransactionRecordInfo);
+      const response: TransactionResponse = {
+        code: 1,
+        data: createInfo(2, [])
+      };
+      when(getTransactionRecordInfo)(103).afterReturn(Promise.resolve(response));
+      const viewModel = new TransactionInfoVM();
+
+      await viewModel.getTransactionRecordInfo(103);
+
+      expect(viewModel.transactionInfo).assertUndefined();
+      expect(viewModel.timeLineList.length).assertEqual(0);
+    });
   });
 }

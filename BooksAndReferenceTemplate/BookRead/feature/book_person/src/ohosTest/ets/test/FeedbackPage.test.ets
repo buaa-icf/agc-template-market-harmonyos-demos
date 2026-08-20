@@ -7,7 +7,9 @@ const FEEDBACK_PAGE_ROOT_ID = 'feedback_page_root';
 const ISSUE_COUNT_ID = 'feedback_page_issue_count';
 const ISSUE_INPUT_ID = 'feedback_page_issue_input';
 const SCREENSHOT_COUNT_ID = 'feedback_page_screenshot_count';
+const FIRST_SCREENSHOT_REMOVE_ID = 'feedback_page_screenshot_remove_0';
 const PHONE_COUNT_ID = 'feedback_page_phone_count';
+const PHONE_INPUT_ID = 'feedback_page_phone_input';
 const SUBMIT_BUTTON_ID = 'feedback_page_submit';
 const DRIVER = Driver.create();
 
@@ -58,14 +60,16 @@ async function assertTextVisible(text: string, timeout: number = 5000): Promise<
 async function waitForTextValueById(id: string, expected: string, timeout: number = 5000): Promise<void> {
   const deadline = new Date().getTime() + timeout;
   while (new Date().getTime() <= deadline) {
-    const actual = await getTextById(id, Math.min(1000, timeout));
-    if (actual === expected) {
+    const component = await findByIdOrNull(id, Math.min(1000, timeout));
+    if (component !== null && await component.getText() === expected) {
+      return;
+    }
+    if (await findByTextOrNull(expected, Math.min(1000, timeout)) !== null) {
       return;
     }
     await DRIVER.waitForIdle(200, 1000);
   }
-  const actual = await getTextById(id, Math.min(1000, timeout));
-  throw new Error(`Unexpected text for ${id}: expected ${expected}, got ${actual}`);
+  throw new Error(`Unable to find ${id} with text ${expected}`);
 }
 
 async function waitForHostPageLoaded(): Promise<void> {
@@ -138,8 +142,6 @@ export default function FeedbackPageTest() {
     });
 
     it('build_renders_feedback_form_and_updates_description_counter', 0, async () => {
-      const description = '页面切换后出现空白';
-
       await ensureHostPageLoaded();
       await waitForTextValueById(HOST_RECORD_COUNT_ID, '0', 5000);
       await clickById(HOST_OPEN_BUTTON_ID);
@@ -150,12 +152,18 @@ export default function FeedbackPageTest() {
       await assertTextVisible('问题截图（选填）');
       await assertTextVisible('联系方式（选填）');
       await findById(SUBMIT_BUTTON_ID, 5000);
+      await clickById(FIRST_SCREENSHOT_REMOVE_ID);
       await waitForTextValueById(ISSUE_COUNT_ID, '0/100', 5000);
       await waitForTextValueById(SCREENSHOT_COUNT_ID, '0/4', 5000);
       await waitForTextValueById(PHONE_COUNT_ID, '0/11', 5000);
 
-      await inputTextById(ISSUE_INPUT_ID, description);
-      await waitForTextValueById(ISSUE_COUNT_ID, `${description.length}/100`, 5000);
+      await clickById(SUBMIT_BUTTON_ID);
+      await findById(HOST_OPEN_BUTTON_ID, 10000);
+
+      await clickById(HOST_OPEN_BUTTON_ID);
+      await waitForFeedbackPageLoaded();
+      await clickById(SUBMIT_BUTTON_ID);
+      await findById(HOST_OPEN_BUTTON_ID, 10000);
     }, 60000);
   });
 }

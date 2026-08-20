@@ -168,6 +168,18 @@ export default function PictureBeautificationTest() {
       const after = await getBoundsById(CROP_CANVAS_ID);
       expect(after.right <= image.right + tolerance).assertTrue();
       expect(after.bottom <= image.bottom + tolerance).assertTrue();
+      });
+    it('moveClipCanvasFreeType_resize_clamps_at_right_boundary', 0, async () => {
+      const initial = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(initial, 0.98, 0.5, -120, 0);
+      const shrunken = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(shrunken, 0.5, 0.5, 800, 0);
+      const atRightBoundary = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(atRightBoundary, 0.98, 0.5, 120, 0);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      expect(after.right <= image.right + tolerance).assertTrue();
     });
 
     it('moveClipCanvasRatioType_select_1_1_applies_square_ratio', 0, async () => {
@@ -179,6 +191,14 @@ export default function PictureBeautificationTest() {
       // 允许约 10 像素的边框/绘制误差
       expect(w > 0 && h > 0).assertTrue();
       expect(boundsChanged(before, rect)).assertTrue();
+    });
+
+    it('drawClipImage_redraws_grid_for_every_supported_ratio', 0, async () => {
+      const ratios: string[] = ['1:1', '3:2', '4:3', '9:16', '16:9'];
+      for (let index = 0; index < ratios.length; index++) {
+        await selectRatio(ratios[index]);
+        await findById(CROP_CANVAS_ID);
+      }
     });
 
     it('moveClipCanvasRatioType_move_branch_updates_clip_rect', 0, async () => {
@@ -288,6 +308,20 @@ export default function PictureBeautificationTest() {
       const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
       expect(after.right - after.left <= (image.right - image.left) + tolerance).assertTrue();
       expect(after.bottom - after.top <= (image.bottom - image.top) + tolerance).assertTrue();
+    });
+
+    it('moveClipCanvasRatioType_resize_clamps_at_right_boundary', 0, async () => {
+      await selectRatio('1:1');
+      const initial = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(initial, 0.98, 0.98, -120, -120);
+      const shrunken = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(shrunken, 0.5, 0.5, 800, 0);
+      const atRightBoundary = await getBoundsById(CROP_CANVAS_ID);
+      await swipeWithin(atRightBoundary, 0.98, 0.98, 120, 120);
+      const after = await getBoundsById(CROP_CANVAS_ID);
+      const image = await getBoundsById(IMAGE_CONTENT_ID);
+      const tolerance = Math.max(20, Math.round((image.right - image.left) * 0.1));
+      expect(after.right <= image.right + tolerance).assertTrue();
     });
   });
 }

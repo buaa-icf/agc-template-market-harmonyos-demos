@@ -61,7 +61,7 @@ export struct CoursePage {
             .height('100%')
         }
       }
-      .height('100%')
+      .layoutWeight(1)
       .width('100%')
       .backgroundColor($r('sys.color.background_secondary'))
     }
@@ -76,7 +76,8 @@ export struct CoursePage {
   @Builder
   deleteButtonBuilder() {
     if (this.isSelectDelete) {
-      Row() {
+      Button() {
+        Row() {
         Image($r('app.media.icon_delete'))
           .height($r('app.float.vp_24'))
           .width($r('app.float.vp_24'))
@@ -85,25 +86,26 @@ export struct CoursePage {
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
           .margin({ left: $r('app.float.vp_8') })
+        }.justifyContent(FlexAlign.Center)
       }
       .width($r('app.float.vp_312'))
       .id(COURSE_PAGE_DELETE_BUTTON_ID)
-      .justifyContent(FlexAlign.Center)
       .borderRadius(20)
       .padding({ top: $r('app.float.vp_8'), bottom: $r('app.float.vp_8') })
       .backgroundColor('#4c5dc4')
       .opacity(this.selectCount > 0 ? 1 : 0.4)
-      .onClick(() => {
-        if (this.selectCount > 0) {
-          // 删除选中
-          this.deleteSelectData()
-        }
-      })
+      .onClick(this.deleteSelectData)
+
+
+
+
     }
   }
-
   // 移除所选中的
   deleteSelectData() {
+    if (this.selectCount <= 0) {
+      return
+    }
     this.isSelectDelete = false
     this.propOrderInfo.orderInfos = this.propOrderInfo.orderInfos.filter((it: OrderInfo) => it.isDelete === false)
   }
@@ -298,13 +300,17 @@ export struct CoursePage {
           })
           .visibility(this.isSelectDelete ? Visibility.Visible : Visibility.Hidden)
         Image($r('app.media.ic_public_trash'))
+          .id(COURSE_PAGE_DELETE_TOGGLE_ID)
           .width($r('app.float.vp_40'))
           .height($r('app.float.vp_40'))
           .opacity(this.swiperDel ? 0.4 : 1)
           .margin({ left: $r('app.float.vp_8') })
       }
-      .id(COURSE_PAGE_DELETE_TOGGLE_ID)
       .onClick(() => {
+        if (this.isSelectDelete) {
+          this.deleteSelectData()
+          return
+        }
         if (!this.swiperDel && this.propOrderInfo.orderInfos.length > 0) {
           this.isSelectDelete = !this.isSelectDelete
           if (!this.isSelectDelete) {

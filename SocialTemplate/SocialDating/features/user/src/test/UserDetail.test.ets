@@ -31,6 +31,33 @@ interface UserDetailTestHostLike {
   initialRender: () => void
 }
 
+type ButtonClickCallback = (event?: ClickEvent) => void | Promise<void>
+
+interface ButtonHost {
+  onClick: (callback: ButtonClickCallback) => void
+}
+
+class NavPathStackDouble {
+  onPopCallback: ((popInfo: PopInfo) => void) | undefined = undefined
+
+  pushPathByName(_name: string, _param: Object, onPop: (popInfo: PopInfo) => void): void {
+    this.onPopCallback = onPop
+  }
+}
+
+class NavPathInfoDouble {
+}
+
+class PopInfoDouble {
+  info: NavPathInfo
+  result: Object
+
+  constructor(result: Object) {
+    this.info = new NavPathInfoDouble() as Object as NavPathInfo
+    this.result = result
+  }
+}
+
 @Component
 struct UserDetailTestHost {
   @Provide('pageStack') pageStack: NavPathStack = new NavPathStack()
@@ -136,6 +163,60 @@ export default function UserDetailTest() {
     it('builds upload profile picture dialog content', 0, () => {
       privateFields.UploadProfilePicDialogBuilder()
       expect(true).assertTrue()
+    })
+
+    it('rebuilds upload profile picture dialog with an existing profile image', 0, () => {
+      page.profileImage = 'profile-image-uri'
+
+      privateFields.UploadProfilePicDialogBuilder()
+
+      expect(page.profileImage).assertEqual('profile-image-uri')
+    })
+
+    it('handles album selections with empty and non-empty results', 0, () => {
+      const handlers: ButtonClickCallback[] = []
+      const buttonHost = Button as Object as ButtonHost
+      const originalOnClick = buttonHost.onClick
+      const stackDouble = new NavPathStackDouble()
+      const initialProfileImage = page.profileImage
+      page.pageStack = stackDouble as Object as NavPathStack
+      buttonHost.onClick = (callback: ButtonClickCallback) => {
+        handlers.push(callback)
+      }
+
+      try {
+        privateFields.UploadProfilePicDialogBuilder()
+        handlers[0]()
+        stackDouble.onPopCallback?.(new PopInfoDouble([]) as Object as PopInfo)
+        expect(page.profileImage).assertEqual(initialProfileImage)
+        stackDouble.onPopCallback?.(new PopInfoDouble(['album-image-uri']) as Object as PopInfo)
+        expect(page.profileImage).assertEqual('album-image-uri')
+      } finally {
+        buttonHost.onClick = originalOnClick
+      }
+    })
+
+    it('handles successful, failed, and non-photo camera results', 0, async () => {
+      const handlers: ButtonClickCallback[] = []
+      const buttonHost = Button as Object as ButtonHost
+      const originalOnClick = buttonHost.onClick
+      buttonHost.onClick = (callback: ButtonClickCallback) => {
+        handlers.push(callback)
+      }
+
+      try {
+        privateFields.UploadProfilePicDialogBuilder()
+        await handlers[1]()
+        expect(page.profileImage).assertEqual('camera-image-uri')
+
+        await handlers[1]()
+        expect(page.profileImage).assertEqual('camera-image-uri')
+
+        await handlers[1]()
+        expect(page.profileImage).assertEqual('camera-image-uri')
+      } finally {
+        buttonHost.onClick = originalOnClick
+      }
     })
   })
 }

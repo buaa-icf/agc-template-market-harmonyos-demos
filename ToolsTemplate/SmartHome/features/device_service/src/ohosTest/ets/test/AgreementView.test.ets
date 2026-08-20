@@ -53,6 +53,10 @@ async function resetToHost(driver: Driver, hostAnchorId: string): Promise<void> 
     await driver.triggerKey(KeyCode.KEYCODE_BACK);
     await waitForIdle(driver);
   }
+  const cancelButton = await driver.waitForComponent(ON.id('loginPanel_agreement_cancel_btn'), 800);
+  if (cancelButton !== null) {
+    await click(cancelButton, driver);
+  }
   await findById(driver, hostAnchorId);
 }
 
@@ -71,6 +75,17 @@ export default function AgreementViewTest() {
         await findById(driver, 'agreement_test_host_anchor');
         await click(await findById(driver, 'loginPanel_agreement_privacy_link'), driver);
         await findById(driver, 'agreement_privacy_page_anchor');
+      });
+
+    it('build should render and cancel an agreement without privacy spans',
+      TestType.FUNCTION | Size.MEDIUMTEST | Level.LEVEL3, async () => {
+        const driver = Driver.create();
+
+        await resetToHost(driver, 'agreement_test_host_anchor');
+        await click(await findById(driver, 'agreement_test_open_empty_dialog'), driver);
+        await findById(driver, 'loginPanel_agreement_dialog_privacy_title');
+        await click(await findById(driver, 'loginPanel_agreement_cancel_btn'), driver);
+        await findById(driver, 'agreement_test_host_anchor');
       });
   });
 }

@@ -50,6 +50,18 @@ function createPage(): SubmitOrderPage {
 class MockOrderResult {
 }
 
+class DialogUpdateRecorder {
+  updateCount: number = 0
+
+  update(_param: CreateOrderDialogParam): void {
+    this.updateCount++
+  }
+}
+
+interface GlobalDialogMutableView {
+  globalDialogInstance: DialogUpdateRecorder | undefined
+}
+
 export default function SubmitOrderPageTest() {
   describe('SubmitOrderPageTest', () => {
     let suiteMockKit: MockKit = new MockKit();
@@ -236,6 +248,34 @@ export default function SubmitOrderPageTest() {
       expect(page.selectedCount).assertEqual(1)
       expect(page.passengerList.length).assertEqual(1)
 
+      mockKit.clearAll()
+    })
+
+    it('updates the visible dialog and clears the submit interval', 0, async () => {
+      const page = createPage()
+      const mockKit = new MockKit()
+      const passenger = buildPassenger('timer-passenger', '13800138000')
+      passenger.isChecked = true
+      page.passengerList = [passenger]
+      page.selectedCount = 1
+      page.contactName = 'timer-contact'
+      page.contactPhone = '13800138000'
+      const dialogRecorder = new DialogUpdateRecorder()
+      const mutableDialog = GlobalDialog as Object as GlobalDialogMutableView
+      mutableDialog.globalDialogInstance = dialogRecorder
+
+      const mockShowDialog = mockKit.mockFunc(GlobalDialog, GlobalDialog.showDialogForCreateOrder)
+      when(mockShowDialog)(ArgumentMatchers.anyObj).afterReturn(Promise.resolve())
+      const mockOrderApi = mockKit.mockFunc(OrderApi, OrderApi.addOrUpdateOrder)
+      when(mockOrderApi)(ArgumentMatchers.anyObj).afterReturn(Promise.resolve(new MockOrderResult()))
+
+      page.submitOrder()
+      await new Promise<void>((resolve) => setTimeout(resolve, 5200))
+
+      expect(dialogRecorder.updateCount > 0).assertTrue()
+      expect(page.dataStorage.payOrderTime === '').assertFalse()
+
+      mutableDialog.globalDialogInstance = undefined
       mockKit.clearAll()
     })
   })

@@ -248,8 +248,9 @@ export struct AgencyTaskCalender {
           Flex({ wrap: FlexWrap.Wrap }) {
             ForEach(this.showDays.showDays, (weekDays: DateElement [], index) => {
               Flex({ justifyContent: FlexAlign.SpaceBetween }) {
-                ForEach(weekDays, (day: DateElement) => {
+                ForEach(weekDays, (day: DateElement, dayIndex: number) => {
                   Text(`${day.day}`)
+                    .id(`agency_calendar_day_${index}_${dayIndex}`)
                     .height(24)
                     .width(24)
                     .textAlign(TextAlign.Center)
@@ -288,6 +289,7 @@ export struct AgencyTaskCalender {
                 .width(12)
             }.justifyContent(FlexAlign.End).width('50%')
           }.width('100%')
+          .id('agency_calendar_plan_time')
           .padding({ left: 24, right: 24 })
           .onClick(() => {
             this.selectTime();

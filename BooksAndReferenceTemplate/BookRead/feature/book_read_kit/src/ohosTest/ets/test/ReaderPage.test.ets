@@ -1,31 +1,36 @@
-import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '@ohos/hypium'
+import { describe, beforeAll, afterAll, it, expect } from '@ohos/hypium';
+import { Driver, ON, Component } from '@kit.TestKit';
+
+const OPEN_READER_ID = 'open_reader_page_test';
+const READER_HOST_ID = 'reader_page_test_host';
+const READER_RESULT_ID = 'reader_page_preprocess_result';
+const DRIVER = Driver.create();
+
+async function findById(id: string, timeout: number = 10000): Promise<Component> {
+  const component = await DRIVER.waitForComponent(ON.id(id), timeout);
+  if (component === null) {
+    throw new Error(`Unable to find id: ${id}`);
+  }
+  return component;
+}
 
 export default function ReaderPageTest() {
-    describe('ReaderPageTest', () => {
-      // Defines a test suite. Two parameters are supported: test suite name and test suite function.
-        beforeAll(() => {
-          // Presets an action, which is performed only once before all test cases of the test suite start.
-          // This API supports only one parameter: preset action function.
-        })
-        beforeEach(() => {
-          // Presets an action, which is performed before each unit test case starts.
-          // The number of execution times is the same as the number of test cases defined by **it**.
-          // This API supports only one parameter: preset action function.
-        })
-        afterEach(() => {
-          // Presets a clear action, which is performed after each unit test case ends.
-          // The number of execution times is the same as the number of test cases defined by **it**.
-          // This API supports only one parameter: clear action function.
-        })
-        afterAll(() => {
-          // Presets a clear action, which is performed after all test cases of the test suite end.
-          // This API supports only one parameter: clear action function.
-        })
-        it('assertEqual', 0, () => {
-  // Defines a test case. This API supports three parameters: test case name, filter parameter, and test case function.
-    let a = 'test'
-    // Defines a variety of assertion methods, which are used to declare expected boolean conditions.
-    expect(a).assertEqual('test')
-})
-    })
+  describe('ReaderPageTest', () => {
+    beforeAll(async () => {
+      await DRIVER.waitForIdle(500, 10000);
+      const openButton = await findById(OPEN_READER_ID);
+      await openButton.click();
+      await DRIVER.waitForIdle(1000, 10000);
+      await findById(READER_HOST_ID);
+    });
+
+    afterAll(async () => {
+      await DRIVER.waitForIdle(500, 5000);
+    });
+
+    it('preprocess_initializes_paid_book_and_handles_page_show', 0, async () => {
+      const result = await findById(READER_RESULT_ID);
+      expect(await result.getText()).assertEqual('5:3:false:90');
+    });
+  });
 }

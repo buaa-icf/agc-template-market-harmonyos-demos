@@ -15,6 +15,19 @@ async function waitForById(id: string, timeoutMs: number = 12000): Promise<Compo
   return component;
 }
 
+async function openAgreementAndReturn(id: string): Promise<void> {
+  await driver.delayMs(800);
+  const item: Component = await waitForById(id);
+  await item.click();
+  await driver.waitForIdle(800, 10000);
+  const settingsPage: Component = await driver.waitForComponent(ON.id(LOGOUT_BUTTON_ID), 1200);
+  if (settingsPage === null) {
+    await driver.pressBack();
+    await driver.waitForIdle(800, 10000);
+  }
+  await waitForById(LOGOUT_BUTTON_ID);
+}
+
 export default function personalSettingTest() {
   describe('PersonalSettingTest', () => {
     beforeAll(async () => {
@@ -42,6 +55,11 @@ export default function personalSettingTest() {
       await driver.pressBack();
       await driver.waitForIdle(800, 10000);
       await waitForById(LOGOUT_BUTTON_ID);
+    });
+
+    it('should_open_both_agreement_entries_and_return_to_settings', 0, async () => {
+      await openAgreementAndReturn(PRIVACY_POLICY_ITEM_ID);
+      await openAgreementAndReturn(USER_AGREEMENT_ITEM_ID);
     });
   });
 }

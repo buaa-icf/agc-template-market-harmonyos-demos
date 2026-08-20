@@ -4,16 +4,19 @@ import { hvigor } from '@ohos/hvigor';
 import { hapTasks } from '@ohos/hvigor-ohos-plugin';
 import type { HvigorPlugin } from '@ohos/hvigor';
 
-const ON_DEVICE_TEST_TASK: string = 'onDeviceTest';
+const ENTRY_OHOS_TEST_MODULE: string = 'entry@ohosTest';
 const GENERATE_OHOS_TEST_TEMPLATE_TASK: string = 'ohosTest@GenerateOhosTestTemplate';
 const OHOS_TEST_COMPILE_ARK_TS_TASK: string = 'ohosTest@OhosTestCompileArkTS';
+
+function shouldConfigureOhosTest(): boolean {
+    return hvigor.getParameter().getExtParam('module') === ENTRY_OHOS_TEST_MODULE;
+}
 
 const replaceOhosTestIndexPlugin: HvigorPlugin = {
     pluginId: 'driver_license_exam_replace_ohos_test_index',
     apply(node) {
         hvigor.nodesEvaluated(() => {
-            const entryTasks: Set<string> = new Set(hvigor.getCommandEntryTask() ?? []);
-            if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
+            if (!shouldConfigureOhosTest()) {
                 return;
             }
 

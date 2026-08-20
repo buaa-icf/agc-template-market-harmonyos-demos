@@ -8,7 +8,7 @@ export class EditPhonePageVM {
   private static _instance: EditPhonePageVM;
   @Trace isLogin: boolean = false
   @Trace public cellphone: string = ''
-  @Trace userInfo: UserInfo = AppStorageV2.connect(UserInfo, () => new UserInfo())!;
+  @Trace userInfo: UserInfo | undefined = AppStorageV2.connect(UserInfo, () => new UserInfo());
 
   @Monitor('userInfo.id')
   onChange(monitor: IMonitor) {
@@ -32,6 +32,10 @@ export class EditPhonePageVM {
   }
 
   init() {
+    if (!this.userInfo) {
+      this.cellphone = ''
+      return
+    }
     this.checkLogin(this.userInfo.id)
     this.cellphone = this.userInfo.cellphone
   }

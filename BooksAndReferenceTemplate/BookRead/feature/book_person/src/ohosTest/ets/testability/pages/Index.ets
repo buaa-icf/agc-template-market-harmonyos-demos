@@ -9,6 +9,8 @@ import { RechargePage } from '../../../../../../../../src/main/ets/views/Recharg
 import { UserInfo } from 'base_common';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { FeedbackRecord } from 'common';
+import { loginComponentManager } from '@kit.AccountKit';
+import { emitter } from '@kit.BasicServicesKit';
 
 const HOST_ROUTE = 'my_info_card_test_host';
 const CARD_ROUTE = 'my_info_card_test_card';
@@ -19,6 +21,7 @@ const LOGIN_PAGE_ROUTE = 'login_page_test_page';
 const MEMBER_AGREEMENT_PAGE_ROUTE = 'member_agreement_test_page';
 const MEMBER_CENTER_PAGE_ROUTE = 'member_center_test_page';
 const RECHARGE_PAGE_ROUTE = 'recharge_page_test_page';
+const RECHARGE_TEST_EVENT_ID = 91247;
 const HOST_GUEST_BUTTON_ID = 'my_info_card_test_open_guest';
 const HOST_NON_MEMBER_BUTTON_ID = 'my_info_card_test_open_non_member';
 const HOST_MEMBER_BUTTON_ID = 'my_info_card_test_open_member';
@@ -67,10 +70,37 @@ function buildUserInfo(options: TestUserInfoOptions): UserInfo {
 @ComponentV2
 struct Index {
   @Local private currentScenarioLabel: string = '';
+  @Local private showRechargeDirect: boolean = false;
+  private feedbackScenario: number = 0;
+  private loginPrivacyText: loginComponentManager.PrivacyText[] = [{
+    text: '已阅读并同意',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }, {
+    text: '《用户服务协议》',
+    tag: '用户服务协议',
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '和',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }, {
+    text: '《隐私协议》',
+    tag: '隐私协议',
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '',
+    tag: 'empty-rich-text',
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '。',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }];
   @Local private feedbackRecord: FeedbackRecord =
     AppStorageV2.connect(FeedbackRecord, 'feedbackRecord', () => new FeedbackRecord())!;
 
   aboutToAppear(): void {
+    emitter.on({ eventId: RECHARGE_TEST_EVENT_ID }, () => {
+      this.showRechargeDirect = true;
+    });
     TCRouter.init();
     TCRouter.replace(HOST_ROUTE);
     AppStorage.setOrCreate('userInfo', undefined);
@@ -117,6 +147,12 @@ struct Index {
 
   private openFeedbackPage(): void {
     this.resetFeedbackRecord();
+    const stageImageUris: string[] = this.feedbackScenario % 2 === 0 ?
+      ['', 'test://feedback-1', 'test://feedback-2'] :
+      ['', 'test://feedback-1', 'test://feedback-2', 'test://feedback-3'];
+    AppStorage.setOrCreate('feedbackPageTestStageImageUris', stageImageUris);
+    AppStorage.set('feedbackPageTestStageImageUris', stageImageUris);
+    this.feedbackScenario += 1;
     TCRouter.push(FEEDBACK_PAGE_ROUTE);
   }
 
@@ -143,7 +179,7 @@ struct Index {
 
   private openRechargePage(): void {
     AppStorage.setOrCreate('userInfo', undefined);
-    TCRouter.push(RECHARGE_PAGE_ROUTE);
+    this.showRechargeDirect = true;
   }
 
   private latestFeedbackDescription(): string {
@@ -166,6 +202,13 @@ struct Index {
   private hostPage() {
     NavDestination() {
       Column({ space: 16 }) {
+        Button('打开充值页')
+          .id(HOST_RECHARGE_PAGE_BUTTON_ID)
+          .width(Constants.FULL_SIZE)
+          .onClick(() => {
+            this.openRechargePage();
+          })
+
         Column({ space: 8 }) {
           Text(`${this.feedbackRecord.feedbackList.length}`)
             .id(HOST_FEEDBACK_RECORD_COUNT_ID)
@@ -241,12 +284,6 @@ struct Index {
             this.openMemberCenterPage();
           })
 
-        Button('打开充值页')
-          .id(HOST_RECHARGE_PAGE_BUTTON_ID)
-          .width(Constants.FULL_SIZE)
-          .onClick(() => {
-            this.openRechargePage();
-          })
       }
       .id(HOST_FEEDBACK_PAGE_ROOT_ID)
       .width(Constants.FULL_SIZE)
@@ -375,14 +412,17 @@ struct Index {
       this.feedbackRecordPage();
     } else if (name === LOGIN_PAGE_ROUTE) {
       LoginPage({
-        disableAutoQuickLogin: true
+        disableAutoQuickLogin: true,
+        privacyText: this.loginPrivacyText
       });
     } else if (name === MEMBER_AGREEMENT_PAGE_ROUTE) {
       MemberAgreementPage();
     } else if (name === MEMBER_CENTER_PAGE_ROUTE) {
       MemberCenterPage();
     } else if (name === RECHARGE_PAGE_ROUTE) {
-      RechargePage();
+      RechargePage({
+        testDirectRender: true
+      });
     } else if (name === Constants.LOGIN_ROUTE) {
       this.loginPage();
     } else if (name === Constants.MEMBER_CENTER_ROUTE) {
@@ -391,13 +431,32 @@ struct Index {
   }
 
   build() {
-    Navigation(TCRouter.getStack()) {
+    if (this.showRechargeDirect) {
+      Stack({ alignContent: Alignment.TopEnd }) {
+        RechargePage({
+          testDirectRender: true
+        });
+
+        Button('close')
+          .id('recharge_page_test_close')
+          .width(24)
+          .height(24)
+          .opacity(0.01)
+          .onClick(() => {
+            this.showRechargeDirect = false;
+          })
+      }
+      .width(Constants.FULL_SIZE)
+      .height(Constants.FULL_SIZE)
+    } else {
+      Navigation(TCRouter.getStack()) {
+      }
+      .hideNavBar(true)
+      .hideTitleBar(true)
+      .mode(NavigationMode.Stack)
+      .width(Constants.FULL_SIZE)
+      .height(Constants.FULL_SIZE)
+      .navDestination(this.routerMap);
     }
-    .hideNavBar(true)
-    .hideTitleBar(true)
-    .mode(NavigationMode.Stack)
-    .width(Constants.FULL_SIZE)
-    .height(Constants.FULL_SIZE)
-    .navDestination(this.routerMap);
   }
 }

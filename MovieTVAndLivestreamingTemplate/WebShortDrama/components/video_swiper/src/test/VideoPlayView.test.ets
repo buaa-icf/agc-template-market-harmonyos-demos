@@ -212,6 +212,21 @@ export default function VideoPlayViewTest() {
       expect(stringifyStates(callbackStates)).assertEqual('prepared')
     })
 
+    it('marks the player prepared without seeking or autoplay when progress and visibility conditions are absent', 0,
+      async () => {
+        const component = createView()
+        const fakePlayer = new FakeAVPlayer()
+        const callbackStates = registerStateCollector(component)
+
+        component.setAVPlayerStateListen(fakePlayer as Object as media.AVPlayer)
+        await fakePlayer.emitStateChange('prepared')
+
+        expect(component.preparedFlag).assertTrue()
+        expect(fakePlayer.seekCalls.length).assertEqual(0)
+        expect(fakePlayer.playCallCount).assertEqual(0)
+        expect(stringifyStates(callbackStates)).assertEqual('prepared')
+      })
+
     it('toggles the playing flag for playing paused and stopped states', 0, async () => {
       const component = createView()
       const fakePlayer = new FakeAVPlayer()
@@ -252,6 +267,25 @@ export default function VideoPlayViewTest() {
       expect(fakePlayer.seekCalls.length).assertEqual(1)
       expect(fakePlayer.seekCalls[0].time).assertEqual(0)
       expect(fakePlayer.seekCalls[0].mode).assertEqual(media.SeekMode.SEEK_CLOSEST)
+      expect(stringifyStates(callbackStates)).assertEqual('completed')
+    })
+
+    it('rewinds completed playback without advancing when autoplay is disabled', 0, async () => {
+      const component = createView()
+      const fakePlayer = new FakeAVPlayer()
+      const fakeSwiperController = new FakeSwiperController()
+      const callbackStates = registerStateCollector(component)
+      component.isPlaying = true
+      component.playController.autoPlay = false
+      component.playController.setSwiperController(fakeSwiperController as Object as SwiperController)
+
+      component.setAVPlayerStateListen(fakePlayer as Object as media.AVPlayer)
+      await fakePlayer.emitStateChange('completed')
+
+      expect(component.isPlaying).assertFalse()
+      expect(fakeSwiperController.changeIndexCalls.length).assertEqual(0)
+      expect(fakePlayer.seekCalls.length).assertEqual(1)
+      expect(fakePlayer.seekCalls[0].time).assertEqual(0)
       expect(stringifyStates(callbackStates)).assertEqual('completed')
     })
 

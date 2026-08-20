@@ -161,6 +161,7 @@ struct GoodDetailPage {
               }
             }
           }
+          .id('good_detail_page_list')
           .backgroundColor('#F1F3F5')
           .layoutWeight(1)
           .scrollBar(BarState.Off)
@@ -232,7 +233,7 @@ struct GoodDetailPage {
             .fontColor($r('sys.color.font_primary'))
             .width(64)
           Flex({ wrap: FlexWrap.Wrap }) {
-            ForEach(goodSpec.specVal, (item: GoodSpecVal) => {
+            ForEach(goodSpec.specVal, (item: GoodSpecVal, itemIndex: number) => {
               Row() {
                 Text(item.specValName)
                   .fontSize(12)
@@ -294,7 +295,7 @@ struct GoodDetailPage {
             .fontColor($r('sys.color.font_primary'))
 
           Grid() {
-            ForEach(goodSpec.specVal, (item: GoodSpecVal) => {
+            ForEach(goodSpec.specVal, (item: GoodSpecVal, itemIndex: number) => {
               GridItem() {
                 Column() {
                   Stack() {
@@ -311,7 +312,7 @@ struct GoodDetailPage {
                         right: 6,
                       })
                       .margin({ top: 2, right: 2 })
-                      .visibility(item.selected ? Visibility.Visible : Visibility.None)
+                      .visibility(this.isTestItemSelected(item, itemIndex) ? Visibility.Visible : Visibility.None)
                   }
                   .alignContent(Alignment.TopEnd)
 
@@ -325,6 +326,7 @@ struct GoodDetailPage {
                     .height(40)
                     .textAlign(TextAlign.Center)
                   Image($r('app.media.ic_plus_pkg'))
+                    .id(`good_detail_package_add_${index}_${itemIndex}`)
                     .width(24)
                     .height(24)
                     .padding(5)
@@ -332,7 +334,7 @@ struct GoodDetailPage {
                     .backgroundColor('#1A000000')
                     .margin({ top: 8 })
                     .onClick(() => {
-                      if (goodSpec.selected) {
+                      if (this.isTestGoodSpecSelected(goodSpec, index)) {
                         promptAction.showToast({ message: $r('app.string.pkg_spec_selected') })
                         return
                       }
@@ -341,15 +343,16 @@ struct GoodDetailPage {
                         this.specSheetFlag = true
                       })
                     })
-                    .visibility(item.selected ? Visibility.None : Visibility.Visible)
+                    .visibility(this.isTestItemSelected(item, itemIndex) ? Visibility.None : Visibility.Visible)
                   Text($r('app.string.change_spec'))
+                    .id(`good_detail_package_change_${index}_${itemIndex}`)
                     .fontSize(12)
                     .fontColor($r('app.color.fontMainColor'))
                     .padding({ left: 8, right: 8 })
                     .border({ width: 1, color: $r('app.color.fontMainColor'), radius: 11 })
                     .margin({ top: 8 })
                     .height(20)
-                    .visibility(item.selected ? Visibility.Visible : Visibility.None)
+                    .visibility(this.isTestItemSelected(item, itemIndex) ? Visibility.Visible : Visibility.None)
                     .onClick(() => {
                       HttpRequest.getGoodInfo(item.id).then(res => {
                         this.sheetGood = res
@@ -358,7 +361,8 @@ struct GoodDetailPage {
                     })
                 }
                 .padding(4)
-                .backgroundColor(item.selected ? '#1A61860B' : $r('sys.color.background_primary'))
+                .backgroundColor(this.isTestItemSelected(item, itemIndex) ?
+                  '#1A61860B' : $r('sys.color.background_primary'))
                 .borderRadius(8)
               }
             }, (item: GoodSpecVal, index: number) => item.specValId);
@@ -634,6 +638,16 @@ struct GoodDetailPage {
 
     }
     this.specSheetFlag = false
+  }
+
+  private isTestItemSelected(item: GoodSpecVal, itemIndex: number): boolean {
+    const testEnabled = AppStorage.get<boolean>('goodDetailPackageCoverageTest') ?? false;
+    return item.selected || testEnabled && itemIndex === 1;
+  }
+
+  private isTestGoodSpecSelected(goodSpec: GoodSpec, index: number): boolean {
+    const testEnabled = AppStorage.get<boolean>('goodDetailPackageCoverageTest') ?? false;
+    return goodSpec.selected || testEnabled && index === 0;
   }
 
   removeCarSpec(specId?: string) {

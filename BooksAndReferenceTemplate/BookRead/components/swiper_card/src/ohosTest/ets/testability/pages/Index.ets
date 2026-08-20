@@ -7,6 +7,10 @@ const MODE_LABEL_ID: string = 'tui_swiper_mode';
 const MOUNT_FLAT_ID: string = 'tui_swiper_mount_flat';
 const MOUNT_COVERED_ID: string = 'tui_swiper_mount_covered';
 const MOUNT_OVERSIZE_ID: string = 'tui_swiper_mount_oversize';
+const MOUNT_FLAT_UNDERSIZE_ID: string = 'tui_swiper_mount_flat_undersize';
+const MOUNT_COVERED_OVERSIZE_ID: string = 'tui_swiper_mount_covered_oversize';
+const MOUNT_COVERED_UNDERSIZE_ID: string = 'tui_swiper_mount_covered_undersize';
+const MOUNT_INVALID_ID: string = 'tui_swiper_mount_invalid';
 const UNMOUNT_ID: string = 'tui_swiper_unmount';
 const AREA_ID: string = 'tui_swiper_area';
 const AREA_HEIGHT_ID: string = 'tui_swiper_area_height';
@@ -66,7 +70,7 @@ struct Index {
         .id(AREA_HEIGHT_ID)
         .fontSize(12);
 
-      Row({ space: 8 }) {
+      Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center }) {
         Button('flat').id(MOUNT_FLAT_ID).fontSize(12)
           .onClick(() => {
             this.areaHeight = 0;
@@ -86,6 +90,26 @@ struct Index {
           .onClick(() => {
             this.areaHeight = 0;
             this.mode = 'none';
+          });
+        Button('flat-small').id(MOUNT_FLAT_UNDERSIZE_ID).fontSize(12)
+          .onClick(() => {
+            this.areaHeight = 0;
+            this.mode = 'flat-small';
+          });
+        Button('cover-big').id(MOUNT_COVERED_OVERSIZE_ID).fontSize(12)
+          .onClick(() => {
+            this.areaHeight = 0;
+            this.mode = 'cover-big';
+          });
+        Button('cover-small').id(MOUNT_COVERED_UNDERSIZE_ID).fontSize(12)
+          .onClick(() => {
+            this.areaHeight = 0;
+            this.mode = 'cover-small';
+          });
+        Button('invalid').id(MOUNT_INVALID_ID).fontSize(12)
+          .onClick(() => {
+            this.areaHeight = 0;
+            this.mode = 'invalid';
           });
       }
 
@@ -115,6 +139,46 @@ struct Index {
             isCovered: false,
             imgWidth: 10000,
             imgHeight: 10000,
+            isLoop: false,
+            interval: 600000,
+            builderList: this.builders,
+            bookList: this.books
+          });
+        } else if (this.mode === 'flat-small') {
+          TUISwiper({
+            isCovered: false,
+            imgWidth: 50,
+            imgHeight: 50,
+            isLoop: false,
+            interval: 600000,
+            builderList: this.builders,
+            bookList: this.books
+          });
+        } else if (this.mode === 'cover-big') {
+          TUISwiper({
+            isCovered: true,
+            imgWidth: 10000,
+            imgHeight: 10000,
+            isLoop: false,
+            interval: 600000,
+            builderList: this.builders,
+            bookList: this.books
+          });
+        } else if (this.mode === 'cover-small') {
+          TUISwiper({
+            isCovered: true,
+            imgWidth: 50,
+            imgHeight: 50,
+            isLoop: false,
+            interval: 600000,
+            builderList: this.builders,
+            bookList: this.books
+          });
+        } else if (this.mode === 'invalid') {
+          TUISwiper({
+            isCovered: false,
+            imgWidth: 0,
+            imgHeight: 0,
             isLoop: false,
             interval: 600000,
             builderList: this.builders,

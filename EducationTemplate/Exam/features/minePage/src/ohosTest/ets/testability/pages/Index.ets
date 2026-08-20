@@ -33,7 +33,7 @@ struct Index {
 
   aboutToAppear(): void {
     this.collectionData.orderInfos = [this.createOrderInfo()];
-    this.courseData.orderInfos = [this.createCourseOrderInfo()];
+    this.courseData.orderInfos = this.createCourseOrderInfos();
   }
 
   build() {
@@ -91,7 +91,7 @@ struct Index {
           Button('CourseReset')
             .id(RESET_COURSE_PAGE_TRIGGER_ID)
             .onClick(() => {
-              this.courseData.orderInfos = [this.createCourseOrderInfo()];
+              this.courseData.orderInfos = this.createCourseOrderInfos();
               this.showCoursePage = true;
               this.showAuthenticationPage = false;
             })
@@ -126,7 +126,7 @@ struct Index {
           Button('CourseFilled')
             .id(SWITCH_COURSE_TO_FILLED_TRIGGER_ID)
             .onClick(() => {
-              this.courseData.orderInfos = [this.createCourseOrderInfo()];
+              this.courseData.orderInfos = this.createCourseOrderInfos();
             })
           Button('CourseEmpty')
             .id(SWITCH_COURSE_TO_EMPTY_TRIGGER_ID)
@@ -200,5 +200,20 @@ struct Index {
     orderInfo.price = '299';
     orderInfo.buyNumbers = 36;
     return orderInfo;
+  }
+
+  private createCourseOrderInfos(): OrderInfo[] {
+    const first = this.createCourseOrderInfo();
+    const second = new OrderInfo(
+      'instrument-course-id-2',
+      true,
+      OrderState.Paid,
+      'instrument-course-order-no-2',
+      'Course Instrument Class 2',
+      false
+    );
+    second.price = '399';
+    second.buyNumbers = 18;
+    return [first, second];
   }
 }

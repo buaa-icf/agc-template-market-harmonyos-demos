@@ -109,19 +109,18 @@ export struct QuickLoginPage {
         `Failed to click LoginWithHuaweiIDButton. Code is ${error.code}, message is ${error.message}`);
       this.error = error;
       if (error.code === LoginErrorCode.ERROR_CODE_NETWORK_ERROR) {
-        AlertDialog.show(
-          {
-            message: $r('app.string.hwid_no_internet_connect'),
-            offset: { dx: 0, dy: -12 },
-            alignment: DialogAlignment.Bottom,
-            autoCancel: false,
-            confirm: {
-              value: $r('app.string.hwid_text_button_known'),
-              action: () => {
-              }
-            }
-          }
-        );
+        this.showLoginErrorDialog($r('app.string.hwid_no_internet_connect'));
+
+
+
+
+
+
+
+
+
+
+
       } else if (error.code === LoginErrorCode.ERROR_CODE_AGREEMENT_STATUS_NOT_ACCEPTED) {
         // 未同意协议，弹出协议弹框，推荐使用该回调方式
         this.agreementDialog.open();
@@ -143,6 +142,7 @@ export struct QuickLoginPage {
       return;
     }
     try {
+      this.loginResultHook();
       if (this.isSelected) {
         // 配置好可用的调试证书和client_id后再放开校验
         // if (response) {
@@ -161,25 +161,40 @@ export struct QuickLoginPage {
     } catch (e) {
       hilog.info(this.domainId, this.logTag,
         `Failed to LoginWithHuaweiIDButton, errCode: ${e.code}, errMessage: ${e.message}`);
-      AlertDialog.show(
-        {
-          message: $r('app.string.service_error'),
-          offset: { dx: 0, dy: -12 },
-          alignment: DialogAlignment.Bottom,
-          autoCancel: false,
-          confirm: {
-            value: $r('app.string.hwid_text_button_known'),
-            action: () => {
-            }
-          }
-        }
-      );
+      this.showLoginErrorDialog($r('app.string.service_error'));
+
+
+
+
+
+
+
+
+
+
+
     } finally {
       this.enableStatus = true;
     }
   }
 
   // Toast提示
+  loginResultHook: () => void = () => {};
+
+  showLoginErrorDialog: (message: Resource) => void = (message: Resource): void => {
+    AlertDialog.show({
+      message,
+      offset: { dx: 0, dy: -12 },
+      alignment: DialogAlignment.Bottom,
+      autoCancel: false,
+      confirm: {
+        value: $r('app.string.hwid_text_button_known'),
+        action: () => {
+        }
+      }
+    });
+  };
+
   showToast(resource: Resource){
     try {
       promptAction.showToast({

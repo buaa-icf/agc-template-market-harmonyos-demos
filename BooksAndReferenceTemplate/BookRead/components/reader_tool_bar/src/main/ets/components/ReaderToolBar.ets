@@ -174,6 +174,7 @@ export struct ReaderToolBar {
   @Builder
   fontChoice(name: string, filePath: string, index: number) {
     Text(name)
+      .id(`reader_tool_bar_font_choice_${index}`)
       .padding({
         left: 24,
         right: 24,
@@ -290,6 +291,7 @@ export struct ReaderToolBar {
 
         Row({ space: 10 }) {
           Text('仿真')
+            .id('reader_tool_bar_flip_simulation')
             .padding({
               left: 24,
               right: 24,
@@ -310,6 +312,7 @@ export struct ReaderToolBar {
             })
 
           Text('横滑')
+            .id('reader_tool_bar_flip_swiper')
             .padding({
               left: 24,
               right: 24,

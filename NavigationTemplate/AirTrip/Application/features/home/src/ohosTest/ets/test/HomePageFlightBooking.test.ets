@@ -5,6 +5,8 @@ const FIND_TIMEOUT_MS: number = 10_000;
 const IDLE_MS: number = 500;
 const CLEAR_DEPARTURE_ID: string = 'home_test_clear_departure';
 const RESTORE_DEPARTURE_ID: string = 'home_test_restore_departure';
+const CLEAR_DESTINATION_ID: string = 'home_test_clear_destination';
+const RESTORE_DESTINATION_ID: string = 'home_test_restore_destination';
 
 async function waitForIdle(driver: Driver, durationMs: number = IDLE_MS): Promise<void> {
   await driver.delayMs(durationMs);
@@ -86,6 +88,18 @@ export default function homePageFlightBookingTest() {
       const restoredDeparture = await (await waitById(driver, 'home_flight_departure_value')).getText();
       expect(restoredDeparture !== emptyDeparture).assertTrue();
       expect(restoredDeparture.length > 0).assertTrue();
+    });
+
+    it('should render the empty-destination style and recover the default city', 0, async () => {
+      const destinationBefore = await (await waitById(driver, 'home_flight_destination_value')).getText();
+      await clickById(driver, CLEAR_DESTINATION_ID);
+      const emptyDestination = await (await waitById(driver, 'home_flight_destination_value')).getText();
+      expect(emptyDestination !== destinationBefore).assertTrue();
+
+      await clickById(driver, RESTORE_DESTINATION_ID);
+      const restoredDestination = await (await waitById(driver, 'home_flight_destination_value')).getText();
+      expect(restoredDestination !== emptyDestination).assertTrue();
+      expect(restoredDestination.length > 0).assertTrue();
     });
 
     it('should invoke the departure-city selector callback without leaving the host', 0, async () => {

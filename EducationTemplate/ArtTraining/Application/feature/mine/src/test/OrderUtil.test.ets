@@ -77,6 +77,13 @@ export default function OrderUtilTest() {
       expect(callbackCalled).assertFalse();
     });
 
+    it('handles immediate offline payment without opening a route', 0, () => {
+      OrderUtil.handleOrderOperation(mockOrder, OrderActionMap.IMMEDIATE_PAYMENT, callback);
+
+      expect(RouterModule.size()).assertEqual(0);
+      expect(callbackCalled).assertFalse();
+    });
+
     it('opens contact customer service dialog with store phone', 0, () => {
       AppStorage.setOrCreate(AppStorageMap.STORE_PHONE, '400-123-4567');
 

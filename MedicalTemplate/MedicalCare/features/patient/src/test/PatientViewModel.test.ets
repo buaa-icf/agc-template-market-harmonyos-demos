@@ -152,6 +152,56 @@ export default function PatientViewModelTest() {
       expect(viewModel.isLoading).assertEqual(false)
     })
 
+    it('stops bindPatient when an ascii patient name is too long', 0, () => {
+      const viewModel = createViewModel()
+      viewModel.patientDetailInfo.patientName = '123456789'
+
+      viewModel.bindPatient()
+
+      expect(viewModel.patientList.length).assertEqual(0)
+      expect(viewModel.isLoading).assertEqual(false)
+    })
+
+    it('accepts a fifteen-character identity card number', 0, () => {
+      const viewModel = createViewModel()
+      viewModel.patientDetailInfo.idCard = '123456789012345'
+
+      viewModel.bindPatient()
+
+      expect(viewModel.patientDetailInfo.idCard.length).assertEqual(15)
+    })
+
+    it('accepts a passport number at the minimum valid length', 0, () => {
+      const viewModel = createViewModel()
+      viewModel.patientDetailInfo.idCardType = '护照'
+      viewModel.patientDetailInfo.idCard = '1234567'
+
+      viewModel.bindPatient()
+
+      expect(viewModel.patientDetailInfo.idCard.length).assertEqual(7)
+    })
+
+    it('accepts an hk permit number at the maximum valid length', 0, () => {
+      const viewModel = createViewModel()
+      viewModel.patientDetailInfo.idCardType = '港澳通行证'
+      viewModel.patientDetailInfo.idCard = '12345678901'
+
+      viewModel.bindPatient()
+
+      expect(viewModel.patientDetailInfo.idCard.length).assertEqual(11)
+    })
+
+    it('accepts an unlisted certificate type', 0, () => {
+      const viewModel = createViewModel()
+      viewModel.patientDetailInfo.idCardType = 'other'
+      viewModel.patientDetailInfo.idCard = 'A1'
+
+      viewModel.bindPatient()
+
+      expect(viewModel.patientDetailInfo.idCardType).assertEqual('other')
+      expect(viewModel.patientDetailInfo.idCard).assertEqual('A1')
+    })
+
     it('stops bindPatient when the phone length is invalid', 0, () => {
       const viewModel = createViewModel()
       viewModel.patientDetailInfo.phone = '1380013800'

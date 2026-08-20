@@ -257,5 +257,42 @@ export default function TabSwiperTest() {
       expect(attr['indicatorWidth'] as number).assertEqual(0);
       expect(harness.getLayoutCalls()).assertEqual(0);
     });
+
+    it('updates every remaining monitored visual attribute', 0, () => {
+      const swiperObject: ESObject = harness.swiper as ESObject;
+      const attr: ESObject = (swiperObject['ctx'] as ESObject)['attr'] as ESObject;
+      const edgeEffectOptions: Object = attr['trackEdgeEffectOptions'] as Object;
+      const monitor: FakeMonitor = new FakeMonitor();
+      monitor.add('trackHeight', '40vp' as Object);
+      monitor.add('trackEdgeEffectMode', EdgeEffect.Spring as Object);
+      monitor.add('trackEdgeEffectOptions', edgeEffectOptions);
+      monitor.add('indicatorWidth', 28 as Object);
+      monitor.add('indicatorHeight', 6 as Object);
+      monitor.add('indicatorRadius', 3 as Object);
+      monitor.add('indicatorColor', Color.Blue as Object);
+      monitor.add('indicatorMarginBottom', 5 as Object);
+
+      harness.swiper.onTabSwiperAttributeChange(monitor);
+
+      expect(attr['trackHeight'] as string).assertEqual('40vp');
+      expect(attr['trackEdgeEffectMode'] as EdgeEffect).assertEqual(EdgeEffect.Spring);
+      expect(attr['trackEdgeEffectOptions'] as Object).assertEqual(edgeEffectOptions);
+      expect(attr['indicatorWidth'] as number).assertEqual(28);
+      expect(attr['indicatorHeight'] as number).assertEqual(6);
+      expect(attr['indicatorRadius'] as number).assertEqual(3);
+      expect(attr['indicatorColor'] as ResourceColor).assertEqual(Color.Blue);
+      expect(attr['indicatorMarginBottom'] as number).assertEqual(5);
+    });
+
+    it('ignores an empty viewData length update', 0, () => {
+      const monitor: FakeMonitor = new FakeMonitor();
+      monitor.add('viewData', [] as Object);
+      monitor.add('viewData.length', 0 as Object);
+
+      harness.swiper.onTabSwiperAttributeChange(monitor);
+
+      expect(harness.changeIndexCalls.length).assertEqual(0);
+      expect(harness.onChangeCalls.length).assertEqual(0);
+    });
   });
 }

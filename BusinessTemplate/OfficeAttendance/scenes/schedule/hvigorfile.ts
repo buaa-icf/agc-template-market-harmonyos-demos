@@ -157,26 +157,35 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
     pluginId: 'schedule_replace_ohos_test_index',
     apply(node) {
         hvigor.nodesEvaluated(() => {
-            const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
-            if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
+            const nodeApi = node as unknown as Record<string, Function>;
+            const hasTask: (name: string) => boolean = typeof nodeApi.hasTask === 'function'
+                ? (nodeApi.hasTask as (name: string) => boolean).bind(node)
+                : (name: string): boolean => node.getTaskByName(name) !== undefined;
+            if (!hasTask(GENERATE_OHOS_TEST_TEMPLATE_TASK)) {
                 return;
             }
 
             node.registerTask({
                 name: 'ReplaceOhosTestIndex',
                 dependencies: [GENERATE_OHOS_TEST_TEMPLATE_TASK],
-                postDependencies: [OHOS_TEST_COMPILE_ARK_TS_TASK],
+                postDependencies: hasTask(OHOS_TEST_COMPILE_ARK_TS_TASK) ? [OHOS_TEST_COMPILE_ARK_TS_TASK] : [],
                 run(taskContext) {
                     const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
-                    const targetPath = path.resolve(taskContext.modulePath,
-                        '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+                    const targetPaths = [
+                        path.resolve(taskContext.modulePath,
+                            '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'),
+                        path.resolve(taskContext.modulePath,
+                            'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets')
+                    ];
 
                     if (!fs.existsSync(sourcePath)) {
                         return;
                     }
 
-                    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-                    fs.copyFileSync(sourcePath, targetPath);
+                    targetPaths.forEach((targetPath: string) => {
+                        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+                        fs.copyFileSync(sourcePath, targetPath);
+                    });
                 }
             });
         });
