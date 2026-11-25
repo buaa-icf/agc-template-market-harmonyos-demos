@@ -23,6 +23,17 @@ async function click(component: Component, driver: Driver): Promise<void> {
   await waitForIdle(driver);
 }
 
+// The accessibility tree also exposes the host underneath closing dialogs and pages.
+async function waitUntilGone(driver: Driver, id: string): Promise<void> {
+  const deadline = Date.now() + FIND_TIMEOUT_MS;
+  while (await driver.findComponent(ON.id(id))) {
+    if (Date.now() >= deadline) {
+      throw new Error(`Still visible: ${id}`);
+    }
+    await driver.delayMs(100);
+  }
+}
+
 // IDs that only exist on pushed NavDestination pages. The host screen
 // shows none of them. We rely on these (not the host anchor) to decide
 // whether we are still on a pushed page, because waitForComponent finds
@@ -69,12 +80,19 @@ export default function AgreementViewTest() {
         await resetToHost(driver, 'agreement_test_host_anchor');
         await click(await findById(driver, 'agreement_test_open_dialog'), driver);
         await click(await findById(driver, 'loginPanel_agreement_terms_link'), driver);
+        await waitUntilGone(driver, 'loginPanel_agreement_dialog_privacy_title');
         await findById(driver, 'agreement_terms_page_anchor');
         await click(await findById(driver, 'agreement_terms_page_back'), driver);
+        await waitUntilGone(driver, 'agreement_terms_page_anchor');
 
         await findById(driver, 'agreement_test_host_anchor');
+        await click(await findById(driver, 'agreement_test_open_dialog'), driver);
         await click(await findById(driver, 'loginPanel_agreement_privacy_link'), driver);
+        await waitUntilGone(driver, 'loginPanel_agreement_dialog_privacy_title');
         await findById(driver, 'agreement_privacy_page_anchor');
+        await click(await findById(driver, 'agreement_privacy_page_back'), driver);
+        await waitUntilGone(driver, 'agreement_privacy_page_anchor');
+        await findById(driver, 'agreement_test_host_anchor');
       });
 
     it('build should render and cancel an agreement without privacy spans',
@@ -85,6 +103,7 @@ export default function AgreementViewTest() {
         await click(await findById(driver, 'agreement_test_open_empty_dialog'), driver);
         await findById(driver, 'loginPanel_agreement_dialog_privacy_title');
         await click(await findById(driver, 'loginPanel_agreement_cancel_btn'), driver);
+        await waitUntilGone(driver, 'loginPanel_agreement_dialog_privacy_title');
         await findById(driver, 'agreement_test_host_anchor');
       });
   });

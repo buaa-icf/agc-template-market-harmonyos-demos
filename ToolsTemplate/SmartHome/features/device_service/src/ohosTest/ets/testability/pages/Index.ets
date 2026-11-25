@@ -22,42 +22,35 @@ struct Index {
     text: $r('app.string.end'),
     type: loginComponentManager.TextType.PLAIN_TEXT
   }];
-  dialogController: CustomDialogController = this.createDialogController();
-  emptyDialogController: CustomDialogController = this.createEmptyDialogController();
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: AgreementDialog({
+      privacyText: this.privacyText,
+      cancel: () => {
+        this.dialogController.close();
+      },
+      confirm: () => {
+        this.dialogController.close();
+      },
+      pathStack: this.pathStack
+    }),
+    autoCancel: false,
+    alignment: DialogAlignment.Center
+  });
 
-  createDialogController(): CustomDialogController {
-    return new CustomDialogController({
-      builder: AgreementDialog({
-        privacyText: this.privacyText,
-        cancel: () => {
-          this.dialogController.close();
-        },
-        confirm: () => {
-          this.dialogController.close();
-        },
-        pathStack: this.pathStack
-      }),
-      autoCancel: false,
-      alignment: DialogAlignment.Center
-    });
-  }
-
-  createEmptyDialogController(): CustomDialogController {
-    return new CustomDialogController({
-      builder: AgreementDialog({
-        privacyText: [],
-        cancel: () => {
-          this.emptyDialogController.close();
-        },
-        confirm: () => {
-          this.emptyDialogController.close();
-        },
-        pathStack: this.pathStack
-      }),
-      autoCancel: false,
-      alignment: DialogAlignment.Center
-    });
-  }
+  emptyDialogController: CustomDialogController = new CustomDialogController({
+    builder: AgreementDialog({
+      privacyText: [],
+      cancel: () => {
+        this.emptyDialogController.close();
+      },
+      confirm: () => {
+        this.emptyDialogController.close();
+      },
+      pathStack: this.pathStack
+    }),
+    autoCancel: false,
+    alignment: DialogAlignment.Center
+  });
 
   @Builder
   navDestinationBuilder(name: string, param?: Object) {
@@ -84,6 +77,11 @@ struct Index {
         Column({ space: 16 }) {
           Text('Privacy Policy Test Destination')
             .id('agreement_privacy_page_anchor')
+          Button('Back')
+            .id('agreement_privacy_page_back')
+            .onClick(() => {
+              this.pathStack.pop();
+            })
         }
         .width('100%')
         .height('100%')
@@ -104,14 +102,12 @@ struct Index {
         Button('Open Agreement Dialog')
           .id('agreement_test_open_dialog')
           .onClick(() => {
-            this.dialogController = this.createDialogController();
             this.dialogController.open();
           })
 
         Button('Open Empty Agreement Dialog')
           .id('agreement_test_open_empty_dialog')
           .onClick(() => {
-            this.emptyDialogController = this.createEmptyDialogController();
             this.emptyDialogController.open();
           })
 
