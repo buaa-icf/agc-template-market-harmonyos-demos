@@ -13,7 +13,10 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
     apply(node) {
         hvigor.nodesEvaluated(() => {
             const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
-            if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
+            // Studio calls assembleHap separately for the app and the instrumented test module.
+            const moduleTarget = hvigor.getParameter().getExtParam('module');
+            const isTestHap = moduleTarget === `${node.getNodeName()}@ohosTest`;
+            if (!isTestHap && !entryTasks.has(ON_DEVICE_TEST_TASK)) {
                 return;
             }
 
@@ -23,15 +26,17 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
                 postDependencies: [OHOS_TEST_COMPILE_ARK_TS_TASK],
                 run(taskContext) {
                     const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
-                    const targetPath = path.resolve(taskContext.modulePath,
-                        'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+                    const hostPath = 'default/intermediates/src/ohosTest/ets/testability/pages/Index.ets';
+                    const generatedHosts = ['.test', 'build']
+                        .map(root => path.resolve(taskContext.modulePath, root, hostPath))
+                        .filter(file => fs.existsSync(file));
 
-                    if (!fs.existsSync(sourcePath)) {
-                        return;
+                    if (generatedHosts.length === 0) {
+                        throw new Error('GenerateOhosTestTemplate did not create the test host page');
                     }
-
-                    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-                    fs.copyFileSync(sourcePath, targetPath);
+                    for (const host of generatedHosts) {
+                        fs.copyFileSync(sourcePath, host);
+                    }
                 }
             });
         });

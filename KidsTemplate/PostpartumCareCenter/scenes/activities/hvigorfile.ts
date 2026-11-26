@@ -13,7 +13,9 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
   apply(node) {
     hvigor.nodesEvaluated(() => {
       const entryTasks = new Set(hvigor.getCommandEntryTask() ?? []);
-      if (!entryTasks.has(ON_DEVICE_TEST_TASK)) {
+      const isStudioTestHap = entryTasks.has('genOnDeviceTestHap') &&
+        hvigor.getParameter().getExtParam('module') === `${node.getNodeName()}@ohosTest`;
+      if (!entryTasks.has(ON_DEVICE_TEST_TASK) && !isStudioTestHap) {
         return;
       }
 
@@ -23,15 +25,20 @@ const replaceOhosTestIndexPlugin: HvigorPlugin = {
         postDependencies: [OHOS_TEST_COMPILE_ARK_TS_TASK],
         run(taskContext) {
           const sourcePath = path.resolve(taskContext.modulePath, 'src/ohosTest/ets/testability/pages/Index.ets');
-          const targetPath = path.resolve(taskContext.modulePath,
-            'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets');
+          // Keep the entry page in sync with both Hvigor output layouts.
+          const targetPaths = [
+            path.resolve(taskContext.modulePath, 'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'),
+            path.resolve(taskContext.modulePath, '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets')
+          ];
 
           if (!fs.existsSync(sourcePath)) {
             return;
           }
 
-          fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-          fs.copyFileSync(sourcePath, targetPath);
+          for (const targetPath of targetPaths) {
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.copyFileSync(sourcePath, targetPath);
+          }
         }
       });
     });

@@ -4,19 +4,25 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const SOURCE_RELATIVE: string = 'src/ohosTest/ets/testability/pages/Index.ets';
-const DEST_RELATIVE: string = 'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets';
+// Hvigor versions use either directory for the generated on-device entry page.
+const DEST_RELATIVES: string[] = [
+  'build/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets',
+  '.test/default/intermediates/src/ohosTest/ets/testability/pages/Index.ets'
+];
 
 function copyTestabilityIndex(moduleDir: string): void {
   const src: string = path.join(moduleDir, SOURCE_RELATIVE);
-  const dst: string = path.join(moduleDir, DEST_RELATIVE);
   if (!fs.existsSync(src)) {
     return;
   }
   const content: string = fs.readFileSync(src, 'utf8');
   // Rewrite relative imports so they resolve correctly from the generated intermediates directory.
   const rewritten: string = content.replace(/\.\.\/\.\.\/\.\.\/\.\.\/main\/ets\//g, '../../../../../../../../src/main/ets/');
-  fs.mkdirSync(path.dirname(dst), { recursive: true });
-  fs.writeFileSync(dst, rewritten, 'utf8');
+  for (const relative of DEST_RELATIVES) {
+    const dst: string = path.join(moduleDir, relative);
+    fs.mkdirSync(path.dirname(dst), { recursive: true });
+    fs.writeFileSync(dst, rewritten, 'utf8');
+  }
 }
 
 function nodeDir(n: HvigorNode): string {

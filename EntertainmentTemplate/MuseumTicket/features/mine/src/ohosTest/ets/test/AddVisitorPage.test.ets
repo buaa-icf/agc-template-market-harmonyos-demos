@@ -1,16 +1,16 @@
 import { beforeAll, beforeEach, describe, expect, it } from '@ohos/hypium';
-import { Component, Driver, ON } from '@kit.TestKit';
+import { abilityDelegatorRegistry, Component, Driver, ON } from '@kit.TestKit';
+import { window } from '@kit.ArkUI';
 
 const UI_TIMEOUT = 10000;
-const IDLE_DELAY = 1200;
 const HOST_ANCHOR_ID = 'add_visitor_host_anchor';
 const POPULATED_BUTTON_ID = 'add_visitor_show_populated';
 const EMPTY_BUTTON_ID = 'add_visitor_show_empty';
 const SAVE_BUTTON_ID = 'add_visitor_save_button';
 const CANCEL_BUTTON_ID = 'add_visitor_cancel_button';
 
-async function waitForIdle(driver: Driver, delayMs: number = IDLE_DELAY): Promise<void> {
-  await driver.delayMs(delayMs);
+async function waitForIdle(driver: Driver): Promise<void> {
+  await driver.waitForIdle(250, 1500);
 }
 
 async function findById(driver: Driver, id: string, timeout: number = UI_TIMEOUT): Promise<Component> {
@@ -21,51 +21,39 @@ async function findById(driver: Driver, id: string, timeout: number = UI_TIMEOUT
   return component;
 }
 
-async function ensureHostVisible(driver: Driver): Promise<void> {
-  const hostAnchor = await driver.findComponent(ON.id(HOST_ANCHOR_ID));
-  if (hostAnchor !== null) {
-    return;
+async function waitForFormToClose(driver: Driver): Promise<void> {
+  const deadline = Date.now() + UI_TIMEOUT;
+  while (await driver.findComponent(ON.id(SAVE_BUTTON_ID)) !== null) {
+    if (Date.now() >= deadline) {
+      throw new Error('The add visitor form is still open.');
+    }
+    await driver.delayMs(100);
   }
+  await findById(driver, HOST_ANCHOR_ID);
+}
 
-  const cancelButton = await driver.findComponent(ON.id(CANCEL_BUTTON_ID));
-  if (cancelButton !== null) {
-    await cancelButton.click();
+async function dismissKeyboardIfShown(driver: Driver): Promise<void> {
+  const ability = await abilityDelegatorRegistry.getAbilityDelegator().getCurrentTopAbility();
+  const formWindow = await window.getLastWindow(ability.context);
+  if (formWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_KEYBOARD).bottomRect.height > 0) {
+    await driver.pressBack();
     await waitForIdle(driver);
   }
-
-  await findById(driver, HOST_ANCHOR_ID);
 }
 
 async function enterText(driver: Driver, id: string, value: string): Promise<void> {
   const input = await findById(driver, id);
-  const point = await input.getBoundsCenter();
-  await driver.inputText(point, value);
-  await waitForIdle(driver, 100);
-  try {
-    await driver.pressBack();
-  } catch (_error) {
+  await input.inputText(value);
+  const filled = await driver.waitForComponent(ON.id(id).text(value), 3000);
+  await dismissKeyboardIfShown(driver);
+  if (filled === null) {
+    throw new Error(`Input ${id} did not update to the expected value.`);
   }
-  await waitForIdle(driver, 100);
-}
-
-async function openEmptyForm(driver: Driver): Promise<void> {
-  await ensureHostVisible(driver);
-  await (await findById(driver, EMPTY_BUTTON_ID)).click();
-  await waitForIdle(driver);
-  await findById(driver, SAVE_BUTTON_ID);
-}
-
-async function closeForm(driver: Driver): Promise<void> {
-  const cancel = await driver.findComponent(ON.id(CANCEL_BUTTON_ID));
-  if (cancel !== null) {
-    await cancel.click();
-    await waitForIdle(driver);
-  }
-  await ensureHostVisible(driver);
 }
 
 async function submitForm(driver: Driver, name: string, cardId: string, phone: string): Promise<void> {
-  await openEmptyForm(driver);
+  await (await findById(driver, EMPTY_BUTTON_ID)).click();
+  await waitForIdle(driver);
   if (name.length > 0) {
     await enterText(driver, 'add_visitor_name_input', name);
   }
@@ -76,22 +64,23 @@ async function submitForm(driver: Driver, name: string, cardId: string, phone: s
     await enterText(driver, 'add_visitor_phone_input', phone);
   }
   await (await findById(driver, SAVE_BUTTON_ID)).click();
-  await waitForIdle(driver, 500);
 }
 
 export default function AddVisitorPageTest() {
   describe('AddVisitorPageTest', () => {
     let driver: Driver;
 
-    beforeAll(async () => {
+    beforeAll(() => {
       driver = Driver.create();
-      await waitForIdle(driver, 2000);
-      await ensureHostVisible(driver);
     });
 
     beforeEach(async () => {
-      await waitForIdle(driver);
-      await ensureHostVisible(driver);
+      const cancel = await driver.findComponent(ON.id(CANCEL_BUTTON_ID));
+      if (cancel !== null) {
+        await dismissKeyboardIfShown(driver);
+        await cancel.click();
+      }
+      await waitForFormToClose(driver);
     });
 
     it('build_renders_contact_form', 0, async () => {
@@ -116,12 +105,7 @@ export default function AddVisitorPageTest() {
       await waitForIdle(driver);
 
       await (await findById(driver, CANCEL_BUTTON_ID)).click();
-      await waitForIdle(driver);
-
-      const closedSaveButton = await driver.findComponent(ON.id(SAVE_BUTTON_ID));
-      if (closedSaveButton !== null) {
-        throw new Error('add_visitor_save_button should disappear after closing the page.');
-      }
+      await waitForFormToClose(driver);
 
       await (await findById(driver, EMPTY_BUTTON_ID)).click();
       await waitForIdle(driver);
@@ -132,39 +116,33 @@ export default function AddVisitorPageTest() {
     });
 
     it('isContactInfoValid_rejects_missing_name', 0, async () => {
-      await closeForm(driver);
       await submitForm(driver, '', '', '');
       await findById(driver, SAVE_BUTTON_ID);
     });
 
     it('isContactInfoValid_rejects_missing_card_id', 0, async () => {
-      await closeForm(driver);
-      await submitForm(driver, 'Test Visitor', '', '');
+      await submitForm(driver, 'A', '', '');
       await findById(driver, SAVE_BUTTON_ID);
     });
 
     it('isContactInfoValid_rejects_invalid_card_id', 0, async () => {
-      await closeForm(driver);
-      await submitForm(driver, 'Test Visitor', 'invalid-card', '');
+      await submitForm(driver, 'A', '1', '');
       await findById(driver, SAVE_BUTTON_ID);
     });
 
     it('isContactInfoValid_rejects_missing_phone', 0, async () => {
-      await closeForm(driver);
-      await submitForm(driver, 'Test Visitor', '110101199003079876', '');
+      await submitForm(driver, 'A', '110101199003079876', '');
       await findById(driver, SAVE_BUTTON_ID);
     });
 
     it('isContactInfoValid_rejects_invalid_phone', 0, async () => {
-      await closeForm(driver);
-      await submitForm(driver, 'Test Visitor', '110101199003079876', '123');
+      await submitForm(driver, 'A', '110101199003079876', '123');
       await findById(driver, SAVE_BUTTON_ID);
     });
 
     it('upDateContactInfo_saves_a_valid_contact', 0, async () => {
-      await closeForm(driver);
-      await submitForm(driver, 'Test Visitor', '110101199003079876', '13812345678');
-      await ensureHostVisible(driver);
+      await submitForm(driver, 'A', '110101199003079876', '13812345678');
+      await waitForFormToClose(driver);
     });
   });
 }
