@@ -26,6 +26,14 @@ function safeCall(fn: () => void): void {
   }
 }
 
+function requireUserInfo(vm: EditPhonePageVM): UserInfo {
+  const info = vm.userInfo;
+  if (!info) {
+    throw new Error('Expected the view model to have userInfo');
+  }
+  return info;
+}
+
 function callModify(vm: EditPhonePageVM): void {
   vm.modify();
 }
@@ -37,8 +45,8 @@ export default function editPhonePageVMTest() {
 
     beforeEach(() => {
       vm = new EditPhonePageVM();
-      vm.userInfo.id = 0;
-      vm.userInfo.cellphone = '';
+      requireUserInfo(vm).id = 0;
+      requireUserInfo(vm).cellphone = '';
       vm.isLogin = false;
       vm.cellphone = '';
     });
@@ -73,16 +81,16 @@ export default function editPhonePageVMTest() {
     });
 
     it('init_copiesCellphoneAndChecksLogin', 0, () => {
-      vm.userInfo.id = 5;
-      vm.userInfo.cellphone = '13800000000';
+      requireUserInfo(vm).id = 5;
+      requireUserInfo(vm).cellphone = '13800000000';
       vm.init();
       expect(vm.isLogin).assertTrue();
       expect(vm.cellphone).assertEqual('13800000000');
     });
 
     it('init_setsIsLoginFalseWhenIdZero', 0, () => {
-      vm.userInfo.id = 0;
-      vm.userInfo.cellphone = '13900000000';
+      requireUserInfo(vm).id = 0;
+      requireUserInfo(vm).cellphone = '13900000000';
       vm.init();
       expect(vm.isLogin).assertFalse();
       expect(vm.cellphone).assertEqual('13900000000');
@@ -119,27 +127,27 @@ export default function editPhonePageVMTest() {
     });
 
     it('modify_doesNotChangeWhenCellphoneEmpty', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.cellphone = '13800000000';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).cellphone = '13800000000';
       vm.cellphone = '';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.cellphone).assertEqual('13800000000');
+      expect(requireUserInfo(vm).cellphone).assertEqual('13800000000');
     });
 
     it('modify_doesNotChangeWhenCellphoneNotElevenDigits', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.cellphone = '13800000000';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).cellphone = '13800000000';
       vm.cellphone = '12345';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.cellphone).assertEqual('13800000000');
+      expect(requireUserInfo(vm).cellphone).assertEqual('13800000000');
     });
 
     it('modify_updatesUserInfoWhenCellphoneValid', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.cellphone = '13800000000';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).cellphone = '13800000000';
       vm.cellphone = '13912345678';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.cellphone).assertEqual('13912345678');
+      expect(requireUserInfo(vm).cellphone).assertEqual('13912345678');
     });
   });
 }

@@ -26,6 +26,14 @@ function safeCall(fn: () => void): void {
   }
 }
 
+function requireUserInfo(vm: EditNamePageVM): UserInfo {
+  const info = vm.userInfo;
+  if (!info) {
+    throw new Error('Expected the view model to have userInfo');
+  }
+  return info;
+}
+
 function callModify(vm: EditNamePageVM): void {
   vm.modify();
 }
@@ -37,8 +45,8 @@ export default function editNamePageVMTest() {
 
     beforeEach(() => {
       vm = new EditNamePageVM();
-      vm.userInfo.id = 0;
-      vm.userInfo.nickname = '';
+      requireUserInfo(vm).id = 0;
+      requireUserInfo(vm).nickname = '';
       vm.isLogin = false;
       vm.nickname = '';
     });
@@ -73,16 +81,16 @@ export default function editNamePageVMTest() {
     });
 
     it('init_copiesNicknameAndChecksLogin', 0, () => {
-      vm.userInfo.id = 5;
-      vm.userInfo.nickname = 'Alice';
+      requireUserInfo(vm).id = 5;
+      requireUserInfo(vm).nickname = 'Alice';
       vm.init();
       expect(vm.isLogin).assertTrue();
       expect(vm.nickname).assertEqual('Alice');
     });
 
     it('init_setsIsLoginFalseWhenIdZero', 0, () => {
-      vm.userInfo.id = 0;
-      vm.userInfo.nickname = 'Bob';
+      requireUserInfo(vm).id = 0;
+      requireUserInfo(vm).nickname = 'Bob';
       vm.init();
       expect(vm.isLogin).assertFalse();
       expect(vm.nickname).assertEqual('Bob');
@@ -119,27 +127,27 @@ export default function editNamePageVMTest() {
     });
 
     it('modify_doesNotChangeWhenNicknameEmpty', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.nickname = 'old';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).nickname = 'old';
       vm.nickname = '';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.nickname).assertEqual('old');
+      expect(requireUserInfo(vm).nickname).assertEqual('old');
     });
 
     it('modify_doesNotChangeWhenNicknameTooLong', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.nickname = 'old';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).nickname = 'old';
       vm.nickname = '123456789';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.nickname).assertEqual('old');
+      expect(requireUserInfo(vm).nickname).assertEqual('old');
     });
 
     it('modify_updatesUserInfoWhenNicknameValid', 0, () => {
-      vm.userInfo.id = 1;
-      vm.userInfo.nickname = 'old';
+      requireUserInfo(vm).id = 1;
+      requireUserInfo(vm).nickname = 'old';
       vm.nickname = 'newName';
       safeCall((): void => callModify(vm));
-      expect(vm.userInfo.nickname).assertEqual('newName');
+      expect(requireUserInfo(vm).nickname).assertEqual('newName');
     });
   });
 }
